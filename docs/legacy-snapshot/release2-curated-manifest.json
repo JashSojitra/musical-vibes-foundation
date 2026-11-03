@@ -1,0 +1,93 @@
+[
+  {
+    "local": "public/assets/curated/conversation.webp",
+    "original": "public/assets/legacy/25_12_4_Seniors_Club--2.jpg",
+    "source": "https://www.musicalvibesfoundation.com/assets/25_12_4_Seniors_Club/2.jpg",
+    "format": "webp",
+    "width": 1600,
+    "height": 901,
+    "channels": 3,
+    "premultiplied": false,
+    "hasAlpha": false,
+    "size": 171168,
+    "consent": "unconfirmed"
+  },
+  {
+    "local": "public/assets/curated/gathering.webp",
+    "original": "public/assets/legacy/25_11_13_Seniors_Club--1.jpg",
+    "source": "https://www.musicalvibesfoundation.com/assets/25_11_13_Seniors_Club/1.jpg",
+    "format": "webp",
+    "width": 1600,
+    "height": 900,
+    "channels": 3,
+    "premultiplied": false,
+    "hasAlpha": false,
+    "size": 127144,
+    "consent": "unconfirmed"
+  },
+  {
+    "local": "public/assets/curated/diwali-portrait.webp",
+    "original": "public/assets/legacy/25_10_16_Diwali_Celebrations--2.jpg",
+    "source": "https://www.musicalvibesfoundation.com/assets/25_10_16_Diwali_Celebrations/2.jpg",
+    "format": "webp",
+    "width": 1200,
+    "height": 1600,
+    "channels": 3,
+    "premultiplied": false,
+    "hasAlpha": false,
+    "size": 210280,
+    "consent": "unconfirmed"
+  },
+  {
+    "local": "public/assets/curated/speaker.webp",
+    "original": "public/assets/legacy/Oct_2_2025_Seniors_Club--1.jpg",
+    "source": "https://www.musicalvibesfoundation.com/assets/Oct_2_2025_Seniors_Club/1.jpg",
+    "format": "webp",
+    "width": 1600,
+    "height": 901,
+    "channels": 3,
+    "premultiplied": false,
+    "hasAlpha": false,
+    "size": 130976,
+    "consent": "unconfirmed"
+  },
+  {
+    "local": "public/assets/curated/june-song.webp",
+    "original": "public/assets/legacy/June1925--1.jpg",
+    "source": "https://www.musicalvibesfoundation.com/assets/June1925/1.jpg",
+    "format": "webp",
+    "width": 1400,
+    "height": 1415,
+    "channels": 3,
+    "premultiplied": false,
+    "hasAlpha": false,
+    "size": 162598,
+    "consent": "unconfirmed"
+  },
+  {
+    "local": "public/assets/curated/picnic-table.webp",
+    "original": "public/assets/legacy/Aug_21_2025_Seniors_club--2.jpeg",
+    "source": "https://www.musicalvibesfoundation.com/assets/Aug_21_2025_Seniors_club/2.jpeg",
+    "format": "webp",
+    "width": 1600,
+    "height": 792,
+    "channels": 3,
+    "premultiplied": false,
+    "hasAlpha": false,
+    "size": 138662,
+    "consent": "unconfirmed"
+  },
+  {
+    "local": "public/assets/curated/march.webp",
+    "original": "public/assets/legacy/Mar_19_2025_seniors_club--1.jpg",
+    "source": "https://www.musicalvibesfoundation.com/assets/Mar_19_2025_seniors_club/1.jpg",
+    "format": "webp",
+    "width": 1600,
+    "height": 901,
+    "channels": 3,
+    "premultiplied": false,
+    "hasAlpha": false,
+    "size": 116402,
+    "consent": "unconfirmed"
+  }
+]

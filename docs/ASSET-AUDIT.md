@@ -1,5 +1,9 @@
 # Asset audit — November 3, 2026
 
+## Release 2 update
+
+Twelve photographs are now curated: the original five plus seven additional derivatives from the same visually reviewed 41-photo sample. No new external photography was added. See `release2-curated-manifest.json` for the additional source mappings and `src/data/media.ts` for contextual captions, categories, dimensions, and focal positions. Yoga, nutrition, online learning, and food support still lack verified activity-specific photography; their detail pages label contextual community images honestly. The gallery omits flyers, watermarked concert images, and the unverified outreach sample. The source inventory and original logo below remain unchanged.
+
 ## Provenance and scope
 
 The existing collector captured seven HTML pages but only two assets. The galleries are populated by `/javascript/gallery.js`, which the original collector did not follow. That public script is now preserved under `docs/legacy-snapshot/` and indexed in `gallery-index.json` without executing its code. No third-party stock photography or generated imagery was added.

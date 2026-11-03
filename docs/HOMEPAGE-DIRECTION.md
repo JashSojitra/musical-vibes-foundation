@@ -1,5 +1,7 @@
 # A place in the rhythm
 
+This records the Release 1 direction. The current multi-page design is documented in [RELEASE-2-DESIGN.md](RELEASE-2-DESIGN.md); this earlier direction is retained as design history.
+
 The first complete homepage direction uses the foundation's own gatherings as its visual centre. An oversized editorial serif, deep plum, warm ivory, dusty rose, sage, and saffron echo the warmth and variety of the original logo. The logo is never redrawn or recoloured.
 
 ## Narrative and composition

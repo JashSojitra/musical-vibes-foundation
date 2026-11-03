@@ -1,32 +1,100 @@
-'use client';
-import { useEffect, useRef } from 'react';
-/** Enhancement only: the entire document remains visible without JavaScript. */
+"use client";
+
+import { usePathname } from "next/navigation";
+import { useEffect, useRef } from "react";
+
 export default function Motion({ children }: { children: React.ReactNode }) {
   const root = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
+  const lastPath = useRef(pathname);
+
   useEffect(() => {
+    if (lastPath.current !== pathname) {
+      document.getElementById("main")?.focus({ preventScroll: true });
+      lastPath.current = pathname;
+    }
     let cancelled = false;
     let dispose: (() => void) | undefined;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    Promise.all([import('gsap'), import('gsap/ScrollTrigger')]).then(([{ gsap }, { ScrollTrigger }]) => {
-      if (cancelled || !root.current) return;
-      gsap.registerPlugin(ScrollTrigger);
-      const mm = gsap.matchMedia();
-      mm.add('(prefers-reduced-motion: no-preference)', () => {
-        const context = gsap.context(() => {
-          gsap.from('.hero-title > span', { yPercent: 25, stagger: .13, duration: 1.2, ease: 'power3.out' });
-          gsap.from('.hero-bottom', { y: 18, duration: .9, delay: .45 });
-          gsap.to('.hero-photo', { yPercent: 12, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true } });
-          gsap.utils.toArray<HTMLElement>('[data-reveal]').forEach(el => gsap.from(el, { y: 32, duration: .85, ease: 'power2.out', scrollTrigger: { trigger: el, start: 'top 94%', once: true } }));
-          gsap.fromTo('.rhythm-line', { scaleX: 0 }, { scaleX: 1, ease: 'none', scrollTrigger: { trigger: '.story', start: 'top 80%', end: 'bottom 65%', scrub: .5 } });
-          gsap.to('.record', { rotation: 70, ease: 'none', scrollTrigger: { trigger: '.music-chapter', start: 'top bottom', end: 'bottom top', scrub: 1 } });
-          gsap.from('.wellness-word', { xPercent: -12, ease: 'none', scrollTrigger: { trigger: '.wellness-chapter', start: 'top bottom', end: 'bottom top', scrub: 1 } });
-          gsap.to('.chapter-progress', { scaleX: 1, transformOrigin: 'left', ease: 'none', scrollTrigger: { trigger: '#programs', start: 'top bottom', end: 'bottom bottom', scrub: true } });
-        }, root);
-        return () => context.revert();
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    void Promise.all([import("gsap"), import("gsap/ScrollTrigger")])
+      .then(([{ gsap }, { ScrollTrigger }]) => {
+        if (cancelled || !root.current) return;
+        gsap.registerPlugin(ScrollTrigger);
+        const mm = gsap.matchMedia();
+        mm.add("(prefers-reduced-motion: no-preference)", () => {
+          const context = gsap.context(() => {
+            const title = root.current?.querySelector("[data-title]");
+            if (title)
+              gsap.from(title, {
+                y: 25,
+                duration: 1.1,
+                ease: "power3.out",
+                clearProps: "transform",
+              });
+            gsap.utils.toArray<HTMLElement>("[data-reveal]").forEach((el) => {
+              gsap.from(el, {
+                y: 26,
+                duration: 0.85,
+                ease: "power3.out",
+                scrollTrigger: { trigger: el, start: "top 94%", once: true },
+                clearProps: "transform",
+              });
+            });
+            gsap.utils
+              .toArray<HTMLElement>("[data-image] .photo-frame")
+              .forEach((el) => {
+                gsap.from(el, {
+                  clipPath: "inset(0 0 6% 0)",
+                  duration: 1.2,
+                  ease: "power2.out",
+                  scrollTrigger: { trigger: el, start: "top 95%", once: true },
+                  clearProps: "clipPath",
+                });
+              });
+            const heroPhoto = root.current?.querySelector(".hero-photo");
+            if (heroPhoto)
+              gsap.to(heroPhoto, {
+                yPercent: 12,
+                ease: "none",
+                scrollTrigger: {
+                  trigger: ".home-hero",
+                  start: "top top",
+                  end: "bottom top",
+                  scrub: 0.6,
+                },
+              });
+            const line = root.current?.querySelector(".connection-rule");
+            if (line)
+              gsap.from(line, {
+                scaleX: 0.15,
+                transformOrigin: "left",
+                ease: "none",
+                scrollTrigger: {
+                  trigger: line,
+                  start: "top 95%",
+                  end: "top 35%",
+                  scrub: 1,
+                },
+              });
+          }, root);
+          return () => context.revert();
+        });
+        dispose = () => mm.revert();
+        ScrollTrigger.refresh();
+      })
+      .catch(() => {
+        /* The server-rendered document remains fully readable. */
       });
-      dispose = () => mm.revert();
-    }).catch(() => { /* Static content remains available if enhancement cannot load. */ });
-    return () => { cancelled = true; dispose?.(); };
-  }, []);
-  return <div ref={root}>{children}</div>;
+    return () => {
+      cancelled = true;
+      dispose?.();
+    };
+  }, [pathname]);
+
+  return (
+    <div ref={root} className="page-motion">
+      {children}
+    </div>
+  );
 }

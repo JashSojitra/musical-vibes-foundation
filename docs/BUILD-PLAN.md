@@ -1,5 +1,9 @@
 # Implementation sequence
 
+## Release 2 milestone
+
+The complete multi-page implementation supersedes the homepage-only milestone below. Eight main routes, six program detail routes, and three historical event routes are implemented, along with the original ribbon sculpture, shared navigation, gallery lightbox, enquiry preparation, and searchable FAQ. See [RELEASE-2-DESIGN.md](RELEASE-2-DESIGN.md), [RELEASE-2-ARCHITECTURE.md](RELEASE-2-ARCHITECTURE.md), and [RELEASE-2-VALIDATION.md](RELEASE-2-VALIDATION.md). Sanity and all launch/hosting work remain unstarted.
+
 ## Current local milestone — November 3, 2026
 
 The first complete homepage direction is implemented for review, including original branding, authentic photography, six program presentations, GSAP choreography, mobile navigation, FAQ, contact links, and SEO metadata. See [HOMEPAGE-DIRECTION.md](HOMEPAGE-DIRECTION.md), [ASSET-AUDIT.md](ASSET-AUDIT.md), and [VALIDATION.md](VALIDATION.md). Three.js has been intentionally deferred. Sanity, additional page routes, deployment, and DNS/hosting work have not started. The phases below remain the broader roadmap, not a claim that all phase-two routes are finished.

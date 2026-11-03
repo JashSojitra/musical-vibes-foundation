@@ -1,33 +1,262 @@
-import Image from 'next/image';
-import { getHomeContent } from '@/lib/content';
-import Navigation from './navigation';
-import Motion from './motion';
-
-const Arrow = () => <span aria-hidden="true">↗</span>;
-const Label = ({ children }: { children: React.ReactNode }) => <p className="label"><span aria-hidden="true" />{children}</p>;
+import Link from "next/link";
+import Image from "next/image";
+import { getSiteContent, getMedia } from "@/lib/content";
+import { Action, Arrow, Eyebrow, Invitation, Photo, TextLink } from "./ui";
+import SoundSculpture from "./experience/sound-sculpture";
+import RhythmMoment from "./experience/rhythm-moment";
 
 export default async function Home() {
-  const content = await getHomeContent();
-  return <Motion>
-    <a href="#main" className="skip-link">Skip to content</a><Navigation />
-    <main id="main">
-      <section className="hero" aria-labelledby="hero-heading">
-        <div className="hero-photo"><Image src={content.images.hero.src} alt={content.images.hero.alt} fill priority sizes="100vw" quality={85} /></div><div className="hero-shade" />
-        <div className="hero-content"><Label>MUSIC. WELLNESS. TOGETHERNESS.</Label><h1 className="hero-title" id="hero-heading"><span>Find your joy.</span><span>Feel the <em>connection.</em></span></h1><div className="hero-bottom"><p>Music brings us together.{' '}<br />Compassion makes us a community.</p><a className="button button-light" href="#programs">Discover our programs <Arrow /></a></div></div>
-        <div className="hero-caption"><span>A COMMUNITY WITH HEART · BRAMPTON, ONTARIO</span><a href="#story">SCROLL TO FEEL THE VIBE <span aria-hidden="true">↓</span></a></div><span className="hero-side" aria-hidden="true">BELONGING STARTS HERE</span>
+  const { programs, events, home } = await getSiteContent();
+  const picnic = await getMedia("picnic");
+  const music = await getMedia("song");
+  const circle = await getMedia("circle");
+  const featured = events.filter((item) =>
+    home.featuredEventSlugs.includes(item.slug),
+  );
+  return (
+    <>
+      <section className="home-hero" aria-labelledby="home-title">
+        <div className="hero-fine-line" aria-hidden="true" />
+        <div className="hero-copy">
+          <Eyebrow>MUSIC. WELLNESS. COMMUNITY.</Eyebrow>
+          <h1 id="home-title" data-title>
+            The art of
+            <br />
+            <em>connection.</em>
+          </h1>
+          <p>
+            There’s something beautiful about coming together.
+            <br className="desktop-break" /> Find it in music. Feel it in
+            community.
+          </p>
+          <div className="hero-actions">
+            <Action href="/programs" light>
+              Explore programs
+            </Action>
+            <Action href="/get-involved" secondary>
+              Get involved
+            </Action>
+          </div>
+        </div>
+        <div className="hero-sculpture">
+          <SoundSculpture />
+        </div>
+        <figure className="hero-community-photo">
+          <div className="hero-photo">
+            <Image
+              src={picnic.src}
+              alt={picnic.alt}
+              fill
+              priority
+              quality={85}
+              sizes="(max-width: 700px) 100vw, 48vw"
+            />
+          </div>
+          <figcaption>REAL PEOPLE. SHARED MOMENTS. OUR COMMUNITY.</figcaption>
+        </figure>
+        <div className="hero-footnote">
+          <span>ROOTED IN BRAMPTON, ONTARIO</span>
+          <Link href="/about">
+            DISCOVER OUR STORY <Arrow down />
+          </Link>
+        </div>
       </section>
-      <section className="story section-pad" id="story" aria-labelledby="story-heading"><div className="story-top"><Label>01 / OUR REASON FOR BEING</Label><span className="small-note">Rooted in empathy.{' '}<br />Made for connection.</span></div><h2 id="story-heading" data-reveal>Life has a different rhythm{' '}<br />when we’re <em>together.</em></h2><div className="rhythm-line" aria-hidden="true" /><div className="story-bottom"><div className="value-note"><span className="asterisk" aria-hidden="true">✳</span><p>Empathy. Empowerment.{' '}<br />Community.</p></div><div><p className="body-large">At Musical Vibes Foundation, we bring music, wellness, and compassion into the lives of seniors and our wider community.</p><p>Based in Brampton, Ontario, our nonprofit creates spaces for self-expression, shared experiences, and meaningful connection. Because everyone deserves to feel included, valued, and part of something.</p><a className="text-link" href="#contact">Get to know us <Arrow /></a></div></div></section>
-      <section id="programs" className="programs" aria-labelledby="programs-heading">
-        <div className="programs-intro section-pad"><Label>02 / WAYS WE COME TOGETHER</Label><h2 id="programs-heading" data-reveal>A little music.{' '}<br />A little care.{' '}<br /><em>A world of possibility.</em></h2><p>Six programs. One shared purpose:{' '}<br />helping people connect and thrive.</p><div className="chapter-progress" aria-hidden="true" /></div>
-        <article className="music-chapter chapter" aria-labelledby="music-heading"><div className="chapter-photo"><Image src={content.images.music.src} alt={content.images.music.alt} fill sizes="(max-width: 760px) 100vw, 55vw" /></div><div className="chapter-copy"><Label>01 / MUSIC & EXPRESSION</Label><h3 id="music-heading" data-reveal>Some things{' '}<br />only <em>music</em>{' '}<br />can say.</h3><h4>{content.programs[0].title}</h4><p>{content.programs[0].description}</p><a className="text-link" href={`mailto:${content.email}?subject=Healing%20Through%20Music`}>Find your rhythm <Arrow /></a><div className="record" aria-hidden="true"><span>MVF{' '}<br />SIDE A</span></div></div></article>
-        <article className="wellness-chapter section-pad" aria-labelledby="wellness-heading"><span className="wellness-word" aria-hidden="true">breathe.</span><div className="wellness-heading"><Label>02 / ROOM TO RECHARGE</Label><h3 id="wellness-heading" data-reveal>A moment to pause.{' '}<br /><em>A space to grow.</em></h3><p>Small, thoughtful practices for everyday wellbeing.</p></div><div className="wellness-programs">{[content.programs[1], content.programs[3]].map((program, i) => <div key={program.title}><span className="mini-index">0{i === 0 ? 2 : 4}</span><h4>{program.title}</h4><p>{program.description}</p><a className="text-link" href={`mailto:${content.email}?subject=${encodeURIComponent(program.title)}`}>Ask about this program <Arrow /></a></div>)}</div></article>
-        <article className="community-chapter chapter" aria-labelledby="community-heading"><div className="community-copy"><Label>03 / A PLACE TO BELONG</Label><h3 id="community-heading" data-reveal>Come as you are.{' '}<br /><em>Leave connected.</em></h3><h4>{content.programs[2].title}</h4><p>{content.programs[2].description}</p><a className="text-link" href={`mailto:${content.email}?subject=Seniors%20Club`}>Be part of the community <Arrow /></a></div><figure className="community-photo"><Image src={content.images.community.src} alt={content.images.community.alt} fill sizes="(max-width: 760px) 100vw, 50vw" /><figcaption>SHARED MOMENTS FROM OUR SENIORS CLUB</figcaption></figure></article>
-        <div className="giving-learning section-pad">{[content.programs[4], content.programs[5]].map((program, i) => <article key={program.title} data-reveal><div className="label">0{i + 5} / {i === 0 ? 'KEEP GROWING' : 'CARE IN ACTION'}</div><span className="line-symbol" aria-hidden="true">{i === 0 ? '↗' : '♡'}</span><h3>{program.title}</h3><p>{program.description}</p><a className="text-link" href={`mailto:${content.email}?subject=${encodeURIComponent(program.title)}`}>{i === 0 ? 'Explore learning opportunities' : 'Ask how you can help'} <Arrow /></a></article>)}</div>
+
+      <section className="home-mission wrap">
+        <Eyebrow>GOOD THINGS BEGIN TOGETHER</Eyebrow>
+        <div>
+          <h2 data-reveal>
+            More than a melody.
+            <br />
+            <em>A sense of belonging.</em>
+          </h2>
+          <div className="connection-rule" aria-hidden="true" />
+          <div className="mission-copy">
+            <p>
+              We bring music, wellness, and compassion into the lives of seniors
+              and our wider community.
+            </p>
+            <div>
+              <p>
+                Musical Vibes Foundation creates spaces to express yourself,
+                share experiences, and feel part of something. Because a little
+                connection can change the rhythm of a day.
+              </p>
+              <TextLink href="/about">The heart of our foundation</TextLink>
+            </div>
+          </div>
+        </div>
       </section>
-      <section className="gallery section-pad" id="gallery" aria-labelledby="gallery-heading"><div className="gallery-heading"><div><Label>03 / IN GOOD COMPANY</Label><h2 id="gallery-heading" data-reveal>Real people.{' '}<br /><em>Beautiful moments.</em></h2></div><p>A glimpse into the gatherings{' '}<br />that bring our community together.</p></div><div className="gallery-grid">{content.gallery.map((photo, i) => <figure key={photo.src} className={`gallery-item gallery-item-${i}`} data-reveal><a href={photo.src} target="_blank" rel="noreferrer" aria-label={`View full photograph: ${photo.alt} (opens a new tab)`}><div className="gallery-image"><Image src={photo.src} alt={photo.alt} fill sizes="(max-width: 760px) 90vw, 45vw" /><span className="image-expand" aria-hidden="true">↗</span></div></a><figcaption><span>{photo.caption}</span><span>{photo.date}</span></figcaption></figure>)}</div><p className="archive-note">From the foundation’s photo archive. A celebration of moments already shared.</p></section>
-      <section className="invitation section-pad" aria-labelledby="invitation-heading"><Label>THERE’S A PLACE FOR YOU HERE</Label><h2 id="invitation-heading" data-reveal>Bring your heart.{' '}<br />We’ll bring the <em>vibes.</em></h2><p>Join a program, lend a hand, or start a conversation.{' '}<br />Good things begin when we connect.</p><a className="button button-light" href={`mailto:${content.email}`}>Let’s make a connection <Arrow /></a><div className="invitation-rings" aria-hidden="true"><i /><i /><i /></div></section>
-      <section className="questions section-pad" aria-labelledby="questions-heading"><Label>A FEW HELPFUL NOTES</Label><h2 id="questions-heading">Start with a <em>conversation.</em></h2>{content.faq.map(item => <details key={item.question}><summary>{item.question}<span aria-hidden="true">+</span></summary><p>{item.answer}</p></details>)}</section>
-    </main>
-    <footer className="footer section-pad" id="contact"><div className="footer-top"><a href="#top" className="footer-logo" aria-label="Back to top"><Image src="/assets/legacy/logo.png" alt="Musical Vibes Foundation" width={1001} height={335} /></a><div><Label>LET’S KEEP IN TOUCH</Label><a className="footer-email" href={`mailto:${content.email}`}>{content.email} <Arrow /></a><a className="footer-phone" href="tel:+14168326970">{content.phone}</a><p>Brampton, Ontario, Canada</p></div></div><div className="footer-bottom"><span>© {new Date().getFullYear()} Musical Vibes Foundation</span><span>Music. Wellness. Community.</span><a href="#top">Back to top ↑</a></div></footer>
-  </Motion>;
+
+      <section className="home-programs wrap">
+        <div className="section-heading">
+          <div>
+            <Eyebrow>FIND YOUR WAY TO CONNECT</Eyebrow>
+            <h2 data-reveal>
+              Different paths.
+              <br />
+              <em>One shared purpose.</em>
+            </h2>
+          </div>
+          <TextLink href="/programs">Explore all six programs</TextLink>
+        </div>
+        <div className="home-program-feature">
+          <Photo media={music} caption />
+          <div className="home-program-feature-copy">
+            <span className="eyebrow">01 / MUSIC & EXPRESSION</span>
+            <h3>
+              Some things
+              <br />
+              only <em>music</em>
+              <br />
+              can say.
+            </h3>
+            <p>{programs[0].description}</p>
+            <TextLink href={`/programs/${programs[0].slug}`}>
+              {programs[0].title}
+            </TextLink>
+          </div>
+        </div>
+        <div className="home-program-pair">
+          {[programs[2], programs[1]].map((program) => (
+            <Link
+              href={`/programs/${program.slug}`}
+              key={program.slug}
+              className={`home-program-path theme-${program.theme}`}
+            >
+              <span className="eyebrow">
+                {program.number} / {program.category}
+              </span>
+              <h3>
+                {program.slug === "meditation-and-yoga" ? (
+                  <>
+                    A moment to pause.
+                    <br />
+                    <em>A space to grow.</em>
+                  </>
+                ) : (
+                  <>
+                    Come as you are.
+                    <br />
+                    <em>Leave connected.</em>
+                  </>
+                )}
+              </h3>
+              <p>{program.description}</p>
+              <span className="path-link">
+                {program.title}
+                <Arrow />
+              </span>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section className="home-photo-story">
+        <Photo media={circle} />
+        <div className="photo-story-copy">
+          <Eyebrow>IN GOOD COMPANY</Eyebrow>
+          <h2>
+            A familiar face.
+            <br />A shared story.
+            <br />
+            <em>A brighter day.</em>
+          </h2>
+          <Action href="/gallery" light>
+            Meet our community in pictures
+          </Action>
+        </div>
+      </section>
+
+      <section className="home-rhythm wrap">
+        <div className="section-heading">
+          <div>
+            <Eyebrow>CONNECTION HAS A RHYTHM</Eyebrow>
+            <h2 data-reveal>
+              You don’t have to hear it
+              <br />
+              <em>to feel it.</em>
+            </h2>
+          </div>
+          <p>
+            Different feelings. Different rhythms.
+            <br />
+            Choose a word and watch the shape change.
+          </p>
+        </div>
+        <RhythmMoment />
+      </section>
+
+      <section className="home-events wrap">
+        <div className="section-heading">
+          <div>
+            <Eyebrow>MOMENTS WE’VE SHARED</Eyebrow>
+            <h2 data-reveal>
+              Gathered together.
+              <br />
+              <em>Remembered warmly.</em>
+            </h2>
+          </div>
+          <TextLink href="/events">Visit the events archive</TextLink>
+        </div>
+        <div className="home-event-list">
+          {await Promise.all(
+            featured.map(async (event) => {
+              const image = await getMedia(event.imageId);
+              return (
+                <Link
+                  href={`/events/${event.slug}`}
+                  className="home-event"
+                  key={event.slug}
+                >
+                  <Image
+                    src={image.src}
+                    alt={image.alt}
+                    width={image.width}
+                    height={image.height}
+                    sizes="(max-width: 700px) 100vw, 25vw"
+                  />
+                  <div>
+                    <span className="eyebrow">
+                      FROM THE ARCHIVE · {event.dateLabel}
+                    </span>
+                    <h3>{event.title}</h3>
+                    <span className="text-link">
+                      Revisit this gathering <Arrow />
+                    </span>
+                  </div>
+                </Link>
+              );
+            }),
+          )}
+        </div>
+        <p className="archive-note">
+          Looking for the next gathering?{" "}
+          <Link href="/contact">Ask us about current plans.</Link>
+        </p>
+      </section>
+
+      <section className="home-support wrap">
+        <Eyebrow>COMPASSION, PUT INTO PRACTICE</Eyebrow>
+        <div className="support-overview">
+          <h2 data-reveal>
+            Bring your time.
+            <br />
+            Bring your ideas.
+            <br />
+            <em>Bring your heart.</em>
+          </h2>
+          <div>
+            <p>
+              There’s more than one way to make a connection. Volunteer, support
+              a community initiative, or explore a collaboration with the
+              foundation.
+            </p>
+            <Action href="/get-involved">Find your way to get involved</Action>
+          </div>
+        </div>
+      </section>
+      <Invitation title="Good things happen" emphasis="when we connect." />
+    </>
+  );
 }

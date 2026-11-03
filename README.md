@@ -1,17 +1,17 @@
-# Musical Vibes Foundation — homepage redesign
+# Musical Vibes Foundation — Release 2
 
-A local Next.js App Router implementation with TypeScript, authentic legacy photography, and GSAP / ScrollTrigger enhancements. No Sanity configuration, hosting changes, deployment, or remote push.
+**The Art of Connection:** a complete Next.js App Router website built around authentic community photography, editorial typography, GSAP choreography, and one original Three.js ribbon sculpture.
 
-## Develop and review
+## Run locally
 
-Use Node.js 22 or newer and npm. This workspace was validated with Node.js 24.
+Use Node.js 22+ and npm. This workspace was validated with Node.js 24.
 
 ```bash
 npm ci
 npm run dev
 ```
 
-Open http://localhost:3000. Navigation links lead to homepage sections; program enquiries use the foundation's existing public email. The full About, individual Program, and archive routes remain a later phase.
+Open http://localhost:3000. Stop the development server before building; both use `.next/`.
 
 ```bash
 npm run lint
@@ -20,39 +20,51 @@ npm run build
 npm start
 ```
 
-Build before starting the production server. Avoid building and running the development server concurrently because both use `.next/`.
+## Pages
 
-## Design and content
+Home, About, Programs, Events, Gallery, Get Involved, Contact, and FAQ are real routes. All six programs have detail pages. Three historical gatherings have event pages. No confirmed upcoming schedule has been supplied; the upcoming section has a helpful empty state.
 
-- [Homepage direction](docs/HOMEPAGE-DIRECTION.md): visual identity, narrative, motion, and content architecture.
-- [Asset audit](docs/ASSET-AUDIT.md): provenance, selections, classifications, missing assets, and consent questions.
-- [Validation report](docs/VALIDATION.md): completed checks and remaining verification limits.
-- [Content audit](docs/CONTENT-AUDIT.md) and [build plan](docs/BUILD-PLAN.md): source inventory and broader roadmap.
+The shared header provides active navigation, a program submenu, and a modal mobile menu. The gallery includes category filters and a fullscreen keyboard-controlled lightbox. Contact enquiries validate locally and explicitly prepare an email draft; nothing is silently submitted or stored.
 
-`src/data/site.ts` holds content. `src/lib/content.ts` is the server-side adapter boundary for later Sanity integration. `home.tsx` renders the document on the server; client components handle navigation and optional motion. Metadata, Organization / WebSite / FAQ structured data, robots, and sitemap are included.
+## Browser and HTTP verification
 
-The original `public/assets/legacy/logo.png` is preserved unchanged. Five optimized WebP derivatives provide real community imagery. Originals, source HTML, the gallery script, manifests, and a contact sheet are retained for audit. No photos, testimonials, upcoming events, or impact statistics have been fabricated.
-
-## Asset collection and reproduction
-
-The initial Python collector snapshots HTML and directly linked media:
+Run against a local production server:
 
 ```bash
-python -m pip install -r scripts/requirements.txt
-python scripts/collect_legacy.py
+npm run test:browser
+npm run verify:routes
 ```
 
-The galleries require their separate JavaScript index. The Node sampler retrieves that index and up to three original photos per album from the same public foundation domain, without executing the legacy code or downloading video:
+The Playwright configuration checks 1440px desktop, 768px tablet, and 390px mobile. It uses installed Chrome at the standard Windows path when present. On other machines, install a supported Playwright browser with `npx playwright install chromium`, or set `PLAYWRIGHT_BROWSER_PATH` to your browser executable. Tests use a separate browser profile and never interact with your open tabs or send external messages.
+
+## Architecture
+
+- `src/types/content.ts`: stable typed content models.
+- `src/data/content.ts` and `media.ts`: real local records and media provenance.
+- `src/lib/content.ts`: server-side adapter boundary for a future CMS.
+- `src/app/`: route pages and page-specific metadata.
+- `src/components/experience/`: lazy-loaded sculpture and visual rhythm study.
+- `tests/site.spec.ts`: browser interaction, keyboard, responsive, reduced-motion, and WebGL-failure tests.
+
+All meaningful text is server-rendered. Reduced-motion visitors receive still artwork without loading the scene. WebGL failure retains a static illustration and working navigation. No microphone, recording, audio playback, or upload is included.
+
+## Design and validation
+
+- [Release 2 design](docs/RELEASE-2-DESIGN.md)
+- [Release 2 architecture](docs/RELEASE-2-ARCHITECTURE.md)
+- [Release 2 validation](docs/RELEASE-2-VALIDATION.md)
+- [Future Sanity plan](docs/SANITY-INTEGRATION-PLAN.md)
+- [Asset audit](docs/ASSET-AUDIT.md)
+
+Original source pages, photographs, manifests, and the contact sheet remain in the repository. The original logo is unchanged. Twelve curated images are used in this release. The two image-curation scripts reproduce their derivatives:
 
 ```bash
-node scripts/collect-gallery.mjs
-node scripts/index-galleries.mjs
-npm run assets:audit
 npm run assets:curate
+npm run assets:curate:release2
 ```
 
-Collection requires network access. Existing local artifacts can be reviewed without recollecting. Source album dates are historical labels, not current event listings. Reuse permission and participant consent require confirmation before publication.
+See the [asset audit](docs/ASSET-AUDIT.md) for collection instructions, source rights, unsuitable assets, and missing program-specific photography.
 
-## Review and launch policy
+## Publication boundaries
 
-Local commits use the existing Git identity. Do not push until the owner reviews the work. Do not change DNS, hosting, or deploy to production. Confirm image consent, program wording, credentials, current schedules, and any future donation destination before launch.
+No Sanity project, client, studio, or credentials are configured. No deployment, DNS or hosting change, or GitHub push is authorised in this release. Commits use the existing local Git identity. Before launch, confirm participant consent and photo rights, current program details, the event schedule, and whether to replace the explicit email-draft workflow with a real submission backend.

@@ -1,3 +1,21 @@
-import type { MetadataRoute } from 'next';
-import { site } from '@/data/site';
-export default function sitemap(): MetadataRoute.Sitemap { return [{url:site.url, changeFrequency:'monthly', priority:1}]; }
+import type { MetadataRoute } from "next";
+import { getSiteContent } from "@/lib/content";
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const { settings, programs, events } = await getSiteContent();
+  return [
+    "",
+    "/about",
+    "/programs",
+    "/events",
+    "/gallery",
+    "/get-involved",
+    "/contact",
+    "/faq",
+    ...programs.map((item) => `/programs/${item.slug}`),
+    ...events.map((item) => `/events/${item.slug}`),
+  ].map((path) => ({
+    url: settings.url + path,
+    changeFrequency: "monthly" as const,
+    priority: path ? 0.7 : 1,
+  }));
+}
