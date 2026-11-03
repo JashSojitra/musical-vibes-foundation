@@ -1,0 +1,60 @@
+{
+  "site": "https://www.musicalvibesfoundation.com",
+  "pages": [
+    {
+      "url": "https://www.musicalvibesfoundation.com/",
+      "title": "Musical Vibes Foundation",
+      "status": 200
+    },
+    {
+      "url": "https://www.musicalvibesfoundation.com/pages/about.html",
+      "title": "Musical Vibes Foundation",
+      "status": 200
+    },
+    {
+      "url": "https://www.musicalvibesfoundation.com/pages/program.html",
+      "title": "Musical Vibes Foundation",
+      "status": 200
+    },
+    {
+      "url": "https://www.musicalvibesfoundation.com/pages/contact.html",
+      "title": "Musical Vibes Foundation",
+      "status": 200
+    },
+    {
+      "url": "https://www.musicalvibesfoundation.com/pages/gallery.html",
+      "title": "Musical Vibes Foundation",
+      "status": 200
+    },
+    {
+      "url": "https://www.musicalvibesfoundation.com/pages/galleryseniors.html",
+      "title": "Musical Vibes Foundation",
+      "status": 200
+    },
+    {
+      "url": "https://www.musicalvibesfoundation.com/pages/gallerymusicalvibes.html",
+      "title": "Musical Vibes Foundation",
+      "status": 200
+    }
+  ],
+  "assets": [
+    {
+      "source": "https://www.musicalvibesfoundation.com/assets/logo.png",
+      "local": "public/assets/legacy/logo.png",
+      "bytes": 135920,
+      "sha256": "67332e1645013f1927c53639513c6da3449c0490f377086233e143366b1ded1d"
+    },
+    {
+      "source": "https://www.musicalvibesfoundation.com/assets/mic.webp",
+      "local": "public/assets/legacy/0282e0e100-mic.webp",
+      "bytes": 189932,
+      "sha256": "379e0c8821fa93ce497e6960360aa991e5ef74f8d1309f42cae2fdd2e63235f4"
+    }
+  ],
+  "errors": [
+    {
+      "url": "https://www.musicalvibesfoundation.com/assets/Feb_26_2025_seniors_club/TEST.mp4",
+      "error": "404 Client Error: Not Found for url: https://www.musicalvibesfoundation.com/assets/Feb_26_2025_seniors_club/TEST.mp4"
+    }
+  ]
+}

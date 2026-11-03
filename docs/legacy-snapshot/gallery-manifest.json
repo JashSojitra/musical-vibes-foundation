@@ -1,0 +1,371 @@
+[
+  {
+    "source": "https://www.musicalvibesfoundation.com/assets/25_12_8_Seniors_Club/1a.jpeg",
+    "local": "public/assets/legacy/25_12_8_Seniors_Club--1a.jpeg",
+    "album": "25_12_8_Seniors_Club",
+    "bytes": 326302,
+    "sha256": "9FF96069A408837877288AEC943EB545A8E48A0626F378237B137D78A71D920E",
+    "width": 1024,
+    "height": 1024
+  },
+  {
+    "source": "https://www.musicalvibesfoundation.com/assets/25_12_8_Seniors_Club/1.jpg",
+    "local": "public/assets/legacy/25_12_8_Seniors_Club--1.jpg",
+    "album": "25_12_8_Seniors_Club",
+    "bytes": 325045,
+    "sha256": "63AEDF006726694275A8DC4DC8EC8146B2090A3DDA5AB09A19566FC209C8B58C",
+    "width": 1500,
+    "height": 2000
+  },
+  {
+    "source": "https://www.musicalvibesfoundation.com/assets/25_12_8_Seniors_Club/2.jpg",
+    "local": "public/assets/legacy/25_12_8_Seniors_Club--2.jpg",
+    "album": "25_12_8_Seniors_Club",
+    "bytes": 488914,
+    "sha256": "87EE03EE120C701A63F3D77F93800ACA7BFC501545F90656A9BFEDD8D1C708F3",
+    "width": 2000,
+    "height": 1500
+  },
+  {
+    "source": "https://www.musicalvibesfoundation.com/assets/25_12_4_Seniors_Club/1.jpg",
+    "local": "public/assets/legacy/25_12_4_Seniors_Club--1.jpg",
+    "album": "25_12_4_Seniors_Club",
+    "bytes": 6307527,
+    "sha256": "4F0DC86AC30382E304E9B5A829F5579928F2DB9C20F32EEAFE32609B60598C23",
+    "width": 4000,
+    "height": 2252
+  },
+  {
+    "source": "https://www.musicalvibesfoundation.com/assets/25_12_4_Seniors_Club/2.jpg",
+    "local": "public/assets/legacy/25_12_4_Seniors_Club--2.jpg",
+    "album": "25_12_4_Seniors_Club",
+    "bytes": 7319081,
+    "sha256": "650040E9BF4B39C483EFC41D3ABD55FBEAD17F887593DCBFD0D2867B53E70838",
+    "width": 4000,
+    "height": 2252
+  },
+  {
+    "source": "https://www.musicalvibesfoundation.com/assets/25_12_4_Seniors_Club/3.jpg",
+    "local": "public/assets/legacy/25_12_4_Seniors_Club--3.jpg",
+    "album": "25_12_4_Seniors_Club",
+    "bytes": 5648982,
+    "sha256": "88F6075CD8E4BE08A05E4D0757F6429FEAD0E18625BF7E221986FF0B1CD2C7A7",
+    "width": 4000,
+    "height": 2252
+  },
+  {
+    "source": "https://www.musicalvibesfoundation.com/assets/25_11_13_Seniors_Club/1.jpg",
+    "local": "public/assets/legacy/25_11_13_Seniors_Club--1.jpg",
+    "album": "25_11_13_Seniors_Club",
+    "bytes": 163206,
+    "sha256": "9D49FE3907E980CB7088DE5998EF547DD777CDDF6F7EA48A0AA8E01A60069EAF",
+    "width": 1600,
+    "height": 900
+  },
+  {
+    "source": "https://www.musicalvibesfoundation.com/assets/25_11_13_Seniors_Club/2.jpg",
+    "local": "public/assets/legacy/25_11_13_Seniors_Club--2.jpg",
+    "album": "25_11_13_Seniors_Club",
+    "bytes": 161311,
+    "sha256": "F3C3A4861C459555C9BC4002A360B0B5FDD5252AD229B50369F6A5028E71D992",
+    "width": 1600,
+    "height": 900
+  },
+  {
+    "source": "https://www.musicalvibesfoundation.com/assets/25_11_13_Seniors_Club/3.jpg",
+    "local": "public/assets/legacy/25_11_13_Seniors_Club--3.jpg",
+    "album": "25_11_13_Seniors_Club",
+    "bytes": 127847,
+    "sha256": "8B90CC79AEB4E476938BFE4AD8D87BD724DD6D5AC6EB2E90027BAEA0C19AEF6A",
+    "width": 1600,
+    "height": 900
+  },
+  {
+    "source": "https://www.musicalvibesfoundation.com/assets/25_10_16_Diwali_Celebrations/1.jpg",
+    "local": "public/assets/legacy/25_10_16_Diwali_Celebrations--1.jpg",
+    "album": "25_10_16_Diwali_Celebrations",
+    "bytes": 7238137,
+    "sha256": "110AC618B50CE0008FA5F8754DACD95C38E33DE563A45FDF1B71C734CD578BB5",
+    "width": 4000,
+    "height": 2252
+  },
+  {
+    "source": "https://www.musicalvibesfoundation.com/assets/25_10_16_Diwali_Celebrations/2.jpg",
+    "local": "public/assets/legacy/25_10_16_Diwali_Celebrations--2.jpg",
+    "album": "25_10_16_Diwali_Celebrations",
+    "bytes": 348703,
+    "sha256": "8FDF24D082F89E942040E73420339C2ED9D14EBA35833F31AF556C1B5B60901C",
+    "width": 1500,
+    "height": 2000
+  },
+  {
+    "source": "https://www.musicalvibesfoundation.com/assets/25_10_16_Diwali_Celebrations/3.jpg",
+    "local": "public/assets/legacy/25_10_16_Diwali_Celebrations--3.jpg",
+    "album": "25_10_16_Diwali_Celebrations",
+    "bytes": 246236,
+    "sha256": "5D760002DE383926573DEE1018000233920EF837447D69D38EF3509BA7339EEE",
+    "width": 1200,
+    "height": 1600
+  },
+  {
+    "source": "https://www.musicalvibesfoundation.com/assets/Feb_26_2025_seniors_club/11.jpg",
+    "local": "public/assets/legacy/Feb_26_2025_seniors_club--11.jpg",
+    "album": "Feb_26_2025_seniors_club",
+    "bytes": 2224613,
+    "sha256": "F2C3BD6F86D1A23E8D72EC738D4E31653CE8B1506BD91F408A0B5CFE6597FF8D",
+    "width": 4000,
+    "height": 2252
+  },
+  {
+    "source": "https://www.musicalvibesfoundation.com/assets/Feb_26_2025_seniors_club/7.jpg",
+    "local": "public/assets/legacy/Feb_26_2025_seniors_club--7.jpg",
+    "album": "Feb_26_2025_seniors_club",
+    "bytes": 2380329,
+    "sha256": "AA03BE2E58ABFEE7C5505D946B9993607D277B3B161A7F8A9A4FDC3B2CCD76B4",
+    "width": 4000,
+    "height": 2252
+  },
+  {
+    "source": "https://www.musicalvibesfoundation.com/assets/Feb_26_2025_seniors_club/8.jpg",
+    "local": "public/assets/legacy/Feb_26_2025_seniors_club--8.jpg",
+    "album": "Feb_26_2025_seniors_club",
+    "bytes": 2188437,
+    "sha256": "EB988681338304F11C2959FACA08B343A35727733DB0A16F8B3687D41C840AD3",
+    "width": 4000,
+    "height": 2252
+  },
+  {
+    "source": "https://www.musicalvibesfoundation.com/assets/Mar_19_2025_seniors_club/1.jpg",
+    "local": "public/assets/legacy/Mar_19_2025_seniors_club--1.jpg",
+    "album": "Mar_19_2025_seniors_club",
+    "bytes": 8024687,
+    "sha256": "75297A5BA1EDFE716D125B6F7027E280D5BF644768A449BCD4B7E79B14649073",
+    "width": 4000,
+    "height": 2252
+  },
+  {
+    "source": "https://www.musicalvibesfoundation.com/assets/Mar_19_2025_seniors_club/2.jpg",
+    "local": "public/assets/legacy/Mar_19_2025_seniors_club--2.jpg",
+    "album": "Mar_19_2025_seniors_club",
+    "bytes": 9160958,
+    "sha256": "28A1CFDE9A8C566074B7C7FCADEEE29CE94D60B9779279468ABB55C91D528AD9",
+    "width": 4000,
+    "height": 2252
+  },
+  {
+    "source": "https://www.musicalvibesfoundation.com/assets/Mar_19_2025_seniors_club/3.jpg",
+    "local": "public/assets/legacy/Mar_19_2025_seniors_club--3.jpg",
+    "album": "Mar_19_2025_seniors_club",
+    "bytes": 8658579,
+    "sha256": "89EEBF2821CBC02D0270C9F477D6C718224D7B04965D0E843DB349FF8EB8A4F4",
+    "width": 4000,
+    "height": 2252
+  },
+  {
+    "source": "https://www.musicalvibesfoundation.com/assets/jan_15_2025_seniors_club/1.jpg",
+    "local": "public/assets/legacy/jan_15_2025_seniors_club--1.jpg",
+    "album": "jan_15_2025_seniors_club",
+    "bytes": 488984,
+    "sha256": "E92484C9EB38457E03AAD9D451EB20223F98FE029C78E30CE2E3733D60951544",
+    "width": 2048,
+    "height": 1536
+  },
+  {
+    "source": "https://www.musicalvibesfoundation.com/assets/jan_15_2025_seniors_club/2.jpg",
+    "local": "public/assets/legacy/jan_15_2025_seniors_club--2.jpg",
+    "album": "jan_15_2025_seniors_club",
+    "bytes": 500087,
+    "sha256": "601EEED6143D2AC29DD7A40D2C18D0861E79B2C3D98D5313078412A13DA3FE3C",
+    "width": 1536,
+    "height": 2048
+  },
+  {
+    "source": "https://www.musicalvibesfoundation.com/assets/May_8_2025_Seniors_Meet/1.jpg",
+    "local": "public/assets/legacy/May_8_2025_Seniors_Meet--1.jpg",
+    "album": "May_8_2025_Seniors_Meet",
+    "bytes": 8945586,
+    "sha256": "C7B43E502251D61E261C64F813C65DAC5CFF477401B9CCB3ED78EA1FF593B4F8",
+    "width": 4000,
+    "height": 2252
+  },
+  {
+    "source": "https://www.musicalvibesfoundation.com/assets/May_8_2025_Seniors_Meet/2.jpg",
+    "local": "public/assets/legacy/May_8_2025_Seniors_Meet--2.jpg",
+    "album": "May_8_2025_Seniors_Meet",
+    "bytes": 7784060,
+    "sha256": "B2043D54B8286EF2A4F3D29C01ED0789B1DA0164A61B89007102A41E93A6017C",
+    "width": 4000,
+    "height": 2252
+  },
+  {
+    "source": "https://www.musicalvibesfoundation.com/assets/May_8_2025_Seniors_Meet/3.jpg",
+    "local": "public/assets/legacy/May_8_2025_Seniors_Meet--3.jpg",
+    "album": "May_8_2025_Seniors_Meet",
+    "bytes": 1733569,
+    "sha256": "BC5984872B946BBAD83278EB0020334638D4AF869274E95CE53F8C0470C72E7E",
+    "width": 4000,
+    "height": 2252
+  },
+  {
+    "source": "https://www.musicalvibesfoundation.com/assets/June1925/1.jpg",
+    "local": "public/assets/legacy/June1925--1.jpg",
+    "album": "June1925",
+    "bytes": 5111903,
+    "sha256": "F5AD5542782313795BD763D5272A380F8AE7D5C9A444626AE58EF3784A9D7356",
+    "width": 3316,
+    "height": 3352
+  },
+  {
+    "source": "https://www.musicalvibesfoundation.com/assets/June1925/2.jpg",
+    "local": "public/assets/legacy/June1925--2.jpg",
+    "album": "June1925",
+    "bytes": 314564,
+    "sha256": "577E92C45D007BDA7101FB72C7EF1009062E3DC5B46B980B4F7F9EC57D0C7523",
+    "width": 1080,
+    "height": 1398
+  },
+  {
+    "source": "https://www.musicalvibesfoundation.com/assets/June1925/3.jpg",
+    "local": "public/assets/legacy/June1925--3.jpg",
+    "album": "June1925",
+    "bytes": 245432,
+    "sha256": "35D86B8633F8D15A2306E27B4235B0F3DF3A3B44F9E8CD24B45125E2FBE006A9",
+    "width": 1080,
+    "height": 1207
+  },
+  {
+    "source": "https://www.musicalvibesfoundation.com/assets/Aug_21_2025_Seniors_club/1.jpeg",
+    "local": "public/assets/legacy/Aug_21_2025_Seniors_club--1.jpeg",
+    "album": "Aug_21_2025_Seniors_club",
+    "bytes": 358424,
+    "sha256": "9CFDCD53B8F1EB53D824004542280163598843A1A9741E8127E2997BAF43E09C",
+    "width": 1600,
+    "height": 1120
+  },
+  {
+    "source": "https://www.musicalvibesfoundation.com/assets/Aug_21_2025_Seniors_club/2.jpeg",
+    "local": "public/assets/legacy/Aug_21_2025_Seniors_club--2.jpeg",
+    "album": "Aug_21_2025_Seniors_club",
+    "bytes": 172781,
+    "sha256": "A1BB6DDE9A3AA87A36B4EC236B184387FB0C57E497834CA3D187D500B8828E9D",
+    "width": 1600,
+    "height": 792
+  },
+  {
+    "source": "https://www.musicalvibesfoundation.com/assets/Aug_21_2025_Seniors_club/3.jpeg",
+    "local": "public/assets/legacy/Aug_21_2025_Seniors_club--3.jpeg",
+    "album": "Aug_21_2025_Seniors_club",
+    "bytes": 839370,
+    "sha256": "EE3D22C0F02FA1443809F714B513FB17F08E75761749FB5EC648F3B5B8B823D8",
+    "width": 1600,
+    "height": 1066
+  },
+  {
+    "source": "https://www.musicalvibesfoundation.com/assets/Oct_2_2025_Seniors_Club/1.jpg",
+    "local": "public/assets/legacy/Oct_2_2025_Seniors_Club--1.jpg",
+    "album": "Oct_2_2025_Seniors_Club",
+    "bytes": 221721,
+    "sha256": "CF0A7A8D5CC002AAE223A377113865BF4C350A7270E863D8AF67F1FBEDA6C9AB",
+    "width": 2000,
+    "height": 1126
+  },
+  {
+    "source": "https://www.musicalvibesfoundation.com/assets/Oct_2_2025_Seniors_Club/3.jpg",
+    "local": "public/assets/legacy/Oct_2_2025_Seniors_Club--3.jpg",
+    "album": "Oct_2_2025_Seniors_Club",
+    "bytes": 256323,
+    "sha256": "09B752E3117884C209B5288ABDD96964E96E843DF4FB9F7D161CCCBB08AD961A",
+    "width": 2000,
+    "height": 1126
+  },
+  {
+    "source": "https://www.musicalvibesfoundation.com/assets/Oct_2_2025_Seniors_Club/5.jpg",
+    "local": "public/assets/legacy/Oct_2_2025_Seniors_Club--5.jpg",
+    "album": "Oct_2_2025_Seniors_Club",
+    "bytes": 252645,
+    "sha256": "15ADB6A817E16582B777F77F262D1D3136BCBC4AFEF0A65872ACA3E6DB0B5C1D",
+    "width": 2000,
+    "height": 1126
+  },
+  {
+    "source": "https://www.musicalvibesfoundation.com/assets/June_6_2025/1.jpg",
+    "local": "public/assets/legacy/June_6_2025--1.jpg",
+    "album": "June_6_2025",
+    "bytes": 106685,
+    "sha256": "B54C3987B6F56D3B6B7754D769166D66958B6E5B8582A81693FA227532C92351",
+    "width": 1410,
+    "height": 2048
+  },
+  {
+    "source": "https://www.musicalvibesfoundation.com/assets/June_6_2025/2.jpg",
+    "local": "public/assets/legacy/June_6_2025--2.jpg",
+    "album": "June_6_2025",
+    "bytes": 360691,
+    "sha256": "3948677F38B0C60D0702EF755BED0E7FDEF71250D9C25A0BEFF22F29F5DE9D94",
+    "width": 2000,
+    "height": 1126
+  },
+  {
+    "source": "https://www.musicalvibesfoundation.com/assets/June_6_2025/3.jpg",
+    "local": "public/assets/legacy/June_6_2025--3.jpg",
+    "album": "June_6_2025",
+    "bytes": 397413,
+    "sha256": "F087D519514F6257061CBF3DB9F16E1C4C5731B5E3D28A2FAEAA052885F9B624",
+    "width": 2000,
+    "height": 1126
+  },
+  {
+    "source": "https://www.musicalvibesfoundation.com/assets/Oct_7_2025_Sick_Kids/1.jpg",
+    "local": "public/assets/legacy/Oct_7_2025_Sick_Kids--1.jpg",
+    "album": "Oct_7_2025_Sick_Kids",
+    "bytes": 286962,
+    "sha256": "B8FC4894C1920230D6AE73F0D8118B7D3F26D4935E265E5EBC3F5CFD44C80C5F",
+    "width": 2000,
+    "height": 1126
+  },
+  {
+    "source": "https://www.musicalvibesfoundation.com/assets/Oct_7_2025_Sick_Kids/2.jpg",
+    "local": "public/assets/legacy/Oct_7_2025_Sick_Kids--2.jpg",
+    "album": "Oct_7_2025_Sick_Kids",
+    "bytes": 248051,
+    "sha256": "9CE55969728BB6CC658F70104975F0607251829D1A7705072513756A23189916",
+    "width": 2000,
+    "height": 1126
+  },
+  {
+    "source": "https://www.musicalvibesfoundation.com/assets/Oct_7_2025_Sick_Kids/3.jpg",
+    "local": "public/assets/legacy/Oct_7_2025_Sick_Kids--3.jpg",
+    "album": "Oct_7_2025_Sick_Kids",
+    "bytes": 268294,
+    "sha256": "78FB8A44BEA4CFC2AAF1DAA2484EF62EB4119F1187FAAC8FAB24C2E0EF77CE41",
+    "width": 1126,
+    "height": 2000
+  },
+  {
+    "source": "https://www.musicalvibesfoundation.com/assets/Oct_20_2024_Tribute_to_Rafi/1.jpg",
+    "local": "public/assets/legacy/Oct_20_2024_Tribute_to_Rafi--1.jpg",
+    "album": "Oct_20_2024_Tribute_to_Rafi",
+    "bytes": 1191787,
+    "sha256": "3F682DB337712C50CF096FB7CAC32E01A0359E3D5E78385268BBE8588F32DE0D",
+    "width": 3467,
+    "height": 2307
+  },
+  {
+    "source": "https://www.musicalvibesfoundation.com/assets/Oct_20_2024_Tribute_to_Rafi/3.jpg",
+    "local": "public/assets/legacy/Oct_20_2024_Tribute_to_Rafi--3.jpg",
+    "album": "Oct_20_2024_Tribute_to_Rafi",
+    "bytes": 1320219,
+    "sha256": "EACE6273FB5E809A6D08A2FE34848E3FA0CCDB6BCB5EDE8ACC10F97B7D5A57C9",
+    "width": 3467,
+    "height": 2307
+  },
+  {
+    "source": "https://www.musicalvibesfoundation.com/assets/Oct_20_2024_Tribute_to_Rafi/6.jpg",
+    "local": "public/assets/legacy/Oct_20_2024_Tribute_to_Rafi--6.jpg",
+    "album": "Oct_20_2024_Tribute_to_Rafi",
+    "bytes": 1690066,
+    "sha256": "0476E79769CBE992046DB8EF04DDEF273296051A95A4AACF2234ED9ECE90FC4D",
+    "width": 2307,
+    "height": 3467
+  }
+]

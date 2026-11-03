@@ -1,0 +1,33 @@
+{
+  "name": "musical-vibes-foundation",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "assets:collect": "python scripts/collect_legacy.py",
+    "assets:audit": "node scripts/audit-images.mjs",
+    "assets:curate": "node scripts/curate-images.mjs"
+  },
+  "dependencies": {
+    "gsap": "^3.13.0",
+    "lucide-react": "^0.468.0",
+    "next": "^15.5.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.0.0",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "eslint": "^9.0.0",
+    "eslint-config-next": "^15.5.0",
+    "sharp": "^0.35.5",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.9.0"
+  }
+}

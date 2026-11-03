@@ -1,0 +1,51 @@
+{
+  "date": "2026-11-03",
+  "homepage": 200,
+  "oneH1": true,
+  "sixPrograms": true,
+  "structuredData": true,
+  "originalLogoUnchanged": true,
+  "unknownRoute": 404,
+  "responses": [
+    {
+      "url": "/robots.txt",
+      "status": 200,
+      "bytes": 84
+    },
+    {
+      "url": "/sitemap.xml",
+      "status": 200,
+      "bytes": 229
+    },
+    {
+      "url": "/assets/curated/celebration.webp",
+      "status": 200,
+      "bytes": 427894
+    },
+    {
+      "url": "/assets/curated/community-picnic.webp",
+      "status": 200,
+      "bytes": 587254
+    },
+    {
+      "url": "/assets/curated/diwali.webp",
+      "status": 200,
+      "bytes": 260404
+    },
+    {
+      "url": "/assets/curated/seniors-circle.webp",
+      "status": 200,
+      "bytes": 360604
+    },
+    {
+      "url": "/assets/curated/shared-song.webp",
+      "status": 200,
+      "bytes": 204112
+    },
+    {
+      "url": "/_next/image?url=%2Fassets%2Fcurated%2Fcommunity-picnic.webp&w=1080&q=85",
+      "status": 200,
+      "bytes": 206330
+    }
+  ]
+}

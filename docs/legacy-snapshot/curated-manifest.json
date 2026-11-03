@@ -1,0 +1,47 @@
+[
+  {
+    "local": "public/assets/curated/community-picnic.webp",
+    "original": "public/assets/legacy/Aug_21_2025_Seniors_club--3.jpeg",
+    "source": "https://www.musicalvibesfoundation.com/assets/Aug_21_2025_Seniors_club/3.jpeg",
+    "bytes": 587254,
+    "width": 1600,
+    "height": 1066,
+    "consent": "Unconfirmed; local design review only"
+  },
+  {
+    "local": "public/assets/curated/shared-song.webp",
+    "original": "public/assets/legacy/Feb_26_2025_seniors_club--11.jpg",
+    "source": "https://www.musicalvibesfoundation.com/assets/Feb_26_2025_seniors_club/11.jpg",
+    "bytes": 204112,
+    "width": 1800,
+    "height": 1013,
+    "consent": "Unconfirmed; local design review only"
+  },
+  {
+    "local": "public/assets/curated/seniors-circle.webp",
+    "original": "public/assets/legacy/jan_15_2025_seniors_club--1.jpg",
+    "source": "https://www.musicalvibesfoundation.com/assets/jan_15_2025_seniors_club/1.jpg",
+    "bytes": 360604,
+    "width": 1800,
+    "height": 1350,
+    "consent": "Unconfirmed; local design review only"
+  },
+  {
+    "local": "public/assets/curated/diwali.webp",
+    "original": "public/assets/legacy/25_10_16_Diwali_Celebrations--1.jpg",
+    "source": "https://www.musicalvibesfoundation.com/assets/25_10_16_Diwali_Celebrations/1.jpg",
+    "bytes": 260404,
+    "width": 1800,
+    "height": 1013,
+    "consent": "Unconfirmed; local design review only"
+  },
+  {
+    "local": "public/assets/curated/celebration.webp",
+    "original": "public/assets/legacy/25_12_8_Seniors_Club--2.jpg",
+    "source": "https://www.musicalvibesfoundation.com/assets/25_12_8_Seniors_Club/2.jpg",
+    "bytes": 427894,
+    "width": 1800,
+    "height": 1350,
+    "consent": "Unconfirmed; local design review only"
+  }
+]
