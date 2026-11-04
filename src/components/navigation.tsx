@@ -18,6 +18,7 @@ export default function Navigation({
 }) {
   const pathname = usePathname();
   const [submenu, setSubmenu] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const menuRef = useRef<HTMLDialogElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
   const programToggle = useRef<HTMLButtonElement>(null);
@@ -33,11 +34,13 @@ export default function Navigation({
     return () => document.removeEventListener("pointerdown", close);
   }, []);
   function closeMenu() {
+    setMobileOpen(false);
     menuRef.current?.close();
     document.body.style.overflow = "";
     trigger.current?.focus();
   }
   function openMenu() {
+    setMobileOpen(true);
     menuRef.current?.showModal();
     document.body.style.overflow = "hidden";
     if (!matchMedia("(prefers-reduced-motion: reduce)").matches)
@@ -69,7 +72,7 @@ export default function Navigation({
             width={1001}
             height={335}
             priority
-            sizes="220px"
+            sizes="168px"
           />
         </Link>
         <nav className="desktop-nav" aria-label="Main navigation">
@@ -149,6 +152,7 @@ export default function Navigation({
           onClick={openMenu}
           aria-haspopup="dialog"
           aria-controls="mobile-menu"
+          aria-expanded={mobileOpen}
         >
           Menu <span aria-hidden="true">+</span>
         </button>
@@ -159,6 +163,7 @@ export default function Navigation({
         ref={menuRef}
         onCancel={closeMenu}
         onClose={() => {
+          setMobileOpen(false);
           document.body.style.overflow = "";
         }}
         aria-labelledby="menu-title"

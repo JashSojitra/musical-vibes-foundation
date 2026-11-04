@@ -2,12 +2,13 @@ import Link from "next/link";
 import Image from "next/image";
 import { getSiteContent, getMedia } from "@/lib/content";
 import { Action, Arrow, Eyebrow, Invitation, Photo, TextLink } from "./ui";
-import SoundSculpture from "./experience/sound-sculpture";
+import LivingSymphony from "./experience/living-symphony";
 import RhythmMoment from "./experience/rhythm-moment";
 
 export default async function Home() {
   const { programs, events, home } = await getSiteContent();
   const picnic = await getMedia("picnic");
+  const singer = await getMedia("june-song");
   const music = await getMedia("song");
   const circle = await getMedia("circle");
   const featured = events.filter((item) =>
@@ -15,78 +16,7 @@ export default async function Home() {
   );
   return (
     <>
-      <section className="home-hero" aria-labelledby="home-title">
-        <div className="hero-fine-line" aria-hidden="true" />
-        <div className="hero-copy">
-          <Eyebrow>MUSIC. WELLNESS. COMMUNITY.</Eyebrow>
-          <h1 id="home-title" data-title>
-            The art of
-            <br />
-            <em>connection.</em>
-          </h1>
-          <p>
-            There’s something beautiful about coming together.
-            <br className="desktop-break" /> Find it in music. Feel it in
-            community.
-          </p>
-          <div className="hero-actions">
-            <Action href="/programs" light>
-              Explore programs
-            </Action>
-            <Action href="/get-involved" secondary>
-              Get involved
-            </Action>
-          </div>
-        </div>
-        <div className="hero-sculpture">
-          <SoundSculpture />
-        </div>
-        <figure className="hero-community-photo">
-          <div className="hero-photo">
-            <Image
-              src={picnic.src}
-              alt={picnic.alt}
-              fill
-              priority
-              quality={85}
-              sizes="(max-width: 700px) 100vw, 48vw"
-            />
-          </div>
-          <figcaption>REAL PEOPLE. SHARED MOMENTS. OUR COMMUNITY.</figcaption>
-        </figure>
-        <div className="hero-footnote">
-          <span>ROOTED IN BRAMPTON, ONTARIO</span>
-          <Link href="/about">
-            DISCOVER OUR STORY <Arrow down />
-          </Link>
-        </div>
-      </section>
-
-      <section className="home-mission wrap">
-        <Eyebrow>GOOD THINGS BEGIN TOGETHER</Eyebrow>
-        <div>
-          <h2 data-reveal>
-            More than a melody.
-            <br />
-            <em>A sense of belonging.</em>
-          </h2>
-          <div className="connection-rule" aria-hidden="true" />
-          <div className="mission-copy">
-            <p>
-              We bring music, wellness, and compassion into the lives of seniors
-              and our wider community.
-            </p>
-            <div>
-              <p>
-                Musical Vibes Foundation creates spaces to express yourself,
-                share experiences, and feel part of something. Because a little
-                connection can change the rhythm of a day.
-              </p>
-              <TextLink href="/about">The heart of our foundation</TextLink>
-            </div>
-          </div>
-        </div>
-      </section>
+      <LivingSymphony singer={singer} circle={circle} picnic={picnic} />
 
       <section className="home-programs wrap">
         <div className="section-heading">

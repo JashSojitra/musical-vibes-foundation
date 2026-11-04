@@ -25,13 +25,14 @@ export function SculptureFallback() {
   return (
     <svg
       className="sculpture-fallback"
-      viewBox="0 0 700 600"
+      viewBox="0 0 1400 700"
+      preserveAspectRatio="none"
       fill="none"
       aria-hidden="true"
     >
       <defs>
         <linearGradient
-          id="ribbon"
+          id="symphony-ribbon"
           x1="90"
           y1="80"
           x2="610"
@@ -39,21 +40,17 @@ export function SculptureFallback() {
           gradientUnits="userSpaceOnUse"
         >
           <stop stopColor="#efd3a5" />
-          <stop offset=".48" stopColor="#c879a2" />
+          <stop offset=".48" stopColor="#b98a48" />
           <stop offset="1" stopColor="#e4bd78" />
         </linearGradient>
       </defs>
-      {Array.from({ length: 11 }, (_, i) => (
-        <ellipse
+      {Array.from({ length: 32 }, (_, i) => (
+        <path
           key={i}
-          cx="350"
-          cy="300"
-          rx={210 + i * 3}
-          ry={105 + i * 3}
-          stroke="url(#ribbon)"
-          strokeWidth={i === 5 ? 4 : 1}
-          opacity={0.35 + i * 0.045}
-          transform={`rotate(${i * 8 - 40} 350 300)`}
+          d={`M -100 ${520 + i * 2} C 330 ${680 - i * 3}, 470 ${180 + i * 7}, 850 ${440 + i * 2} S 1230 ${170 + i * 5}, 1500 ${240 + i * 2}`}
+          stroke="url(#symphony-ribbon)"
+          strokeWidth={i % 8 === 0 ? 1.5 : 0.65}
+          opacity={0.22 + (i % 8) * 0.07}
         />
       ))}
     </svg>
@@ -68,7 +65,6 @@ export default function SoundSculpture() {
   const [reduced, setReduced] = useState(true);
   const [paused, setPaused] = useState(false);
   const [failed, setFailed] = useState(false);
-  const [intensity, setIntensity] = useState(0.45);
   useEffect(() => {
     const query = matchMedia("(prefers-reduced-motion: reduce)");
     const update = () => {
@@ -124,27 +120,21 @@ export default function SoundSculpture() {
           <SceneBoundary onError={() => setFailed(true)}>
             <Scene
               active={!paused && visible}
-              intensity={intensity}
+              intensity={0.45}
               onReady={() => setReady(true)}
               onFailure={() => setFailed(true)}
             />
           </SceneBoundary>
         ) : null}
       </div>
-      <div className="sculpture-controls">
-        <div>
-          <span className="sculpture-status">
-            <i aria-hidden="true" />
-            {reduced || failed ? "A STILL MOMENT" : "THE SHAPE OF TOGETHER"}
-          </span>
-          <p>
-            {reduced
-              ? "Still artwork · reduced motion"
-              : failed
-                ? "Still artwork · 3D unavailable"
-                : "Interactive visual simulation · no audio"}
-          </p>
-        </div>
+      <div className="symphony-motion-controls">
+        <p className="symphony-motion-status">
+          {reduced
+            ? "Still artwork · reduced motion"
+            : failed
+              ? "Still artwork · 3D unavailable"
+              : ""}
+        </p>
         {!reduced && !failed ? (
           <button
             onClick={() => setPaused(!paused)}
@@ -153,25 +143,11 @@ export default function SoundSculpture() {
               paused ? "Resume sculpture motion" : "Pause sculpture motion"
             }
           >
-            {paused ? "Play motion" : "Pause motion"}{" "}
+            {paused ? "Resume motion" : "Pause motion"}{" "}
             <span aria-hidden="true">{paused ? "▷" : "Ⅱ"}</span>
           </button>
         ) : null}
       </div>
-      {!reduced && !failed ? (
-        <label className="sculpture-range">
-          Shape the connection
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.05"
-            value={intensity}
-            onChange={(event) => setIntensity(Number(event.target.value))}
-            aria-label="Sculpture energy"
-          />
-        </label>
-      ) : null}
     </div>
   );
 }

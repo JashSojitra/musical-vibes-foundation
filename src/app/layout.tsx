@@ -6,6 +6,7 @@ import Footer from "@/components/footer";
 import Motion from "@/components/motion";
 import { StructuredData } from "@/components/ui";
 import "./globals.css";
+import "./release3.css";
 
 export const metadata: Metadata = {
   title: {
