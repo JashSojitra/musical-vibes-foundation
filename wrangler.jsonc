@@ -19,13 +19,5 @@
       "images": { "binding": "IMAGES" },
       "vars": { "DEPLOYMENT_ENV": "production" },
     },
-    "staging": {
-      "name": "musical-vibes-foundation-staging",
-      "workers_dev": true,
-      "preview_urls": false,
-      "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
-      "images": { "binding": "IMAGES" },
-      "vars": { "DEPLOYMENT_ENV": "staging" },
-    },
   },
 }

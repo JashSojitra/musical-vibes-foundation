@@ -17,6 +17,7 @@ const child = spawn(
       VERIFY_BASE_URL: "http://127.0.0.1:3002",
       VERIFICATION_TARGET: "opennext",
       START_WORKER_PREVIEW: "1",
+      WORKER_CONFIG: process.env.WORKER_CONFIG || "wrangler.jsonc",
     },
   },
 );

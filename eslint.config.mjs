@@ -8,6 +8,7 @@ export default defineConfig([
   globalIgnores([
     ".next/**",
     ".open-next/**",
+    ".open-next-staging/**",
     ".wrangler/**",
     "node_modules/**",
     ".agents/**",

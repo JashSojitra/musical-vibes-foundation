@@ -1,5 +1,9 @@
 import { defineConfig } from "@playwright/test";
 import release4 from "./playwright.release4.config";
+const workerConfig = process.env.WORKER_CONFIG || "wrangler.jsonc";
+if (!["wrangler.jsonc", "wrangler.staging.jsonc"].includes(workerConfig)) {
+  throw new Error("Unknown local Worker configuration");
+}
 
 const target = process.env.VERIFICATION_TARGET || "next16";
 const suiteSuffix =
@@ -13,13 +17,14 @@ export default defineConfig({
   webServer:
     process.env.START_WORKER_PREVIEW === "1"
       ? {
-          command: "npm run cf:preview -- --port 3002",
+          command: `npm run cf:preview -- --config ${workerConfig} --port 3002`,
           url: "http://127.0.0.1:3002",
           timeout: 120000,
           reuseExistingServer: !process.env.CI,
         }
       : undefined,
   testMatch: [
+    "staging.spec.ts",
     "site.spec.ts",
     "release4.spec.ts",
     "stage-a.spec.ts",
@@ -28,6 +33,7 @@ export default defineConfig({
   ],
   reporter: [
     ["list"],
+    ["html", { outputFolder: "playwright-report", open: "never" }],
     [
       "json",
       {

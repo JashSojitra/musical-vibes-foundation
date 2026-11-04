@@ -2,6 +2,8 @@
 
 Branch: `migration/next16-cloudflare`, based on `c228711d5e02363f68d2c52156fdf68adfd5cac0`. Working Next.js 15 remains on `main`. No push, deployment, domain/DNS or account settings change is included.
 
+Follow-up: the owner published migration commit `e7d7683`, which passed [Linux CI](https://github.com/JashSojitra/musical-vibes-foundation/actions/runs/41783105319). The current staging-only CI preparation and manual launch instructions are in [STAGING-LAUNCH.md](STAGING-LAUNCH.md); this report otherwise records the original migration evaluation.
+
 ## Framework changes
 
 - Next.js and `eslint-config-next`: **16.4.5**, the stable npm `latest` checked during this migration; React/React DOM **19.3.1**, React types **19.3.0**. Versions are pinned and the npm lockfile is retained. Do not use canary releases for production.
@@ -35,7 +37,7 @@ The native Next production server, selected OpenNext Workers preview and isolate
 
 The older test file needed a configurable base URL and an FAQ-scoped summary selector because the mobile More disclosure also contains a summary. These were stale test assumptions, corrected without changing the application. Legacy screenshot output is separated by runtime to avoid collisions.
 
-Wrangler's local dry run bundled 149 static assets and a Worker of approximately **1,149 KiB gzip**. This confirms local packaging, not production CPU time, account entitlements, internet delivery or live Cloudflare behavior. Windows emits an upstream support warning; the committed Linux CI workflow must pass after publication. The workflow has not been run on GitHub during this local-only task.
+Wrangler's original local dry run bundled 149 static assets and a Worker of approximately **1,149 KiB gzip**. This confirms local packaging, not production CPU time, account entitlements, internet delivery or live Cloudflare behavior. Windows emits an upstream support warning. The migration baseline later passed Linux CI as linked above; follow-up commits must pass independently.
 
 For the configuration, environment contract, staging gates and rollback steps, use [deployment readiness](DEPLOYMENT-READINESS.md). For residual build-tool advisories, use [dependency security](DEPENDENCY-SECURITY.md).
 

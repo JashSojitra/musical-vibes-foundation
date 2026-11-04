@@ -27,6 +27,7 @@ skills-lock.json
 .vercel/
 .next-dev/
 .open-next/
+.open-next-staging/
 .turbo/
 dist/
 out/
