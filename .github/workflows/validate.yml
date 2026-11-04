@@ -1,0 +1,58 @@
+name: Validate Next.js and Workers
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main, "migration/**"]
+  workflow_call:
+permissions:
+  contents: read
+concurrency:
+  group: validate-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    name: Linux CI
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: "24"
+          cache: npm
+      - name: Validate GitHub Actions syntax (actionlint 1.7.12)
+        run: |
+          curl --fail --silent --show-error --location --retry 3 https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_amd64.tar.gz -o "$RUNNER_TEMP/actionlint.tar.gz"
+          printf '%s  %s\n' '8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8' "$RUNNER_TEMP/actionlint.tar.gz" | sha256sum --check
+          tar -xzf "$RUNNER_TEMP/actionlint.tar.gz" -C "$RUNNER_TEMP" actionlint
+          "$RUNNER_TEMP/actionlint" -color
+      - run: npm ci
+      - name: Validate workflow and staging configuration
+        run: npm run validate:ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm audit --omit=dev
+      - run: npm audit --audit-level=high
+      - run: npx playwright install --with-deps chromium
+      - name: Production build and OpenNext staging bundle
+        run: npm run cf:build:staging
+      - name: Validate staging artifacts and prerendered cache
+        run: npm run validate:ci -- --built
+      - name: Browser tests in Workers runtime
+        run: npm run test:workers
+        env:
+          WORKER_CONFIG: wrangler.staging.jsonc
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        if: always()
+        with:
+          name: worker-verification
+          path: |
+            docs/validation/migration/*-tests.json
+            docs/validation/migration/legacy-opennext/
+            test-results/
+            playwright-report/
+          if-no-files-found: warn
+          retention-days: 14

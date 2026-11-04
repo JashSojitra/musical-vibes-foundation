@@ -22,24 +22,24 @@ export default function GalleryExplorer({ media }: { media: MediaAsset[] }) {
   const close = () => {
     dialog.current?.close();
     setSelected(null);
-    document.body.style.overflow = "";
     opener.current?.focus();
   };
   const step = (direction: number) =>
     setSelected(
       filtered[(index + direction + filtered.length) % filtered.length].id,
     );
-  useEffect(
-    () => () => {
-      document.body.style.overflow = "";
-    },
-    [],
-  );
+  useEffect(() => {
+    if (!selected) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [selected]);
   function open(photo: MediaAsset, event: React.MouseEvent<HTMLButtonElement>) {
     opener.current = event.currentTarget;
     setSelected(photo.id);
     dialog.current?.showModal();
-    document.body.style.overflow = "hidden";
   }
   return (
     <div className="gallery-explorer wrap">
