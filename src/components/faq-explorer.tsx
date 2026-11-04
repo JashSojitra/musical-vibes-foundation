@@ -1,4 +1,5 @@
 "use client";
+import ArrowIcon from "@/components/arrow-icon";
 import { useState } from "react";
 import type { FAQ } from "@/types/content";
 export default function FAQExplorer({ items }: { items: FAQ[] }) {
@@ -45,7 +46,7 @@ export default function FAQExplorer({ items }: { items: FAQ[] }) {
           <h2>Let’s find the answer together.</h2>
           <p>Try another word, or get in touch with the foundation.</p>
           <button className="text-link" onClick={() => setQuery("")}>
-            Clear search ↗
+            Clear search <ArrowIcon />
           </button>
         </div>
       )}

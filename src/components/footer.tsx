@@ -1,3 +1,4 @@
+import ArrowIcon from "@/components/arrow-icon";
 import Image from "next/image";
 import Link from "next/link";
 import type { SiteSettings } from "@/types/content";
@@ -52,7 +53,9 @@ export default function Footer({ settings }: { settings: SiteSettings }) {
           © {new Date().getFullYear()} {settings.name}
         </span>
         <span>The art of connection.</span>
-        <a href="#main">Back to content ↑</a>
+        <a href="#main">
+          Back to content <ArrowIcon direction="up" />
+        </a>
       </div>
     </footer>
   );

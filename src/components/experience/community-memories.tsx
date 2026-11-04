@@ -1,4 +1,5 @@
 "use client";
+import ArrowIcon from "@/components/arrow-icon";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -42,7 +43,7 @@ export default function CommunityMemories({
                 setActive((active + photos.length - 1) % photos.length)
               }
             >
-              ←
+              <ArrowIcon direction="left" />
             </button>
             <span aria-live="polite">
               0{active + 1}
@@ -52,7 +53,7 @@ export default function CommunityMemories({
               aria-label="Next memory"
               onClick={() => setActive((active + 1) % photos.length)}
             >
-              →
+              <ArrowIcon direction="right" />
             </button>
           </div>
         </div>

@@ -1,4 +1,5 @@
 "use client";
+import ArrowIcon from "@/components/arrow-icon";
 import { useRef, useState } from "react";
 type Fields = {
   name: string;
@@ -143,7 +144,10 @@ export default function ContactForm({
         </p>
       ) : null}
       <button className="action" type="submit">
-        Prepare my email <span aria-hidden="true">↗</span>
+        Prepare my email{" "}
+        <span aria-hidden="true">
+          <ArrowIcon />
+        </span>
       </button>
       <p className="form-privacy">
         This form does not submit or store your message. Prefer to write
@@ -157,7 +161,10 @@ export default function ContactForm({
             your email app, and send it when you’re ready.
           </p>
           <a className="text-link" href={draft}>
-            Open my email draft <span aria-hidden="true">↗</span>
+            Open my email draft{" "}
+            <span aria-hidden="true">
+              <ArrowIcon />
+            </span>
           </a>
         </div>
       ) : null}
