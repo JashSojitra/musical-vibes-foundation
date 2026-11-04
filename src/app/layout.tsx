@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     images: ["/assets/curated/community-picnic.webp"],
   },
   twitter: { card: "summary_large_image" },
-icons: { icon: { url: "/assets/favicon.png", type: "image/png" } },  robots: { index: true, follow: true },
+  robots: { index: true, follow: true },
 };
 export default async function RootLayout({
   children,
