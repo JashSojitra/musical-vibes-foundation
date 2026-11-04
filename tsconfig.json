@@ -33,6 +33,7 @@
     "node_modules",
     ".tmp",
     ".open-next",
+    ".open-next-demo",
     ".open-next-staging",
     ".wrangler"
   ]

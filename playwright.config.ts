@@ -24,7 +24,6 @@ export default defineConfig({
         process.env.PLAYWRIGHT_BROWSER_PATH ||
         (existsSync(localChrome) ? localChrome : undefined),
     },
-    storageState: process.env.PLAYWRIGHT_STORAGE_STATE || undefined,
     screenshot: "only-on-failure",
     trace: "retain-on-failure",
   },

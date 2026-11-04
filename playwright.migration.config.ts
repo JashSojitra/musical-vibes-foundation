@@ -1,7 +1,7 @@
 import { defineConfig } from "@playwright/test";
 import release4 from "./playwright.release4.config";
 const workerConfig = process.env.WORKER_CONFIG || "wrangler.jsonc";
-if (!["wrangler.jsonc", "wrangler.staging.jsonc"].includes(workerConfig)) {
+if (!["wrangler.jsonc", "wrangler.demo.jsonc"].includes(workerConfig)) {
   throw new Error("Unknown local Worker configuration");
 }
 
@@ -24,7 +24,7 @@ export default defineConfig({
         }
       : undefined,
   testMatch: [
-    "staging.spec.ts",
+    "demo.spec.ts",
     "site.spec.ts",
     "release4.spec.ts",
     "stage-a.spec.ts",

@@ -1,4 +1,4 @@
-export const stagingHeaders = {
+export const demoHeaders = {
   "X-Robots-Tag": "noindex, nofollow",
   "X-Content-Type-Options": "nosniff",
   "X-Frame-Options": "DENY",

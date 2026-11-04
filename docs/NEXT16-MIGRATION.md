@@ -1,8 +1,8 @@
 # Next.js 16 migration and adapter decision
 
-Branch: `migration/next16-cloudflare`, based on `c228711d5e02363f68d2c52156fdf68adfd5cac0`. Working Next.js 15 remains on `main`. No push, deployment, domain/DNS or account settings change is included.
+Original migration branch: `migration/next16-cloudflare`, based on `c228711d5e02363f68d2c52156fdf68adfd5cac0`. The owner merged the validated Next.js 16 migration into `main` in `5c1a225`. The old Next.js 15 baseline remains in Git history.
 
-Follow-up: the owner published migration commit `e7d7683`, which passed [Linux CI](https://github.com/JashSojitra/musical-vibes-foundation/actions/runs/41783105319). The current staging-only CI preparation and manual launch instructions are in [STAGING-LAUNCH.md](STAGING-LAUNCH.md); this report otherwise records the original migration evaluation.
+Follow-up: the owner published migration commit `e7d7683`, which passed [Linux CI](https://github.com/JashSojitra/musical-vibes-foundation/actions/runs/41783105319). Protected staging was subsequently retired in favor of the public client demo in [DEMO-DEPLOYMENT.md](DEMO-DEPLOYMENT.md); this report otherwise records the original migration evaluation.
 
 ## Framework changes
 
@@ -43,4 +43,4 @@ For the configuration, environment contract, staging gates and rollback steps, u
 
 ## Retaining the fallback
 
-Do not reset or rewrite `main`. To run the previous working framework, stop local servers and switch to `main`, then run `npm ci`, `npm run build`, and `npm run start`. Migration work remains committed on its dedicated branch. Merge only after reviewing the local evidence and a successful Linux CI run; stage the Worker before approving a public production launch.
+Do not reset or rewrite `main`. It now contains Next.js 16. If the old framework is ever needed for comparison, use a separate checkout/worktree at `c228711` and install/build there; do not replace the working main branch or deploy it over the public demo inadvertently.

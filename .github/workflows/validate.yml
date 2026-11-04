@@ -30,21 +30,21 @@ jobs:
           tar -xzf "$RUNNER_TEMP/actionlint.tar.gz" -C "$RUNNER_TEMP" actionlint
           "$RUNNER_TEMP/actionlint" -color
       - run: npm ci
-      - name: Validate workflow and staging configuration
+      - name: Validate workflow and demo configuration
         run: npm run validate:ci
       - run: npm run lint
       - run: npm run typecheck
       - run: npm audit --omit=dev
       - run: npm audit --audit-level=high
       - run: npx playwright install --with-deps chromium
-      - name: Production build and OpenNext staging bundle
-        run: npm run cf:build:staging
-      - name: Validate staging artifacts and prerendered cache
+      - name: Production build and OpenNext demo bundle
+        run: npm run cf:build:demo
+      - name: Validate demo artifacts and prerendered cache
         run: npm run validate:ci -- --built
       - name: Browser tests in Workers runtime
         run: npm run test:workers
         env:
-          WORKER_CONFIG: wrangler.staging.jsonc
+          WORKER_CONFIG: wrangler.demo.jsonc
       - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         if: always()
         with:

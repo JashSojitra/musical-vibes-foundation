@@ -1,4 +1,6 @@
-# CI / protected staging preparation validation
+# Historical CI / protected staging preparation validation
+
+This records the retired a7f514e staging setup. Current public-demo instructions are in [DEMO-DEPLOYMENT.md](../../DEMO-DEPLOYMENT.md).
 
 Reviewed 2026-11-04. No deployment, merge, DNS update, Cloudflare account change or Sanity setup was performed. Website source, approved styling and content relationships are unchanged.
 

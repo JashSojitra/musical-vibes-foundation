@@ -1,11 +1,11 @@
 import { expect, test } from "@playwright/test";
 
-test("staging responses and static files carry noindex and security headers", async ({
+test("demo responses and static files carry noindex and security headers", async ({
   request,
 }) => {
   test.skip(
-    process.env.WORKER_CONFIG !== "wrangler.staging.jsonc",
-    "Staging-only response policy",
+    process.env.WORKER_CONFIG !== "wrangler.demo.jsonc",
+    "Demo-only response policy",
   );
   for (const path of [
     "/",
@@ -24,4 +24,18 @@ test("staging responses and static files carry noindex and security headers", as
       "strict-origin-when-cross-origin",
     );
   }
+});
+
+test("demo excludes unused original archive photographs", async ({
+  request,
+}) => {
+  test.skip(
+    process.env.WORKER_CONFIG !== "wrangler.demo.jsonc",
+    "Demo upload policy",
+  );
+  expect(
+    (
+      await request.get("/assets/legacy/Mar_19_2025_seniors_club--2.jpg")
+    ).status(),
+  ).toBe(404);
 });
