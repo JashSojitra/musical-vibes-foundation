@@ -44,7 +44,7 @@
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "@types/three": "^0.187.0",
-    "eslint": "^9.0.0",
+    "eslint": "^10.14.0",
     "eslint-config-next": "16.4.5",
     "prettier": "^3.9.10",
     "rclone.js": "0.6.6",
