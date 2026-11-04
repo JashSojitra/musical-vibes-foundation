@@ -1,6 +1,10 @@
 import { test, expect } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
 
+const captureDirectory = process.env.VERIFICATION_TARGET
+  ? `docs/validation/migration/legacy-${process.env.VERIFICATION_TARGET}`
+  : "docs/validation/release2";
+
 const mainRoutes = [
   "/",
   "/about",
@@ -40,7 +44,7 @@ test("every route has readable content, correct metadata, and no horizontal over
     if (message.type() === "error")
       errors.push(`${message.text()} ${message.location().url}`);
   });
-  await mkdir("docs/validation/release2", { recursive: true });
+  await mkdir(captureDirectory, { recursive: true });
   for (const route of routes) {
     const response = await page.goto(route);
     expect(response?.status(), route).toBe(200);
@@ -91,7 +95,7 @@ test("every route has readable content, correct metadata, and no horizontal over
         );
       });
       await page.screenshot({
-        path: `docs/validation/release2/${testInfo.project.name}-${route === "/" ? "home" : route.slice(1).replaceAll("/", "-")}.jpg`,
+        path: `${captureDirectory}/${testInfo.project.name}-${route === "/" ? "home" : route.slice(1).replaceAll("/", "-")}.jpg`,
         quality: 82,
         fullPage: true,
         animations: "disabled",
@@ -150,7 +154,9 @@ test("navigation, keyboard focus, and program routes", async ({
     "Find a little joy",
   );
   await page.locator(".brand").click();
-  await expect(page).toHaveURL("http://127.0.0.1:3000/");
+  await expect(page).toHaveURL(
+    new URL("/", testInfo.project.use.baseURL!).href,
+  );
 });
 
 test("gallery filters, lightbox keyboard controls, and focus restoration", async ({
@@ -200,8 +206,10 @@ test("FAQ search and keyboard accordion", async ({ page }) => {
   await page.goto("/faq");
   await page.getByLabel("Find an answer").fill("donation");
   await expect(page.locator(".faq-list details")).toHaveCount(1);
-  await page.locator("summary").press("Enter");
-  await expect(page.locator("details[open]")).toContainText("not enabled");
+  await page.locator(".faq-list summary").press("Enter");
+  await expect(page.locator(".faq-list details[open]")).toContainText(
+    "not enabled",
+  );
   await page.getByLabel("Find an answer").fill("zzzz-no-answer");
   await expect(page.locator(".empty-search")).toBeVisible();
   await page.getByRole("button", { name: "Clear search" }).click();
@@ -238,7 +246,7 @@ test("3D initializes without shader errors and offers pause controls", async ({
     page.getByRole("button", { name: "Resume sculpture motion" }),
   ).toHaveAttribute("aria-pressed", "true");
   await page.screenshot({
-    path: "docs/validation/release2/desktop-home-3d.png",
+    path: `${captureDirectory}/desktop-home-3d.png`,
     animations: "disabled",
   });
   expect(

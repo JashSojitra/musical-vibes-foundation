@@ -7,40 +7,61 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit",
     "assets:collect": "python scripts/collect_legacy.py",
     "assets:audit": "node scripts/audit-images.mjs",
     "assets:curate": "node scripts/curate-images.mjs",
     "assets:curate:release2": "node scripts/curate-release2.mjs",
     "test:browser": "playwright test",
     "verify:routes": "node scripts/verify-release2.mjs",
-    "format:check": "prettier --check src tests playwright.config.ts"
+    "format:check": "prettier --check src tests playwright.config.ts",
+    "cf:build": "opennextjs-cloudflare build",
+    "cf:preview": "opennextjs-cloudflare preview",
+    "cf:deploy": "opennextjs-cloudflare deploy",
+    "cf:typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
+    "test:workers": "node scripts/test-workers.mjs",
+    "cf:tail": "wrangler tail"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",
     "@react-three/fiber": "^9.8.2",
     "gsap": "^3.13.0",
     "lucide-react": "^0.468.0",
-    "next": "^15.5.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
+    "next": "16.4.5",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
     "three": "^0.187.0"
   },
   "devDependencies": {
+    "@opennextjs/cloudflare": "1.20.16",
     "@playwright/test": "^1.64.1",
     "@tailwindcss/postcss": "^4.0.0",
     "@types/node": "^22.0.0",
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
     "@types/three": "^0.187.0",
     "eslint": "^9.0.0",
-    "eslint-config-next": "^15.5.0",
+    "eslint-config-next": "16.4.5",
     "prettier": "^3.9.10",
+    "rclone.js": "0.6.6",
     "sharp": "^0.35.5",
     "tailwindcss": "^4.0.0",
-    "typescript": "^5.9.0"
+    "typescript": "^5.9.0",
+    "wrangler": "4.157.0"
   },
   "overrides": {
-    "postcss": "^8.5.32"
+    "postcss": "^8.5.32",
+    "@opennextjs/cloudflare": {
+      "glob": "14.0.3"
+    },
+    "@node-minify/core": {
+      "glob": "14.0.3"
+    },
+    "rclone.js": {
+      "adm-zip": "0.6.1"
+    }
+  },
+  "engines": {
+    "node": ">=22.14.0 <25"
   }
 }
