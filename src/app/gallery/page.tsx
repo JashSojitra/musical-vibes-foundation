@@ -1,3 +1,4 @@
+import ArrowIcon from "@/components/arrow-icon";
 import Link from "next/link";
 import { getPublicContent } from "@/lib/journal";
 import GalleryPreview from "@/components/gallery-preview";
@@ -58,7 +59,7 @@ export default async function Gallery({
             <h2>{selected.title}</h2>
             {selected.journalSlug ? (
               <Link href={`/journal/${selected.journalSlug}`}>
-                Read the Journal story ↗
+                Read the Journal story <ArrowIcon />
               </Link>
             ) : null}
             <Link href="/gallery">Show all photographs</Link>

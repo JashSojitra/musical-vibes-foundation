@@ -1,4 +1,5 @@
 "use client";
+import ArrowIcon from "@/components/arrow-icon";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -61,7 +62,7 @@ export default function ProgramExplorer({
               <p>{item.description}</p>
             </div>
             <span className="program-row-arrow" aria-hidden="true">
-              ↗
+              <ArrowIcon />
             </span>
           </Link>
         ))}

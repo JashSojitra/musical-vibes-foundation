@@ -1,3 +1,4 @@
+import ArrowIcon from "@/components/arrow-icon";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -128,7 +129,9 @@ export default async function Article({
                 {programs.map((program) => (
                   <Link key={program.id} href={`/programs/${program.slug}`}>
                     {program.title}
-                    <span aria-hidden="true">↗</span>
+                    <span aria-hidden="true">
+                      <ArrowIcon />
+                    </span>
                   </Link>
                 ))}
               </>

@@ -1,4 +1,5 @@
 "use client";
+import ArrowIcon from "@/components/arrow-icon";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import type { MediaAsset } from "@/types/content";
@@ -82,7 +83,7 @@ export default function GalleryExplorer({ media }: { media: MediaAsset[] }) {
                 style={{ objectPosition: item.position }}
               />
               <span className="expand-photo" aria-hidden="true">
-                ↗
+                <ArrowIcon />
               </span>
             </button>
             <figcaption>
@@ -131,7 +132,7 @@ export default function GalleryExplorer({ media }: { media: MediaAsset[] }) {
                 onClick={() => step(-1)}
                 aria-label="Previous photograph"
               >
-                ←
+                <ArrowIcon direction="left" />
               </button>
               <Image
                 src={photo.src}
@@ -145,7 +146,7 @@ export default function GalleryExplorer({ media }: { media: MediaAsset[] }) {
                 onClick={() => step(1)}
                 aria-label="Next photograph"
               >
-                →
+                <ArrowIcon direction="right" />
               </button>
             </div>
             <div className="lightbox-caption" aria-live="polite">
