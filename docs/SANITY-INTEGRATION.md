@@ -1,5 +1,7 @@
 # Sanity integration
 
+An isolated live-CMS Workers preview is now prepared. See [CMS-PREVIEW.md](CMS-PREVIEW.md) for fixed-target build/deployment commands, read-only and fixture validation, and the owner publishing checklist. It does not replace the existing local-content demo.
+
 The separate `studio/` package edits public dataset `production` in project `6jpdhhxg`. It is a Sanity Studio, not another Next.js app. `studio/schemas/index.ts` defines Journal, Events, Programs, Media Library (ordinary mediaItem documents, not Sanity's paid Media Library product), the Site Settings singleton and FAQs. Managed Sanity authentication is the only editor login.
 
 ## Source and publication policy

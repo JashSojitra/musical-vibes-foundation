@@ -29,6 +29,7 @@ skills-lock.json
 .open-next/
 .open-next-demo/
 .open-next-staging/
+.open-next-cms-preview/
 .turbo/
 dist/
 out/

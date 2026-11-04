@@ -51,6 +51,12 @@ jobs:
         run: npm run test:workers
         env:
           WORKER_CONFIG: wrangler.demo.jsonc
+      - name: Build and validate isolated CMS preview (no deployment)
+        run: |
+          npm run cf:build:cms-preview
+          npm run cf:validate:cms-preview
+          npm run cf:dry-run:cms-preview
+          npm run test:cms-preview
       - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         if: always()
         with:

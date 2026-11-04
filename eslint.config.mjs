@@ -10,6 +10,7 @@ export default defineConfig([
     ".open-next/**",
     ".open-next-demo/**",
     ".open-next-staging/**",
+    ".open-next-cms-preview/**",
     ".wrangler/**",
     "node_modules/**",
     "studio/node_modules/**",

@@ -1,0 +1,225 @@
+import { test, expect } from "@playwright/test";
+
+const fixture = () => [
+  {
+    _id: "siteSettings",
+    _type: "siteSettings",
+    name: "Musical Vibes Foundation",
+    url: "https://www.musicalvibesfoundation.com",
+    email: "hello@example.org",
+    phone: "+1 416 555 0100",
+    location: "Brampton",
+    mission: "Community connection",
+  },
+  {
+    _id: "media.photo",
+    _type: "mediaItem",
+    sourceId: "song",
+    alt: "A community gathering",
+    caption: "Community music",
+    category: "Music",
+    image: { asset: { _ref: "image-abcdef-1600x1000-webp" } },
+    assetExists: true,
+    editorialApproval: "approved",
+    publicationEnabled: true,
+    standaloneGallery: false,
+  },
+  {
+    _id: "program.music",
+    _type: "program",
+    slug: { current: "preview-music" },
+    title: "Preview music program",
+    headline: "Share a song",
+    description: "Music together",
+    number: "01",
+    theme: "rose",
+    category: "Music",
+    image: { _ref: "media.photo" },
+    focus: ["Connection"],
+    body: [
+      {
+        _type: "block",
+        _key: "p",
+        style: "normal",
+        markDefs: [],
+        children: [
+          {
+            _type: "span",
+            _key: "s",
+            text: "A program description",
+            marks: [],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    _id: "event.gathering",
+    _type: "event",
+    slug: { current: "preview-gathering" },
+    title: "Preview gathering",
+    date: "2025-10-16",
+    status: "past",
+    description: "A community gathering",
+    image: { _ref: "media.photo" },
+    gallery: [{ _ref: "media.photo" }],
+  },
+  {
+    _id: "journal.story",
+    _type: "journalEntry",
+    slug: { current: "preview-story" },
+    title: "Preview story",
+    excerpt: "A shared community moment",
+    publishedAt: "2026-11-03",
+    kind: "event",
+    event: { _ref: "event.gathering" },
+    programs: [{ _ref: "program.music" }],
+    photos: [{ _ref: "media.photo" }],
+    body: [
+      {
+        _type: "block",
+        _key: "p",
+        style: "normal",
+        markDefs: [],
+        children: [
+          {
+            _type: "span",
+            _key: "s",
+            text: "A real CMS-rendered article body",
+            marks: [],
+          },
+        ],
+      },
+    ],
+  },
+];
+
+test("CMS SSR, dynamic slugs, images, metadata and Journal/Gallery updates in workerd", async ({
+  page,
+  request,
+}) => {
+  await request.post("/__fixture", { data: fixture() });
+  const response = await request.get("/journal/preview-story");
+  expect(response.status()).toBe(200);
+  const html = await response.text();
+  expect(html).toContain("A real CMS-rendered article body");
+  expect(response.headers()["cache-control"]).toBe("no-store");
+  expect(response.headers()["x-robots-tag"]).toBe("noindex, nofollow");
+  await page.goto("/journal/preview-story");
+  await expect(page.locator("h1")).toHaveText("Preview story");
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    "href",
+    "https://www.musicalvibesfoundation.com/journal/preview-story",
+  );
+  await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+    "content",
+    "A shared community moment",
+  );
+  expect(
+    await page.locator('script[type="application/ld+json"]').allTextContents(),
+  ).toEqual(
+    expect.arrayContaining([expect.stringContaining('"@type":"Article"')]),
+  );
+  const photo = page.locator(".journal-article-photo img");
+  await expect(photo).toHaveAttribute("srcset", /cdn\.sanity\.io/);
+  await expect
+    .poll(() => photo.evaluate((img) => (img as HTMLImageElement).naturalWidth))
+    .toBeGreaterThan(0);
+  await page
+    .getByRole("link", { name: "Explore this story in photographs" })
+    .click();
+  await expect(page.locator(".selected-collection h2")).toHaveText(
+    "Preview story",
+  );
+  await page.getByRole("link", { name: "Read the Journal story" }).click();
+  await expect(page).toHaveURL(/\/journal\/preview-story$/);
+  expect(await (await request.get("/sitemap.xml")).text()).toContain(
+    "/journal/preview-story",
+  );
+  expect((await request.get("/programs/preview-music")).status()).toBe(200);
+  expect((await request.get("/events/preview-gathering")).status()).toBe(200);
+  expect((await request.get("/journal/not-published")).status()).toBe(404);
+
+  const renamed = fixture();
+  renamed[4].title = "Renamed story";
+  renamed[4].slug = { current: "renamed-story" };
+  await request.post("/__fixture", {
+    data: renamed.map((d) =>
+      d._type === "journalEntry"
+        ? { ...d, previousSlugs: ["preview-story"] }
+        : d,
+    ),
+  });
+  const redirect = await request.get("/journal/preview-story", {
+    maxRedirects: 0,
+    headers: { "user-agent": "facebookexternalhit/1.1" },
+  });
+  expect(redirect.status()).toBe(308);
+  expect(redirect.headers().location).toBe("/journal/renamed-story");
+  await page.goto("/journal/preview-story");
+  await expect(page).toHaveURL(/\/journal\/renamed-story$/);
+  await page.goto("/gallery?collection=journal-collection.journal.story");
+  await expect(page.locator(".selected-collection h2")).toHaveText(
+    "Renamed story",
+  );
+  expect(await (await request.get("/sitemap.xml")).text()).toContain(
+    "/journal/renamed-story",
+  );
+
+  const withdrawn = fixture().map((d) =>
+    d._type === "mediaItem" ? { ...d, editorialApproval: "pending" } : d,
+  );
+  await request.post("/__fixture", { data: withdrawn });
+  await page.goto("/journal/preview-story");
+  await expect(page.locator(".journal-article-photo")).toHaveCount(0);
+  await page.goto("/programs/preview-music");
+  await expect(page.locator(".program-detail-hero img")).toHaveAttribute(
+    "src",
+    /image-unavailable\.svg/,
+  );
+  await page.goto("/gallery");
+  await expect(page.locator(".gallery-photo")).toHaveCount(0);
+  await request.post("/__fixture", {
+    data: fixture().filter((d) => d._type !== "journalEntry"),
+  });
+  expect((await request.get("/journal/preview-story")).status()).toBe(404);
+  expect(await (await request.get("/sitemap.xml")).text()).not.toContain(
+    "/journal/preview-story",
+  );
+});
+
+test("empty CMS stays usable without exposing local demo photographs", async ({
+  page,
+  request,
+}) => {
+  await request.post("/__fixture", {
+    data: fixture().filter((d) => d._type === "siteSettings"),
+  });
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  for (const route of [
+    "/",
+    "/about",
+    "/programs",
+    "/events",
+    "/journal",
+    "/gallery",
+    "/contact",
+    "/faq",
+  ]) {
+    expect((await page.goto(route))?.status(), route).toBe(200);
+    await expect(page.locator("h1")).toHaveCount(1);
+    expect(await page.locator('img[src*="curated"]').count()).toBe(0);
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth > innerWidth,
+      ),
+      route,
+    ).toBe(false);
+  }
+  expect((await request.get("/assets/curated/shared-song.webp")).status()).toBe(
+    404,
+  );
+  expect((await request.get("/assets/image-unavailable.svg")).status()).toBe(
+    200,
+  );
+});

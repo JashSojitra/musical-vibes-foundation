@@ -1,0 +1,54 @@
+name: Deploy isolated CMS preview
+on:
+  workflow_call:
+    inputs:
+      confirm_worker:
+        type: string
+        required: true
+    secrets:
+      CLOUDFLARE_API_TOKEN:
+        required: true
+      CLOUDFLARE_ACCOUNT_ID:
+        required: true
+permissions:
+  contents: read
+concurrency:
+  group: deploy-cms-preview
+  cancel-in-progress: false
+jobs:
+  preview:
+    if: github.repository == 'JashSojitra/musical-vibes-foundation' && github.ref == 'refs/heads/feat/sanity-cms' && inputs.confirm_worker == 'musical-vibes-foundation-cms-preview'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: "24"
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run test:cms
+      - run: npm run cf:build:cms-preview
+      - run: npm run cf:validate:cms-preview
+      - run: npm run cf:dry-run:cms-preview
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:cms-preview
+      - run: npm run test:cms-preview:live
+      - name: Deploy only the isolated CMS preview
+        run: npm run cf:deploy:cms-preview
+        env:
+          CMS_PREVIEW_CONFIRM: musical-vibes-foundation-cms-preview
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        if: always()
+        with:
+          name: cms-preview-validation
+          path: |
+            docs/validation/cms-preview/*.json
+            test-results/cms-preview/
+          if-no-files-found: warn

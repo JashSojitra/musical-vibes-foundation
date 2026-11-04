@@ -42,6 +42,7 @@
     ".open-next-demo",
     ".open-next-staging",
     ".wrangler",
-    "studio"
+    "studio",
+    ".open-next-cms-preview"
   ]
 }

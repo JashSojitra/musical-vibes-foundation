@@ -30,7 +30,14 @@
     "sanity:migrate:write": "tsx scripts/sanity-migration.ts --write",
     "sanity:migrate:verify": "tsx scripts/sanity-migration.ts --verify",
     "studio:build": "npm --prefix studio run build",
-    "studio:validate": "npm --prefix studio run schema:validate"
+    "studio:validate": "npm --prefix studio run schema:validate",
+    "cf:build:cms-preview": "node scripts/build-cms-preview.mjs",
+    "cf:validate:cms-preview": "node scripts/validate-cms-preview.mjs",
+    "cf:preview:cms-preview": "node scripts/run-cms-preview.mjs preview",
+    "cf:dry-run:cms-preview": "node scripts/run-cms-preview.mjs dry-run",
+    "cf:deploy:cms-preview": "node scripts/run-cms-preview.mjs deploy",
+    "test:cms-preview": "playwright test --config playwright.cms-preview.config.ts",
+    "test:cms-preview:live": "playwright test --config playwright.cms-preview-live.config.ts"
   },
   "dependencies": {
     "@portabletext/react": "^8.0.1",

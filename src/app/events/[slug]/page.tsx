@@ -11,6 +11,8 @@ import {
   Photo,
   TextLink,
 } from "@/components/ui";
+// New CMS slugs must render on request, never enter on-demand static generation.
+export const dynamic = "force-dynamic";
 export const dynamicParams = true;
 export async function generateStaticParams() {
   if (process.env.CONTENT_SOURCE === "sanity") return [];

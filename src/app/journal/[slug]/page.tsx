@@ -13,6 +13,8 @@ import {
   TextLink,
 } from "@/components/ui";
 import { collectionHref } from "@/components/gallery-preview";
+// New CMS slugs must render on request, never enter on-demand static generation.
+export const dynamic = "force-dynamic";
 export async function generateStaticParams() {
   if (process.env.CONTENT_SOURCE === "sanity") return [];
   return (await getPublicContent())
@@ -24,8 +26,10 @@ export async function generateMetadata({
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const entry = (await getPublicContent()).getJournalEntry((await params).slug);
+  const requestedSlug = (await params).slug;
+  const entry = (await getPublicContent()).getJournalEntry(requestedSlug);
   if (!entry) return {};
+  if (entry.slug !== requestedSlug) permanentRedirect(`/journal/${entry.slug}`);
   const photo = (await getPublicContent()).getEntryPhotos(entry)[0];
   return {
     ...pageMetadata(

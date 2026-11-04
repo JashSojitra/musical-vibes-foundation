@@ -1,16 +1,31 @@
 name: Deploy public demo
 on:
   workflow_dispatch:
+    inputs:
+      cms_preview:
+        description: "On feat/sanity-cms only, type musical-vibes-foundation-cms-preview to deploy the isolated CMS preview. Leave blank for the existing main-only demo workflow."
+        type: string
+        required: false
+        default: ""
 permissions:
   contents: read
 concurrency:
-  group: deploy-demo
+  group: ${{ github.ref == 'refs/heads/main' && 'deploy-demo' || 'deploy-cms-preview-dispatch' }}
   cancel-in-progress: false
 jobs:
+  cms-preview:
+    if: github.repository == 'JashSojitra/musical-vibes-foundation' && github.ref == 'refs/heads/feat/sanity-cms' && inputs.cms_preview == 'musical-vibes-foundation-cms-preview'
+    uses: ./.github/workflows/deploy-cms-preview.yml
+    with:
+      confirm_worker: ${{ inputs.cms_preview }}
+    secrets:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
   verify:
-    if: github.repository == 'JashSojitra/musical-vibes-foundation' && github.ref == 'refs/heads/main'
+    if: github.repository == 'JashSojitra/musical-vibes-foundation' && github.ref == 'refs/heads/main' && inputs.cms_preview == ''
     uses: ./.github/workflows/validate.yml
   deploy:
+    if: github.ref == 'refs/heads/main' && inputs.cms_preview == ''
     needs: verify
     runs-on: ubuntu-latest
     timeout-minutes: 25
