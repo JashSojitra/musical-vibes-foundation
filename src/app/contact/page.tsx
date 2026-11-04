@@ -1,4 +1,5 @@
 import { getMedia as getIntroMedia } from "@/lib/content";
+import ArrowIcon from "@/components/arrow-icon";
 import { getSiteContent, getProgram } from "@/lib/content";
 import { pageMetadata } from "@/lib/metadata";
 import { Eyebrow, PageIntro, TextLink } from "@/components/ui";
@@ -47,14 +48,18 @@ export default async function Contact({
             <span>Write to us</span>
             <a href={`mailto:${settings.email}`}>
               {settings.email}
-              <span aria-hidden="true">↗</span>
+              <span aria-hidden="true">
+                <ArrowIcon />
+              </span>
             </a>
           </div>
           <div className="contact-channel">
             <span>Give us a call</span>
             <a href={`tel:${settings.phone.replace(/[^+0-9]/g, "")}`}>
               {settings.phone}
-              <span aria-hidden="true">↗</span>
+              <span aria-hidden="true">
+                <ArrowIcon />
+              </span>
             </a>
           </div>
           <div className="contact-channel">

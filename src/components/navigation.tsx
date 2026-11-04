@@ -1,4 +1,5 @@
 "use client";
+import ArrowIcon from "@/components/arrow-icon";
 import Image from "next/image";
 import type { MediaAsset } from "@/types/content";
 import Link from "next/link";
@@ -229,7 +230,10 @@ export default function Navigation({
                   <em>shared rhythm.</em>
                 </p>
                 <Link href="/programs" onClick={closeSubmenu}>
-                  All six programs <span aria-hidden="true">↗</span>
+                  All six programs{" "}
+                  <span aria-hidden="true">
+                    <ArrowIcon />
+                  </span>
                 </Link>
               </div>
               <div className="program-menu-links">
@@ -242,7 +246,9 @@ export default function Navigation({
                   >
                     <span>0{i + 1}</span>
                     {program.title}
-                    <span aria-hidden="true">↗</span>
+                    <span aria-hidden="true">
+                      <ArrowIcon />
+                    </span>
                   </Link>
                 ))}
               </div>
@@ -254,7 +260,10 @@ export default function Navigation({
           href="/get-involved"
           aria-current={pathname === "/get-involved" ? "page" : undefined}
         >
-          Get involved <span aria-hidden="true">↗</span>
+          Get involved{" "}
+          <span aria-hidden="true">
+            <ArrowIcon />
+          </span>
         </Link>
         <button
           className="menu-toggle"
@@ -312,7 +321,9 @@ export default function Navigation({
             >
               <small aria-hidden="true">0{i + 1}</small>
               {label}
-              <span aria-hidden="true">↗</span>
+              <span aria-hidden="true">
+                <ArrowIcon />
+              </span>
             </Link>
           ))}
         </nav>
@@ -328,7 +339,9 @@ export default function Navigation({
                 onClick={closeMenu}
               >
                 {program.title}
-                <span aria-hidden="true">↗</span>
+                <span aria-hidden="true">
+                  <ArrowIcon />
+                </span>
               </Link>
             ))}
           </div>

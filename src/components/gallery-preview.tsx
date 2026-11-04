@@ -1,3 +1,4 @@
+import ArrowIcon from "@/components/arrow-icon";
 import Image from "next/image";
 import Link from "next/link";
 import type { GalleryCollection } from "@/types/content";
@@ -35,7 +36,9 @@ export default function GalleryPreview({
                     : "photographs"}
                 </small>
                 <strong>{collection.title}</strong>
-                <i aria-hidden="true">↗</i>
+                <i aria-hidden="true">
+                  <ArrowIcon />
+                </i>
               </span>
             </Link>
           ))}

@@ -142,6 +142,14 @@ img {
   border-radius: 50%;
   background: currentColor;
 }
+/* Font-independent marks inherit each existing arrow wrapper's size and colour. */
+.arrow-icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+  vertical-align: -0.125em;
+}
 .arrow {
   font-family: Arial, sans-serif;
   font-size: 23px;

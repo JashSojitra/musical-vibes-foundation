@@ -1,3 +1,4 @@
+import ArrowIcon from "@/components/arrow-icon";
 import { getMedia } from "@/lib/content";
 import { pageMetadata } from "@/lib/metadata";
 import {
@@ -86,7 +87,7 @@ export default async function GetInvolved() {
             Start a partnership conversation
           </TextLink>
           <span className="path-symbol" aria-hidden="true">
-            ↗
+            <ArrowIcon />
           </span>
         </article>
       </section>

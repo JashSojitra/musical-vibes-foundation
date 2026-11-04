@@ -1,3 +1,4 @@
+import ArrowIcon from "@/components/arrow-icon";
 import Image from "next/image";
 import Link from "next/link";
 import type { MediaAsset } from "@/types/content";
@@ -5,7 +6,7 @@ import type { MediaAsset } from "@/types/content";
 export function Arrow({ down = false }: { down?: boolean }) {
   return (
     <span className="arrow" aria-hidden="true">
-      {down ? "↓" : "↗"}
+      <ArrowIcon direction={down ? "down" : "up-right"} />
     </span>
   );
 }
