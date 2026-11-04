@@ -60,7 +60,7 @@ test("navigation supports keyboard dismissal and preserves program links", async
         page.locator(`#program-submenu a[href='/programs/${program.slug}']`),
       ).toBeVisible();
     }
-    await page.locator("#program-submenu a").first().click();
+    await page.locator(".program-menu-links a").first().click();
     await expect(page).toHaveURL(/\/programs\/healing-through-music$/);
   } else {
     await page
@@ -109,7 +109,7 @@ test("WebGL unavailable keeps the photography, story and primary action", async 
   await expect(page.locator(".symphony-photo img")).toBeVisible();
   await expect(page.locator(".story-main-photo img")).toBeAttached();
   await page
-    .getByRole("link", { name: "Explore programs", exact: true })
+    .getByRole("link", { name: "Find your rhythm", exact: true })
     .click();
   await expect(page).toHaveURL(/\/programs$/);
 });

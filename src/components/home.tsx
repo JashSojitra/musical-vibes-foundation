@@ -1,15 +1,15 @@
 import Link from "next/link";
 import Image from "next/image";
 import { getSiteContent, getMedia } from "@/lib/content";
-import { Action, Arrow, Eyebrow, Invitation, Photo, TextLink } from "./ui";
+import { Action, Arrow, Eyebrow, Invitation, TextLink } from "./ui";
 import LivingSymphony from "./experience/living-symphony";
-import RhythmMoment from "./experience/rhythm-moment";
+import ProgramJourney from "./experience/program-journey";
+import CommunityMemories from "./experience/community-memories";
 
 export default async function Home() {
-  const { programs, events, home } = await getSiteContent();
+  const { programs, events, home, media } = await getSiteContent();
   const picnic = await getMedia("picnic");
   const singer = await getMedia("june-song");
-  const music = await getMedia("song");
   const circle = await getMedia("circle");
   const featured = events.filter((item) =>
     home.featuredEventSlugs.includes(item.slug),
@@ -18,104 +18,14 @@ export default async function Home() {
     <>
       <LivingSymphony singer={singer} circle={circle} picnic={picnic} />
 
-      <section className="home-programs wrap">
-        <div className="section-heading">
-          <div>
-            <Eyebrow>FIND YOUR WAY TO CONNECT</Eyebrow>
-            <h2 data-reveal>
-              Different paths.
-              <br />
-              <em>One shared purpose.</em>
-            </h2>
-          </div>
-          <TextLink href="/programs">Explore all six programs</TextLink>
-        </div>
-        <div className="home-program-feature">
-          <Photo media={music} caption />
-          <div className="home-program-feature-copy">
-            <span className="eyebrow">01 / MUSIC & EXPRESSION</span>
-            <h3>
-              Some things
-              <br />
-              only <em>music</em>
-              <br />
-              can say.
-            </h3>
-            <p>{programs[0].description}</p>
-            <TextLink href={`/programs/${programs[0].slug}`}>
-              {programs[0].title}
-            </TextLink>
-          </div>
-        </div>
-        <div className="home-program-pair">
-          {[programs[2], programs[1]].map((program) => (
-            <Link
-              href={`/programs/${program.slug}`}
-              key={program.slug}
-              className={`home-program-path theme-${program.theme}`}
-            >
-              <span className="eyebrow">
-                {program.number} / {program.category}
-              </span>
-              <h3>
-                {program.slug === "meditation-and-yoga" ? (
-                  <>
-                    A moment to pause.
-                    <br />
-                    <em>A space to grow.</em>
-                  </>
-                ) : (
-                  <>
-                    Come as you are.
-                    <br />
-                    <em>Leave connected.</em>
-                  </>
-                )}
-              </h3>
-              <p>{program.description}</p>
-              <span className="path-link">
-                {program.title}
-                <Arrow />
-              </span>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      <section className="home-photo-story">
-        <Photo media={circle} />
-        <div className="photo-story-copy">
-          <Eyebrow>IN GOOD COMPANY</Eyebrow>
-          <h2>
-            A familiar face.
-            <br />A shared story.
-            <br />
-            <em>A brighter day.</em>
-          </h2>
-          <Action href="/gallery" light>
-            Meet our community in pictures
-          </Action>
-        </div>
-      </section>
-
-      <section className="home-rhythm wrap">
-        <div className="section-heading">
-          <div>
-            <Eyebrow>CONNECTION HAS A RHYTHM</Eyebrow>
-            <h2 data-reveal>
-              You don’t have to hear it
-              <br />
-              <em>to feel it.</em>
-            </h2>
-          </div>
-          <p>
-            Different feelings. Different rhythms.
-            <br />
-            Choose a word and watch the shape change.
-          </p>
-        </div>
-        <RhythmMoment />
-      </section>
+      <ProgramJourney programs={programs} media={media} />
+      <CommunityMemories
+        photos={[
+          media.find((photo) => photo.id === "diwali")!,
+          picnic,
+          media.find((photo) => photo.id === "christmas")!,
+        ]}
+      />
 
       <section className="home-events wrap">
         <div className="section-heading">

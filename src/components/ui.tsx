@@ -93,9 +93,53 @@ export function PageIntro({
   description: string;
   number?: string;
 }) {
+  const chapterPhotos: Record<
+    string,
+    { src: string; alt: string; label: string }
+  > = {
+    "01": {
+      src: "seniors-circle",
+      alt: "Seniors sharing a gathering in a sunlit community room.",
+      label: "A place in the circle",
+    },
+    "02": {
+      src: "shared-song",
+      alt: "A Seniors Club participant singing into a microphone.",
+      label: "Expression. Connection. Belonging.",
+    },
+    "03": {
+      src: "celebration",
+      alt: "Community members standing together at a Christmas celebration.",
+      label: "Moments worth sharing",
+    },
+    "04": {
+      src: "diwali",
+      alt: "Community members performing music at a Diwali celebration.",
+      label: "The community album",
+    },
+    "05": {
+      src: "picnic-table",
+      alt: "Community members together at a summer picnic.",
+      label: "A little time. A lot of heart.",
+    },
+    "06": {
+      src: "conversation",
+      alt: "Two participants holding microphones at a community gathering.",
+      label: "Every connection starts here",
+    },
+    "07": {
+      src: "gathering",
+      alt: "Seniors sharing a gathering around tables.",
+      label: "A good place to begin",
+    },
+  };
+  const photo = number ? chapterPhotos[number] : undefined;
   return (
-    <header className="page-intro wrap">
-      <Eyebrow>{eyebrow}</Eyebrow>
+    <header className="page-intro wrap" data-chapter={number}>
+      <div className="intro-chapter">
+        <Eyebrow>{eyebrow}</Eyebrow>
+        <span>Musical Vibes / {number ?? "Our community"}</span>
+      </div>
       <div className="page-intro-grid">
         <h1 className="display" data-title>
           {title}
@@ -107,6 +151,23 @@ export function PageIntro({
           ) : null}
         </h1>
         <p className="intro-description">{description}</p>
+        {photo ? (
+          <figure className="intro-photograph">
+            <div>
+              <Image
+                src={`/assets/curated/${photo.src}.webp`}
+                alt={photo.alt}
+                fill
+                priority
+                sizes="(max-width:700px) 80vw, 32vw"
+              />
+            </div>
+            <figcaption>
+              {photo.label}
+              <span>{number} / The art of connection</span>
+            </figcaption>
+          </figure>
+        ) : null}
       </div>
       {number ? (
         <span className="page-number" aria-hidden="true">

@@ -14,52 +14,74 @@ export default function LivingSymphony({
 }) {
   return (
     <div className="living-symphony">
-      <section className="symphony-hero" aria-labelledby="home-title">
-        <div className="symphony-photo">
-          <Image
-            src={singer.src}
-            alt={singer.alt}
-            fill
-            priority
-            quality={85}
-            sizes="(max-width: 700px) 100vw, 60vw"
-            style={{ objectPosition: singer.position }}
-          />
-        </div>
-        <div className="symphony-atmosphere" aria-hidden="true" />
-        <div className="symphony-score">
+      <section className="symphony-hero overture" aria-labelledby="home-title">
+        <div className="overture-score">
           <SoundSculpture />
         </div>
-        <div className="symphony-copy">
-          <p className="symphony-kicker">Music. Wellness. Community.</p>
-          <h1 id="home-title" data-title>
-            The art of
-            <br />
-            <em>connection.</em>
-          </h1>
-          <p className="symphony-intro">
-            There’s something beautiful about coming together. Find it in music.
-            Feel it in community.
+        <div className="overture-copy">
+          <p className="symphony-kicker">
+            Musical Vibes Foundation / The art of connection
           </p>
-          <div className="symphony-actions">
+          <h1 id="home-title" data-title>
+            Life sounds
+            <br />
+            <em>better together.</em>
+          </h1>
+          <p>
+            Music, wellness, and meaningful connection for seniors and our wider
+            community. Rooted in Brampton. Open to you.
+          </p>
+          <div className="overture-actions">
             <Action href="/programs" light>
-              Explore programs
+              Find your rhythm
             </Action>
             <a className="symphony-story-link" href="#our-story">
-              Our story <Arrow down />
+              Discover our story <Arrow down />
             </a>
           </div>
-        </div>
-        <div className="symphony-photo-credit">
-          <span>A voice. A moment. A connection.</span>
-          <small>From our Seniors Meet · June 2025</small>
-        </div>
-        <div className="symphony-bottom">
-          <span>Brampton, Ontario</span>
-          <span>
-            The living symphony <i aria-hidden="true" /> 01
+          <span className="overture-footnote">
+            Many voices. One shared rhythm.
           </span>
         </div>
+        <figure className="overture-memory">
+          <Image
+            src={picnic.src}
+            alt={picnic.alt}
+            fill
+            sizes="(max-width:700px) 48vw, 24vw"
+          />
+        </figure>
+        <figure className="symphony-photo overture-portrait">
+          <div className="overture-portrait-image">
+            <Image
+              src={singer.src}
+              alt={singer.alt}
+              fill
+              priority
+              quality={85}
+              sizes="(max-width: 700px) 100vw, 60vw"
+              style={{ objectPosition: singer.position }}
+            />
+          </div>
+          <figcaption>
+            <span>A voice. A moment. A connection.</span>
+            <small>Seniors Meet · June 2025</small>
+          </figcaption>
+        </figure>
+        <nav className="overture-index" aria-label="Explore the homepage">
+          <a href="#our-story">
+            <small>01</small>Our story
+            <Arrow down />
+          </a>
+          <a href="#journey">
+            <small>02</small>Find your rhythm
+            <Arrow down />
+          </a>
+          <a href="#memories">
+            <small>03</small>The community album
+            <Arrow down />
+          </a>
+        </nav>
       </section>
       <section
         className="symphony-story"
