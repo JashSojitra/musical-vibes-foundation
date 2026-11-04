@@ -127,8 +127,28 @@ test("More navigation supports pointer, click, keyboard, Escape and mobile tap",
   await page.goto("/");
   if (info.project.name === "desktop") {
     const more = page.getByRole("button", { name: "More", exact: true });
+    await expect(
+      page.locator(".desktop-nav > a .nav-label, .program-navigation > button"),
+    ).toHaveText([
+      "About",
+      "Programs",
+      "Events",
+      "Gallery",
+      "Journal",
+      "Contact",
+      "More",
+    ]);
+    await expect(more.locator("span, svg")).toHaveCount(0);
+    expect(
+      await more.evaluate(
+        (element) => getComputedStyle(element, "::after").content,
+      ),
+    ).toMatch(/^(none|normal|"")$/);
     await more.hover();
     await expect(more).toHaveAttribute("aria-expanded", "true");
+    const bounds = await page.locator("#program-submenu").boundingBox();
+    expect(bounds!.x).toBeGreaterThanOrEqual(0);
+    expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(1440);
     await page.locator(".program-menu-links a").first().hover();
     await expect(page.locator("#program-submenu")).toBeVisible();
     await page.keyboard.press("Escape");
@@ -141,6 +161,10 @@ test("More navigation supports pointer, click, keyboard, Escape and mobile tap",
     await expect(page.locator(".program-menu-links a").first()).toBeFocused();
     await page.keyboard.press("Escape");
     await expect(more).toBeFocused();
+    await more.press("Enter");
+    await page.locator(".program-menu-links a").last().focus();
+    await page.keyboard.press("Tab");
+    await expect(more).toHaveAttribute("aria-expanded", "false");
     await page.locator('.desktop-nav a[href="/journal"]').click();
   } else {
     const menu = page.getByRole("button", { name: "Menu", exact: false });
@@ -153,6 +177,11 @@ test("More navigation supports pointer, click, keyboard, Escape and mobile tap",
     await page.locator('#mobile-menu a[href="/journal"]').click();
   }
   await expect(page).toHaveURL(/\/journal$/);
+  const navigation =
+    info.project.name === "desktop" ? ".desktop-nav" : ".mobile-menu-links";
+  await expect(
+    page.locator(`${navigation} a[href="/journal"]`),
+  ).toHaveAttribute("aria-current", "page");
 });
 
 test("Journal, derived gallery and Events teaser form a complete visitor journey", async ({

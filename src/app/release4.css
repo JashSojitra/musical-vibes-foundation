@@ -1,5 +1,6 @@
 /* Release 4 extends the approved system without restyling existing sections. */
 .program-navigation > button {
+  justify-content: center;
   margin-left: 2px;
   padding: 10px 11px;
   min-height: 44px;
@@ -9,8 +10,9 @@
   align-items: center;
   gap: 7px;
 }
-.program-navigation > button > span {
-  font-size: 16px;
+.program-navigation .program-submenu {
+  left: auto;
+  right: 0;
 }
 .program-submenu::before {
   content: "";

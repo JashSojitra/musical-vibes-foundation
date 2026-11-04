@@ -10,3 +10,31 @@ __pycache__/
 test-results/
 playwright-report/
 .tmp/
+
+# Local agent/account state and credentials
+.agents/
+.codex/
+.aws/
+skills-lock.json
+.dev.vars*
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Hosting/build/cache output (configuration files remain trackable)
+.wrangler/
+.vercel/
+.next-dev/
+.open-next/
+.turbo/
+dist/
+out/
+coverage/
+
+# Reproducible visual QA output stays local; Markdown reports are retained.
+docs/validation/**/*.png
+docs/validation/**/*.jpg
+docs/validation/**/*.jpeg
+docs/validation/**/*.webp
+docs/validation/**/*.json

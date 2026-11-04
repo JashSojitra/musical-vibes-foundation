@@ -137,125 +137,114 @@ export default function Navigation({
               })
           }
         >
-          {links.map(([label, href]) =>
-            href === "/programs" ? (
-              <div
-                className="program-navigation"
-                key={href}
-                ref={programNav}
-                onPointerEnter={(event) => {
-                  if (event.pointerType !== "mouse") return;
-                  if (closeTimer.current) clearTimeout(closeTimer.current);
-                  if (!submenu) hoverOpened.current = true;
+          {links.map(([label, href]) => (
+            <Link
+              key={href}
+              href={href}
+              data-magnetic
+              onClick={closeSubmenu}
+              aria-current={active(href) ? "page" : undefined}
+            >
+              <span className="nav-label">{label}</span>
+            </Link>
+          ))}
+          <div
+            className="program-navigation"
+            ref={programNav}
+            onPointerEnter={(event) => {
+              if (event.pointerType !== "mouse") return;
+              if (closeTimer.current) clearTimeout(closeTimer.current);
+              if (!submenu) hoverOpened.current = true;
+              setSubmenu(true);
+            }}
+            onPointerLeave={() => {
+              if (!clickedOpen.current)
+                closeTimer.current = setTimeout(() => {
+                  if (!programNav.current?.contains(document.activeElement))
+                    closeSubmenu();
+                }, 180);
+            }}
+            onKeyDown={(event) => {
+              if (event.key === "Escape") {
+                closeSubmenu();
+                programToggle.current?.focus();
+              }
+            }}
+            onBlur={(event) => {
+              if (!event.currentTarget.contains(event.relatedTarget))
+                closeSubmenu();
+            }}
+          >
+            <button
+              ref={programToggle}
+              aria-label="More"
+              aria-expanded={submenu}
+              aria-controls="program-submenu"
+              onClick={() => {
+                if (hoverOpened.current) {
+                  hoverOpened.current = false;
+                  clickedOpen.current = true;
                   setSubmenu(true);
-                }}
-                onPointerLeave={() => {
-                  if (!clickedOpen.current)
-                    closeTimer.current = setTimeout(() => {
-                      if (!programNav.current?.contains(document.activeElement))
-                        closeSubmenu();
-                    }, 180);
-                }}
-                onKeyDown={(event) => {
-                  if (event.key === "Escape") {
-                    closeSubmenu();
-                    programToggle.current?.focus();
-                  }
-                }}
-                onBlur={(event) => {
-                  if (!event.currentTarget.contains(event.relatedTarget))
-                    closeSubmenu();
-                }}
-              >
-                <Link
-                  href={href}
-                  data-magnetic
-                  aria-current={active(href) ? "page" : undefined}
-                  onClick={closeSubmenu}
-                >
-                  <span className="nav-label">{label}</span>
+                } else {
+                  clickedOpen.current = !submenu;
+                  setSubmenu(!submenu);
+                }
+              }}
+              onKeyDown={(event) => {
+                if (event.key === "ArrowDown") {
+                  event.preventDefault();
+                  setSubmenu(true);
+                  clickedOpen.current = true;
+                  requestAnimationFrame(() =>
+                    programNav.current
+                      ?.querySelector<HTMLAnchorElement>(
+                        ".program-menu-links a",
+                      )
+                      ?.focus(),
+                  );
+                }
+              }}
+            >
+              More
+            </button>
+            <div
+              id="program-submenu"
+              className="program-submenu"
+              hidden={!submenu}
+            >
+              <div className="program-menu-intro">
+                <Image
+                  src="/assets/curated/seniors-circle.webp"
+                  alt="Our community gathered in a circle"
+                  width={360}
+                  height={270}
+                  sizes="180px"
+                />
+                <p>
+                  Find your
+                  <br />
+                  <em>shared rhythm.</em>
+                </p>
+                <Link href="/programs" onClick={closeSubmenu}>
+                  All six programs <span aria-hidden="true">↗</span>
                 </Link>
-                <button
-                  ref={programToggle}
-                  aria-label="More"
-                  aria-expanded={submenu}
-                  aria-controls="program-submenu"
-                  onClick={() => {
-                    if (hoverOpened.current) {
-                      hoverOpened.current = false;
-                      clickedOpen.current = true;
-                      setSubmenu(true);
-                    } else {
-                      clickedOpen.current = !submenu;
-                      setSubmenu(!submenu);
-                    }
-                  }}
-                  onKeyDown={(event) => {
-                    if (event.key === "ArrowDown") {
-                      event.preventDefault();
-                      setSubmenu(true);
-                      clickedOpen.current = true;
-                      requestAnimationFrame(() =>
-                        programNav.current
-                          ?.querySelector<HTMLAnchorElement>(
-                            ".program-menu-links a",
-                          )
-                          ?.focus(),
-                      );
-                    }
-                  }}
-                >
-                  More <span aria-hidden="true">⌄</span>
-                </button>
-                <div
-                  id="program-submenu"
-                  className="program-submenu"
-                  hidden={!submenu}
-                >
-                  <div className="program-menu-intro">
-                    <Image
-                      src="/assets/curated/seniors-circle.webp"
-                      alt="Our community gathered in a circle"
-                      width={360}
-                      height={270}
-                      sizes="180px"
-                    />
-                    <p>
-                      Find your
-                      <br />
-                      <em>shared rhythm.</em>
-                    </p>
-                    <Link href="/programs" onClick={closeSubmenu}>
-                      All six programs <span aria-hidden="true">↗</span>
-                    </Link>
-                  </div>
-                  <div className="program-menu-links">
-                    <span className="eyebrow">WAYS TO CONNECT</span>
-                    {programs.map((program, i) => (
-                      <Link
-                        key={program.slug}
-                        href={`/programs/${program.slug}`}
-                        onClick={closeSubmenu}
-                      >
-                        <span>0{i + 1}</span>
-                        {program.title}
-                        <span aria-hidden="true">↗</span>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
               </div>
-            ) : (
-              <Link
-                key={href}
-                href={href}
-                data-magnetic
-                aria-current={active(href) ? "page" : undefined}
-              >
-                <span className="nav-label">{label}</span>
-              </Link>
-            ),
-          )}
+              <div className="program-menu-links">
+                <span className="eyebrow">WAYS TO CONNECT</span>
+                {programs.map((program, i) => (
+                  <Link
+                    key={program.slug}
+                    href={`/programs/${program.slug}`}
+                    onClick={closeSubmenu}
+                  >
+                    <span>0{i + 1}</span>
+                    {program.title}
+                    <span aria-hidden="true">↗</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
         </nav>
         <Link
           className="header-action"
