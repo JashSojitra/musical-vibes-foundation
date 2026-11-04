@@ -1,4 +1,5 @@
 "use client";
+import { unavailableMedia } from "@/lib/media-placeholder";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -15,7 +16,8 @@ export default function ProgramExplorer({
   const preview = useRef<HTMLDivElement>(null);
   const program =
     programs.find((item) => item.slug === selected) ?? programs[0];
-  const image = media.find((item) => item.id === program.imageId)!;
+  const image =
+    media.find((item) => item.id === program.imageId) ?? unavailableMedia;
   useEffect(() => {
     let cancelled = false;
     let cleanup: (() => void) | undefined;

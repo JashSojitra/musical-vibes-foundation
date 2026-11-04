@@ -1,3 +1,4 @@
+import { getMedia as getIntroMedia } from "@/lib/content";
 import { getSiteContent } from "@/lib/content";
 import { pageMetadata } from "@/lib/metadata";
 import { Invitation, PageIntro, StructuredData } from "@/components/ui";
@@ -9,6 +10,7 @@ export const metadata = pageMetadata(
 );
 export default async function FAQ() {
   const { faqs } = await getSiteContent();
+  const intro = await getIntroMedia("gathering");
   return (
     <>
       <StructuredData
@@ -23,6 +25,11 @@ export default async function FAQ() {
         }}
       />
       <PageIntro
+        artwork={{
+          src: intro.src,
+          alt: intro.alt,
+          label: "A good place to begin",
+        }}
         eyebrow="A FEW HELPFUL ANSWERS"
         title="Curiosity is"
         emphasis="a good beginning."

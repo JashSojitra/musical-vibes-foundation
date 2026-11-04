@@ -1,3 +1,4 @@
+import EditorialBody from "@/components/editorial-body";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProgram, getPrograms, getMedia } from "@/lib/content";
@@ -11,8 +12,9 @@ import {
   Photo,
   StructuredData,
 } from "@/components/ui";
-export const dynamicParams = false;
+export const dynamicParams = true;
 export async function generateStaticParams() {
+  if (process.env.CONTENT_SOURCE === "sanity") return [];
   return (await getPrograms()).map(({ slug }) => ({ slug }));
 }
 export async function generateMetadata({
@@ -101,9 +103,7 @@ export default async function ProgramDetail({
         </div>
         <div className="program-description">
           <p className="lead">{program.description}</p>
-          {program.paragraphs.map((p) => (
-            <p key={p}>{p}</p>
-          ))}
+          <EditorialBody body={program.body} paragraphs={program.paragraphs} />
           <div className="program-focus">
             <h3>At the heart of this program</h3>
             <ul>

@@ -43,8 +43,17 @@ export default function Footer({ settings }: { settings: SiteSettings }) {
         <div className="footer-contact">
           <span className="eyebrow">SAY HELLO</span>
           <a href={`mailto:${settings.email}`}>{settings.email}</a>
-          <a href="tel:+14168326970">{settings.phone}</a>
+          <a href={`tel:${settings.phone.replace(/[^+0-9]/g, "")}`}>
+            {settings.phone}
+          </a>
           <p>{settings.location}</p>
+          {settings.socialLinks
+            ?.filter((link) => /^https?:\/\//.test(link.url))
+            .map((link) => (
+              <a key={link.url} href={link.url}>
+                {link.label}
+              </a>
+            ))}
         </div>
       </div>
       <div className="footer-bottom">

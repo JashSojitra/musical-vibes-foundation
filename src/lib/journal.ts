@@ -40,6 +40,8 @@ export const isPublishedEntry = (
   entry.status === "published" &&
   /^\d{4}-\d{2}-\d{2}$/.test(entry.publishedAt) &&
   Number.isFinite(Date.parse(`${entry.publishedAt}T12:00:00Z`)) &&
+  new Date(`${entry.publishedAt}T12:00:00Z`).toISOString().slice(0, 10) ===
+    entry.publishedAt &&
   entry.publishedAt <= today;
 
 /** Pure projection: no Gallery image copies and no persisted derived collection records. */
@@ -108,7 +110,9 @@ export function createContentAdapter(
   return {
     getJournalEntries: () => publicEntries,
     getJournalEntry: (slug: string) =>
-      publicEntries.find((entry) => entry.slug === slug),
+      publicEntries.find(
+        (entry) => entry.slug === slug || entry.previousSlugs?.includes(slug),
+      ),
     getGalleryCollections: () => collections,
     getPublicPhotos: () => photos,
     getEntryPhotos: (entry: JournalEntry) =>
@@ -125,8 +129,11 @@ export function createContentAdapter(
       source.events.find((event) => event.id === entry.eventId),
   };
 }
-export const getPublicContent = () =>
-  createContentAdapter(content, journalSeed);
+export const getPublicContent = async () => {
+  const { getContentSnapshot } = await import("./content-source");
+  const { source, entries } = await getContentSnapshot();
+  return createContentAdapter(source, entries);
+};
 export const journalDate = (date: string) =>
   new Intl.DateTimeFormat("en-CA", {
     year: "numeric",

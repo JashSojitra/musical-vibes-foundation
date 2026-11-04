@@ -15,7 +15,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/faq",
     ...programs.map((item) => `/programs/${item.slug}`),
     ...events.map((item) => `/events/${item.slug}`),
-    ...getPublicContent()
+    ...(await getPublicContent())
       .getJournalEntries()
       .map((item) => `/journal/${item.slug}`),
   ].map((path) => ({

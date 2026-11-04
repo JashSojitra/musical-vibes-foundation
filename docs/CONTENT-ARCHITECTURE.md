@@ -1,5 +1,7 @@
 # Content architecture — Release 4
 
+Sanity is now implemented alongside this preserved local demo. See [current integration](SANITY-INTEGRATION.md), [migration](SANITY-MIGRATION.md), and [owner guide](SANITY-OWNER-GUIDE.md). The future-tense sections below record the original contract; the integration document describes the implemented request-time refresh strategy that replaces the planned webhook cache.
+
 ## Working local demo
 
 The typed adapter in `src/lib/journal.ts` is the public boundary for Journal and Gallery data. It reads the existing typed local foundation content. Three archive notes are migrated from documented 2025 event records without creating a second event archive or uploading any photographs again. Their Journal publication date is **November 3, 2026**, the date of this demo migration; gathering dates remain separate and visible. These are not invented current weekly updates.

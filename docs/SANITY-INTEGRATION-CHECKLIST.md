@@ -1,5 +1,7 @@
 # Sanity integration checklist
 
+Implementation is available in the separate Studio and typed CMS adapter. See [SANITY-INTEGRATION.md](SANITY-INTEGRATION.md) and [validation status](SANITY-VALIDATION.md). The checklist below is the original preparation contract; uncached request-time reads replace its proposed webhook/cache layer. Live migration, permission review and production cutover remain explicit manual steps.
+
 Preparation only: no project, dataset, Studio, credentials, dependencies or webhook endpoint has been created. This plan extends the existing [content architecture](CONTENT-ARCHITECTURE.md), `src/types/content.ts` and `src/lib/journal.ts`.
 
 ## Schema contract

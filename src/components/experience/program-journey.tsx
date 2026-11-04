@@ -1,4 +1,5 @@
 "use client";
+import { unavailableMedia } from "@/lib/media-placeholder";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -83,7 +84,9 @@ export default function ProgramJourney({
         </div>
         <div className="journey-cards">
           {programs.slice(0, 3).map((program, index) => {
-            const photo = media.find((item) => item.id === program.imageId)!;
+            const photo =
+              media.find((item) => item.id === program.imageId) ??
+              unavailableMedia;
             return (
               <article
                 className={`journey-card journey-card-${index}`}

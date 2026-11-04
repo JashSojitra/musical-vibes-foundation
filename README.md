@@ -53,7 +53,9 @@ All meaningful text is server-rendered. Reduced-motion visitors receive still ar
 - [Release 2 design](docs/RELEASE-2-DESIGN.md)
 - [Release 2 architecture](docs/RELEASE-2-ARCHITECTURE.md)
 - [Release 2 validation](docs/RELEASE-2-VALIDATION.md)
-- [Future Sanity plan](docs/SANITY-INTEGRATION-PLAN.md)
+- [Sanity integration and setup](docs/SANITY-INTEGRATION.md)
+- [Safe content migration](docs/SANITY-MIGRATION.md)
+- [Owner editing guide](docs/SANITY-OWNER-GUIDE.md)
 - [Asset audit](docs/ASSET-AUDIT.md)
 
 Original source pages, photographs, manifests, and the contact sheet remain in the repository. The original logo is unchanged. Twelve curated images are used in this release. The two image-curation scripts reproduce their derivatives:
@@ -67,4 +69,4 @@ See the [asset audit](docs/ASSET-AUDIT.md) for collection instructions, source r
 
 ## Publication boundaries
 
-No Sanity project, client, studio, or credentials are configured. No deployment, DNS or hosting change, or GitHub push is authorised in this release. Commits use the existing local Git identity. Before launch, confirm participant consent and photo rights, current program details, the event schedule, and whether to replace the explicit email-draft workflow with a real submission backend.
+The existing demo remains in local-content mode. A separate Sanity Studio and published-content adapter are prepared for project `6jpdhhxg`, public dataset `production`; migration and deployment are manual, separately authorized steps. No credentials are committed. Before CMS cutover, confirm participant consent and photo rights, current program details and the event schedule, complete the migration and Workers publishing acceptance checks, and review whether the explicit email-draft workflow still meets the foundation's needs.

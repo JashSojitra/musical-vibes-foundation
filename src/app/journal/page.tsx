@@ -8,8 +8,8 @@ export const metadata = pageMetadata(
   "Community updates and stories from the Musical Vibes Foundation archive.",
   "/journal",
 );
-export default function Journal() {
-  const adapter = getPublicContent();
+export default async function Journal() {
+  const adapter = await getPublicContent();
   const [featured, ...recent] = adapter.getJournalEntries();
   const photo = featured ? adapter.getEntryPhotos(featured)[0] : undefined;
   return (
@@ -32,9 +32,9 @@ export default function Journal() {
       />
       <section className="journal-index wrap">
         <p className="journal-archive-note">
-          These opening stories are archive notes drawn from documented 2025
-          gatherings. Publication dates refer to these Journal notes, not the
-          event dates.
+          {process.env.CONTENT_SOURCE === "sanity"
+            ? "Stories, news and updates from our community. Gathering dates are shown separately from publication dates."
+            : "These opening stories are archive notes drawn from documented 2025 gatherings. Publication dates refer to these Journal notes, not the event dates."}
         </p>
         {featured ? (
           <article

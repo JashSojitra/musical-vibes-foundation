@@ -30,6 +30,7 @@ export default defineConfig({
     "stage-a.spec.ts",
     "premium.spec.ts",
     "migration.spec.ts",
+    "sanity.spec.ts",
   ],
   reporter: [
     ["list"],

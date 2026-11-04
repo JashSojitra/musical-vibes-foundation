@@ -15,9 +15,15 @@ export const metadata = pageMetadata(
 );
 export default async function GetInvolved() {
   const photo = await getMedia("picnic-table");
+  const intro = await getMedia("picnic-table");
   return (
     <>
       <PageIntro
+        artwork={{
+          src: intro.src,
+          alt: intro.alt,
+          label: "A little time. A lot of heart.",
+        }}
         eyebrow="GET INVOLVED / BRING YOUR HEART"
         title="Your next connection"
         emphasis="could start here."

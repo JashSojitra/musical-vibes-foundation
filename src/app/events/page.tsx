@@ -13,7 +13,7 @@ export default async function Events() {
   const upcoming = (await getEvents()).filter(
     (item) => item.status === "upcoming",
   );
-  const collections = getPublicContent().getGalleryCollections();
+  const collections = (await getPublicContent()).getGalleryCollections();
   const introPhoto = collections[0]?.photos[0];
   return (
     <>

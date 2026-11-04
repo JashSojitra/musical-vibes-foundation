@@ -3,8 +3,8 @@ import Link from "next/link";
 import { getPublicContent, journalDate } from "@/lib/journal";
 import { Eyebrow, TextLink } from "./ui";
 
-export default function JournalPreview() {
-  const adapter = getPublicContent();
+export default async function JournalPreview() {
+  const adapter = await getPublicContent();
   const entries = adapter.getJournalEntries().slice(0, 3);
   if (!entries.length) return null;
   return (

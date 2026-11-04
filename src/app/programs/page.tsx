@@ -1,3 +1,4 @@
+import { getMedia as getIntroMedia } from "@/lib/content";
 import { getSiteContent } from "@/lib/content";
 import { pageMetadata } from "@/lib/metadata";
 import { Invitation, PageIntro } from "@/components/ui";
@@ -9,16 +10,26 @@ export const metadata = pageMetadata(
 );
 export default async function Programs() {
   const { programs, media } = await getSiteContent();
+  const intro = await getIntroMedia("song");
   return (
     <>
       <PageIntro
+        artwork={{
+          src: intro.src,
+          alt: intro.alt,
+          label: "Expression. Connection. Belonging.",
+        }}
         eyebrow="OUR PROGRAMS / FIND YOUR RHYTHM"
         title="Six ways to connect."
         emphasis="So much to share."
         description="Music. Movement. Conversation. Care. Explore the programs that bring our community together."
         number="02"
       />
-      <ProgramExplorer programs={programs} media={media} />
+      {programs.length ? (
+        <ProgramExplorer programs={programs} media={media} />
+      ) : (
+        <p className="wrap">Program information will be shared soon.</p>
+      )}
       <section className="programs-note wrap">
         <span className="large-asterisk" aria-hidden="true">
           ✳

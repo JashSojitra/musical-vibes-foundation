@@ -40,3 +40,6 @@ docs/validation/**/*.jpg
 docs/validation/**/*.jpeg
 docs/validation/**/*.webp
 docs/validation/**/*.json
+
+# Independent Studio generated runtime
+studio/.sanity/

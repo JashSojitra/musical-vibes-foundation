@@ -1,3 +1,4 @@
+import { getMedia as getIntroMedia } from "@/lib/content";
 import { getSiteContent, getProgram } from "@/lib/content";
 import { pageMetadata } from "@/lib/metadata";
 import { Eyebrow, PageIntro, TextLink } from "@/components/ui";
@@ -24,9 +25,15 @@ export default async function Contact({
   const initialInterest = program
     ? "Joining a program"
     : (interests[query.interest ?? ""] ?? "General enquiry");
+  const intro = await getIntroMedia("conversation");
   return (
     <>
       <PageIntro
+        artwork={{
+          src: intro.src,
+          alt: intro.alt,
+          label: "Every connection starts here",
+        }}
         eyebrow="CONTACT / LET’S START SOMETHING GOOD"
         title="A hello can change"
         emphasis="the whole day."
@@ -45,7 +52,7 @@ export default async function Contact({
           </div>
           <div className="contact-channel">
             <span>Give us a call</span>
-            <a href="tel:+14168326970">
+            <a href={`tel:${settings.phone.replace(/[^+0-9]/g, "")}`}>
               {settings.phone}
               <span aria-hidden="true">↗</span>
             </a>

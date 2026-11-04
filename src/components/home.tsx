@@ -1,3 +1,4 @@
+import { unavailableMedia } from "@/lib/media-placeholder";
 import { getSiteContent, getMedia } from "@/lib/content";
 import { Action, Eyebrow, Invitation } from "./ui";
 import JournalPreview from "./journal-preview";
@@ -6,7 +7,7 @@ import ProgramJourney from "./experience/program-journey";
 import CommunityMemories from "./experience/community-memories";
 
 export default async function Home() {
-  const { programs, media } = await getSiteContent();
+  const { programs, media, home } = await getSiteContent();
   const picnic = await getMedia("picnic");
   const singer = await getMedia("june-song");
   const circle = await getMedia("circle");
@@ -14,12 +15,22 @@ export default async function Home() {
     <>
       <LivingSymphony singer={singer} circle={circle} picnic={picnic} />
 
-      <ProgramJourney programs={programs} media={media} />
+      <ProgramJourney
+        programs={
+          process.env.CONTENT_SOURCE === "sanity" &&
+          home.featuredProgramSlugs.length
+            ? home.featuredProgramSlugs.flatMap((slug) =>
+                programs.filter((p) => p.slug === slug),
+              )
+            : programs
+        }
+        media={media}
+      />
       <CommunityMemories
         photos={[
-          media.find((photo) => photo.id === "diwali")!,
+          media.find((photo) => photo.id === "diwali") ?? unavailableMedia,
           picnic,
-          media.find((photo) => photo.id === "christmas")!,
+          media.find((photo) => photo.id === "christmas") ?? unavailableMedia,
         ]}
       />
 

@@ -1,6 +1,7 @@
+import EditorialBody from "@/components/editorial-body";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { getPublicContent, journalDate } from "@/lib/journal";
 import { getSiteContent } from "@/lib/content";
 import { pageMetadata } from "@/lib/metadata";
@@ -11,8 +12,9 @@ import {
   TextLink,
 } from "@/components/ui";
 import { collectionHref } from "@/components/gallery-preview";
-export function generateStaticParams() {
-  return getPublicContent()
+export async function generateStaticParams() {
+  if (process.env.CONTENT_SOURCE === "sanity") return [];
+  return (await getPublicContent())
     .getJournalEntries()
     .map((entry) => ({ slug: entry.slug }));
 }
@@ -21,20 +23,20 @@ export async function generateMetadata({
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const entry = getPublicContent().getJournalEntry((await params).slug);
+  const entry = (await getPublicContent()).getJournalEntry((await params).slug);
   if (!entry) return {};
-  const photo = getPublicContent().getEntryPhotos(entry)[0];
+  const photo = (await getPublicContent()).getEntryPhotos(entry)[0];
   return {
     ...pageMetadata(
-      entry.title,
-      entry.excerpt,
+      entry.seoTitle || entry.title,
+      entry.seoDescription || entry.excerpt,
       `/journal/${entry.slug}`,
       photo?.src ?? "/assets/legacy/logo.png",
     ),
     openGraph: {
       ...pageMetadata(
-        entry.title,
-        entry.excerpt,
+        entry.seoTitle || entry.title,
+        entry.seoDescription || entry.excerpt,
         `/journal/${entry.slug}`,
         photo?.src ?? "/assets/legacy/logo.png",
       ).openGraph,
@@ -48,9 +50,12 @@ export default async function Article({
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const adapter = getPublicContent();
-  const entry = adapter.getJournalEntry((await params).slug);
+  const adapter = await getPublicContent();
+  const requestedSlug = (await params).slug;
+  const entry = adapter.getJournalEntry(requestedSlug);
   if (!entry) notFound();
+  if (entry.slug !== requestedSlug) permanentRedirect(`/journal/${entry.slug}`);
+  const archive = entry.id.startsWith("journal.event.");
   const photos = adapter.getEntryPhotos(entry),
     event = adapter.getEntryEvent(entry),
     programs = adapter.getEntryPrograms(entry);
@@ -69,7 +74,7 @@ export default async function Article({
           datePublished: entry.publishedAt,
           author: { "@type": "Organization", name: settings.name },
           publisher: { "@type": "Organization", name: settings.name },
-          image: photos.map((photo) => settings.url + photo.src),
+          image: photos.map((photo) => new URL(photo.src, settings.url).href),
           mainEntityOfPage: settings.url + `/journal/${entry.slug}`,
         }}
       />
@@ -81,10 +86,12 @@ export default async function Article({
           ]}
         />
         <header>
-          <Eyebrow>FROM THE COMMUNITY ARCHIVE</Eyebrow>
+          <Eyebrow>
+            {archive ? "FROM THE COMMUNITY ARCHIVE" : "THE COMMUNITY JOURNAL"}
+          </Eyebrow>
           <h1 data-title>{entry.title}</h1>
           <p className="journal-meta">
-            Archive note published{" "}
+            {archive ? "Archive note published" : "Published"}{" "}
             <time dateTime={entry.publishedAt}>
               {journalDate(entry.publishedAt)}
             </time>
@@ -112,9 +119,7 @@ export default async function Article({
         ) : null}
         <div className="journal-article-body">
           <div>
-            {entry.paragraphs.map((paragraph) => (
-              <p key={paragraph}>{paragraph}</p>
-            ))}
+            <EditorialBody body={entry.body} paragraphs={entry.paragraphs} />
             {collection ? (
               <TextLink href={collectionHref(collection.id)}>
                 Explore this story in photographs

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getSiteContent } from "@/lib/content";
+import { getSiteContent, getMedia } from "@/lib/content";
 import { organizationSchema } from "@/lib/metadata";
 import Navigation from "@/components/navigation";
 import Footer from "@/components/footer";
@@ -23,7 +23,11 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_CA",
     siteName: "Musical Vibes Foundation",
-    images: ["/assets/curated/community-picnic.webp"],
+    images: [
+      process.env.CONTENT_SOURCE === "sanity"
+        ? "/assets/legacy/logo.png"
+        : "/assets/curated/community-picnic.webp",
+    ],
   },
   twitter: { card: "summary_large_image" },
   robots: { index: true, follow: true },
@@ -38,8 +42,18 @@ export default async function RootLayout({
         <a href="#main" className="skip-link">
           Skip to content
         </a>
-        <StructuredData data={organizationSchema} />
+        <StructuredData
+          data={{
+            ...organizationSchema,
+            name: settings.name,
+            url: settings.url,
+            email: settings.email,
+            telephone: settings.phone,
+            description: settings.mission,
+          }}
+        />
         <Navigation
+          menuPhoto={await getMedia("circle")}
           programs={programs.map(({ title, slug }) => ({ title, slug }))}
         />
         <Motion>

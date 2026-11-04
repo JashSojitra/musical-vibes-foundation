@@ -1,3 +1,4 @@
+import type { PortableTextBlock } from "@portabletext/types";
 export type Theme = "plum" | "rose" | "sage" | "gold" | "ivory";
 
 export interface MediaAsset {
@@ -19,12 +20,14 @@ export interface MediaAsset {
 export interface Program {
   id: string;
   slug: string;
+  previousSlugs?: string[];
   number: string;
   title: string;
   category: string;
   headline: string;
   description: string;
   paragraphs: string[];
+  body?: PortableTextBlock[];
   focus: string[];
   imageId: string;
   imageContext: string;
@@ -34,6 +37,7 @@ export interface Program {
 export interface CommunityEvent {
   id: string;
   slug: string;
+  previousSlugs?: string[];
   title: string;
   date: string;
   dateLabel: string;
@@ -48,11 +52,15 @@ export interface CommunityEvent {
 export interface JournalEntry {
   id: string;
   slug: string;
+  previousSlugs?: string[];
   title: string;
   excerpt: string;
   paragraphs: string[];
+  body?: PortableTextBlock[];
   status: "draft" | "published" | "unpublished";
   publishedAt: string;
+  seoTitle?: string;
+  seoDescription?: string;
   kind: "event" | "update" | "news";
   eventId?: string;
   programIds: string[];
@@ -80,6 +88,7 @@ export interface SiteSettings {
   phone: string;
   location: string;
   mission: string;
+  socialLinks?: { label: string; url: string }[];
 }
 
 export interface SiteContent {

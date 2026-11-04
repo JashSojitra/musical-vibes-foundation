@@ -14,7 +14,7 @@ export default async function Gallery({
 }: {
   searchParams: Promise<{ collection?: string }>;
 }) {
-  const adapter = getPublicContent();
+  const adapter = await getPublicContent();
   const collections = adapter.getGalleryCollections();
   const query = await searchParams;
   const selected = collections.find(

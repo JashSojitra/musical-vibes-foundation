@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import type { MediaAsset } from "@/types/content";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -20,8 +21,10 @@ const links = [
 ];
 export default function Navigation({
   programs,
+  menuPhoto,
 }: {
   programs: { title: string; slug: string }[];
+  menuPhoto: MediaAsset;
 }) {
   const pathname = usePathname();
   const [submenu, setSubmenu] = useState(false);
@@ -214,8 +217,8 @@ export default function Navigation({
             >
               <div className="program-menu-intro">
                 <Image
-                  src="/assets/curated/seniors-circle.webp"
-                  alt="Our community gathered in a circle"
+                  src={menuPhoto.src}
+                  alt={menuPhoto.alt}
                   width={360}
                   height={270}
                   sizes="180px"

@@ -4,7 +4,9 @@ export function pageMetadata(
   title: string,
   description: string,
   path: string,
-  image = "/assets/curated/community-picnic.webp",
+  image = process.env.CONTENT_SOURCE === "sanity"
+    ? "/assets/legacy/logo.png"
+    : "/assets/curated/community-picnic.webp",
 ): Metadata {
   return {
     title,

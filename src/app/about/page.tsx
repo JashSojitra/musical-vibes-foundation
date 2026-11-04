@@ -16,9 +16,15 @@ export default async function About() {
   const picnic = await getMedia("picnic"),
     portrait = await getMedia("june-song"),
     circle = await getMedia("circle");
+  const intro = await getMedia("circle");
   return (
     <>
       <PageIntro
+        artwork={{
+          src: intro.src,
+          alt: intro.alt,
+          label: "A place in the circle",
+        }}
         eyebrow="OUR STORY / OUR SHARED RHYTHM"
         title="A foundation built"
         emphasis="on togetherness."

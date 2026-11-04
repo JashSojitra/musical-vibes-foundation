@@ -168,7 +168,7 @@ export function PageIntro({
             <div>
               <Image
                 src={
-                  photo.src.startsWith("/")
+                  photo.src.startsWith("/") || photo.src.startsWith("https://")
                     ? photo.src
                     : `/assets/curated/${photo.src}.webp`
                 }
