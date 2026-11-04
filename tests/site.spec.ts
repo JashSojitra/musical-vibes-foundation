@@ -113,7 +113,7 @@ test("navigation, keyboard focus, and program routes", async ({
   await expect(page.locator("main")).toBeFocused();
   if (testInfo.project.name === "desktop") {
     const toggle = page.getByRole("button", {
-      name: "Program pages",
+      name: "More",
       exact: true,
     });
     await toggle.click();
@@ -271,7 +271,7 @@ test("WebGL failure preserves artwork and navigation", async ({ page }) => {
   });
   await expect(page.locator(".sculpture-fallback")).toBeVisible();
   await page
-    .getByRole("link", { name: "Explore programs", exact: true })
+    .getByRole("link", { name: "Find your rhythm", exact: true })
     .click();
   await expect(page).toHaveURL(/\/programs$/);
 });

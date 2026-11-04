@@ -3,11 +3,13 @@ import { getSiteContent } from "@/lib/content";
 import { organizationSchema } from "@/lib/metadata";
 import Navigation from "@/components/navigation";
 import Footer from "@/components/footer";
+import FloatingContact from "@/components/floating-contact";
 import Motion from "@/components/motion";
 import { StructuredData } from "@/components/ui";
 import "./globals.css";
 import "./release3.css";
 import "./premium.css";
+import "./release4.css";
 
 export const metadata: Metadata = {
   title: {
@@ -47,6 +49,7 @@ export default async function RootLayout({
           </main>
         </Motion>
         <Footer settings={settings} />
+        <FloatingContact />
       </body>
     </html>
   );

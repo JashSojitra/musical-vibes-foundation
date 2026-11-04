@@ -32,6 +32,7 @@ export default function Footer({ settings }: { settings: SiteSettings }) {
           <Link href="/programs">Our programs</Link>
           <Link href="/events">Events</Link>
           <Link href="/gallery">Gallery</Link>
+          <Link href="/journal">Journal</Link>
         </nav>
         <nav aria-label="Connect with the foundation">
           <span className="eyebrow">TAKE PART</span>

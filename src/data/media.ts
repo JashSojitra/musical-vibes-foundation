@@ -21,6 +21,10 @@ const media = (
   width,
   height,
   consent: "unconfirmed",
+  // Local-demo editorial visibility only; this is not confirmation of consent.
+  publicationStatus: "published",
+  approval: "approved",
+  standaloneGallery: true,
   position,
 });
 

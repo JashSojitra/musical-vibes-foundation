@@ -25,6 +25,7 @@ export const content: SiteContent = {
   media: mediaAssets,
   programs: [
     {
+      id: "program.healing-through-music",
       slug: "healing-through-music",
       number: "01",
       title: "Healing Through Music",
@@ -46,6 +47,7 @@ export const content: SiteContent = {
       theme: "rose",
     },
     {
+      id: "program.meditation-and-yoga",
       slug: "meditation-and-yoga",
       number: "02",
       title: "Meditation and Yoga",
@@ -67,6 +69,7 @@ export const content: SiteContent = {
       theme: "sage",
     },
     {
+      id: "program.senior-engagement-activities",
       slug: "senior-engagement-activities",
       number: "03",
       title: "Senior Engagement Activities",
@@ -88,6 +91,7 @@ export const content: SiteContent = {
       theme: "gold",
     },
     {
+      id: "program.nutrition-and-health-guidance",
       slug: "nutrition-and-health-guidance",
       number: "04",
       title: "Nutrition and Health Guidance",
@@ -109,6 +113,7 @@ export const content: SiteContent = {
       theme: "ivory",
     },
     {
+      id: "program.online-workshops-and-talks",
       slug: "online-workshops-and-talks",
       number: "05",
       title: "Online Workshops and Talks",
@@ -130,6 +135,7 @@ export const content: SiteContent = {
       theme: "plum",
     },
     {
+      id: "program.food-drives-for-the-needy",
       slug: "food-drives-for-the-needy",
       number: "06",
       title: "Food Drives for the Needy",
@@ -153,6 +159,7 @@ export const content: SiteContent = {
   ],
   events: [
     {
+      id: "event.seniors-club-christmas-2025",
       slug: "seniors-club-christmas-2025",
       title: "A celebration in good company",
       date: "2025-12-08",
@@ -165,6 +172,7 @@ export const content: SiteContent = {
       sourceAlbum: "Seniors Club Christmas Celebration (Dec 8 2025)",
     },
     {
+      id: "event.diwali-celebrations-2025",
       slug: "diwali-celebrations-2025",
       title: "Diwali, shared together",
       date: "2025-10-16",
@@ -177,6 +185,7 @@ export const content: SiteContent = {
       sourceAlbum: "Diwali Celebrations (Oct 16 2025)",
     },
     {
+      id: "event.seniors-club-picnic-2025",
       slug: "seniors-club-picnic-2025",
       title: "A little sunshine. A lot of connection.",
       date: "2025-08-21",

@@ -10,10 +10,14 @@ export interface MediaAsset {
   category: "Music" | "Seniors Club" | "Celebrations";
   source: string;
   consent: "unconfirmed";
+  publicationStatus: "published" | "draft";
+  approval: "approved" | "pending" | "rejected";
+  standaloneGallery: boolean;
   position?: string;
 }
 
 export interface Program {
+  id: string;
   slug: string;
   number: string;
   title: string;
@@ -28,6 +32,7 @@ export interface Program {
 }
 
 export interface CommunityEvent {
+  id: string;
   slug: string;
   title: string;
   date: string;
@@ -38,6 +43,28 @@ export interface CommunityEvent {
   imageId: string;
   galleryIds: string[];
   sourceAlbum: string;
+}
+
+export interface JournalEntry {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  paragraphs: string[];
+  status: "draft" | "published" | "unpublished";
+  publishedAt: string;
+  kind: "event" | "update" | "news";
+  eventId?: string;
+  programIds: string[];
+  photoIds: string[];
+}
+
+export interface GalleryCollection {
+  id: string;
+  title: string;
+  photos: MediaAsset[];
+  journalSlug?: string;
+  journalId?: string;
 }
 
 export interface FAQ {

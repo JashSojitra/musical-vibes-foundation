@@ -1,25 +1,20 @@
 import Link from "next/link";
-import { getEvents, getMedia } from "@/lib/content";
+import { getEvents } from "@/lib/content";
 import { pageMetadata } from "@/lib/metadata";
-import {
-  Action,
-  Arrow,
-  Eyebrow,
-  Invitation,
-  PageIntro,
-  Photo,
-  TextLink,
-} from "@/components/ui";
+import { Eyebrow, Invitation, PageIntro, TextLink } from "@/components/ui";
+import GalleryPreview from "@/components/gallery-preview";
+import { getPublicContent } from "@/lib/journal";
 export const metadata = pageMetadata(
   "Events & Gatherings",
-  "Explore past Musical Vibes Foundation gatherings and get in touch about future community events.",
+  "Find upcoming Musical Vibes Foundation gatherings and explore our community gallery.",
   "/events",
 );
 export default async function Events() {
-  const events = await getEvents(),
-    past = events.filter((item) => item.status === "past"),
-    upcoming = events.filter((item) => item.status === "upcoming"),
-    featured = past[0];
+  const upcoming = (await getEvents()).filter(
+    (item) => item.status === "upcoming",
+  );
+  const collections = getPublicContent().getGalleryCollections();
+  const introPhoto = collections[0]?.photos[0];
   return (
     <>
       <PageIntro
@@ -28,6 +23,15 @@ export default async function Events() {
         emphasis="A moment to remember."
         description="From shared celebrations to community gatherings, these are the moments that bring us closer."
         number="03"
+        artwork={
+          introPhoto
+            ? {
+                src: introPhoto.src,
+                alt: introPhoto.alt,
+                label: "Moments worth sharing",
+              }
+            : null
+        }
       />
       <section className="upcoming-section wrap">
         <Eyebrow>UPCOMING GATHERINGS</Eyebrow>
@@ -71,31 +75,7 @@ export default async function Events() {
           </div>
           <p>Past events, preserved in photographs.</p>
         </div>
-        {featured ? (
-          <div className="featured-event">
-            <Photo media={await getMedia(featured.imageId)} />
-            <div>
-              <span className="eyebrow">
-                FEATURED MEMORY · {featured.dateLabel}
-              </span>
-              <h3>{featured.title}</h3>
-              <p>{featured.description}</p>
-              <Action href={`/events/${featured.slug}`}>
-                Revisit this gathering
-              </Action>
-            </div>
-          </div>
-        ) : null}
-        <div className="past-event-list">
-          {past.slice(1).map((event) => (
-            <Link href={`/events/${event.slug}`} key={event.slug}>
-              <time dateTime={event.date}>{event.dateLabel}</time>
-              <h3>{event.title}</h3>
-              <span className="eyebrow">PAST GATHERING</span>
-              <Arrow />
-            </Link>
-          ))}
-        </div>
+        <GalleryPreview collections={collections} />
       </section>
       <Invitation title="Make room for" emphasis="the next connection." />
     </>

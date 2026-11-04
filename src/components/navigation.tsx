@@ -6,6 +6,7 @@ import {
   useEffect,
   useRef,
   useState,
+  useCallback,
   type PointerEvent as ReactPointerEvent,
 } from "react";
 
@@ -14,6 +15,7 @@ const links = [
   ["Programs", "/programs"],
   ["Events", "/events"],
   ["Gallery", "/gallery"],
+  ["Journal", "/journal"],
   ["Contact", "/contact"],
 ];
 export default function Navigation({
@@ -28,6 +30,15 @@ export default function Navigation({
   const trigger = useRef<HTMLButtonElement>(null);
   const programToggle = useRef<HTMLButtonElement>(null);
   const programNav = useRef<HTMLDivElement>(null);
+  const hoverOpened = useRef(false);
+  const clickedOpen = useRef(false);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const closeSubmenu = useCallback(() => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    hoverOpened.current = false;
+    clickedOpen.current = false;
+    setSubmenu(false);
+  }, []);
   const active = (href: string) =>
     pathname === href || pathname.startsWith(href + "/");
   function magnet(event: ReactPointerEvent<HTMLElement>) {
@@ -52,12 +63,25 @@ export default function Navigation({
   }
   useEffect(() => {
     const close = (event: PointerEvent) => {
-      if (!programNav.current?.contains(event.target as Node))
-        setSubmenu(false);
+      if (!programNav.current?.contains(event.target as Node)) closeSubmenu();
     };
     document.addEventListener("pointerdown", close);
-    return () => document.removeEventListener("pointerdown", close);
-  }, []);
+    const escape = (event: KeyboardEvent) => {
+      if (
+        event.key === "Escape" &&
+        programToggle.current?.getAttribute("aria-expanded") === "true"
+      ) {
+        closeSubmenu();
+        programToggle.current.focus();
+      }
+    };
+    document.addEventListener("keydown", escape);
+    return () => {
+      document.removeEventListener("pointerdown", close);
+      document.removeEventListener("keydown", escape);
+      if (closeTimer.current) clearTimeout(closeTimer.current);
+    };
+  }, [closeSubmenu]);
   function closeMenu() {
     setMobileOpen(false);
     menuRef.current?.close();
@@ -119,35 +143,58 @@ export default function Navigation({
                 className="program-navigation"
                 key={href}
                 ref={programNav}
+                onPointerEnter={(event) => {
+                  if (event.pointerType !== "mouse") return;
+                  if (closeTimer.current) clearTimeout(closeTimer.current);
+                  if (!submenu) hoverOpened.current = true;
+                  setSubmenu(true);
+                }}
+                onPointerLeave={() => {
+                  if (!clickedOpen.current)
+                    closeTimer.current = setTimeout(() => {
+                      if (!programNav.current?.contains(document.activeElement))
+                        closeSubmenu();
+                    }, 180);
+                }}
                 onKeyDown={(event) => {
                   if (event.key === "Escape") {
-                    setSubmenu(false);
+                    closeSubmenu();
                     programToggle.current?.focus();
                   }
                 }}
                 onBlur={(event) => {
                   if (!event.currentTarget.contains(event.relatedTarget))
-                    setSubmenu(false);
+                    closeSubmenu();
                 }}
               >
                 <Link
                   href={href}
                   data-magnetic
                   aria-current={active(href) ? "page" : undefined}
-                  onClick={() => setSubmenu(false)}
+                  onClick={closeSubmenu}
                 >
                   <span className="nav-label">{label}</span>
                 </Link>
                 <button
                   ref={programToggle}
-                  aria-label="Program pages"
+                  aria-label="More"
                   aria-expanded={submenu}
                   aria-controls="program-submenu"
-                  onClick={() => setSubmenu(!submenu)}
+                  onClick={() => {
+                    if (hoverOpened.current) {
+                      hoverOpened.current = false;
+                      clickedOpen.current = true;
+                      setSubmenu(true);
+                    } else {
+                      clickedOpen.current = !submenu;
+                      setSubmenu(!submenu);
+                    }
+                  }}
                   onKeyDown={(event) => {
                     if (event.key === "ArrowDown") {
                       event.preventDefault();
                       setSubmenu(true);
+                      clickedOpen.current = true;
                       requestAnimationFrame(() =>
                         programNav.current
                           ?.querySelector<HTMLAnchorElement>(
@@ -158,7 +205,7 @@ export default function Navigation({
                     }
                   }}
                 >
-                  <span aria-hidden="true">⌄</span>
+                  More <span aria-hidden="true">⌄</span>
                 </button>
                 <div
                   id="program-submenu"
@@ -178,7 +225,7 @@ export default function Navigation({
                       <br />
                       <em>shared rhythm.</em>
                     </p>
-                    <Link href="/programs" onClick={() => setSubmenu(false)}>
+                    <Link href="/programs" onClick={closeSubmenu}>
                       All six programs <span aria-hidden="true">↗</span>
                     </Link>
                   </div>
@@ -188,7 +235,7 @@ export default function Navigation({
                       <Link
                         key={program.slug}
                         href={`/programs/${program.slug}`}
-                        onClick={() => setSubmenu(false)}
+                        onClick={closeSubmenu}
                       >
                         <span>0{i + 1}</span>
                         {program.title}
@@ -265,7 +312,11 @@ export default function Navigation({
               key={href}
               href={href}
               onClick={closeMenu}
-              aria-current={pathname === href ? "page" : undefined}
+              aria-current={
+                (href === "/" ? pathname === "/" : active(href))
+                  ? "page"
+                  : undefined
+              }
             >
               <small aria-hidden="true">0{i + 1}</small>
               {label}
@@ -275,7 +326,7 @@ export default function Navigation({
         </nav>
         <details className="mobile-programs">
           <summary>
-            Explore our six programs <span aria-hidden="true">+</span>
+            More · Our programs <span aria-hidden="true">+</span>
           </summary>
           <div>
             {programs.map((program) => (

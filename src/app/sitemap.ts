@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getSiteContent } from "@/lib/content";
+import { getPublicContent } from "@/lib/journal";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const { settings, programs, events } = await getSiteContent();
   return [
@@ -8,11 +9,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/programs",
     "/events",
     "/gallery",
+    "/journal",
     "/get-involved",
     "/contact",
     "/faq",
     ...programs.map((item) => `/programs/${item.slug}`),
     ...events.map((item) => `/events/${item.slug}`),
+    ...getPublicContent()
+      .getJournalEntries()
+      .map((item) => `/journal/${item.slug}`),
   ].map((path) => ({
     url: settings.url + path,
     changeFrequency: "monthly" as const,

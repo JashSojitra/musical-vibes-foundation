@@ -45,7 +45,7 @@ test("navigation supports keyboard dismissal and preserves program links", async
   await expect(page.locator("main")).toBeFocused();
   const desktop = info.project.name === "desktop";
   const toggle = page.getByRole("button", {
-    name: desktop ? "Program pages" : "Menu",
+    name: desktop ? "More" : "Menu",
     exact: desktop,
   });
   await toggle.click();

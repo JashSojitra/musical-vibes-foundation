@@ -86,12 +86,14 @@ export function PageIntro({
   emphasis,
   description,
   number,
+  artwork,
 }: {
   eyebrow: string;
   title: string;
   emphasis?: string;
   description: string;
   number?: string;
+  artwork?: { src: string; alt: string; label: string } | null;
 }) {
   const chapterPhotos: Record<
     string,
@@ -132,8 +134,18 @@ export function PageIntro({
       alt: "Seniors sharing a gathering around tables.",
       label: "A good place to begin",
     },
+    "08": {
+      src: "diwali",
+      alt: "Music at the community Diwali celebration.",
+      label: "Stories from our shared rhythm",
+    },
   };
-  const photo = number ? chapterPhotos[number] : undefined;
+  const photo =
+    artwork === undefined
+      ? number
+        ? chapterPhotos[number]
+        : undefined
+      : artwork;
   return (
     <header className="page-intro wrap" data-chapter={number}>
       <div className="intro-chapter">
@@ -155,7 +167,11 @@ export function PageIntro({
           <figure className="intro-photograph">
             <div>
               <Image
-                src={`/assets/curated/${photo.src}.webp`}
+                src={
+                  photo.src.startsWith("/")
+                    ? photo.src
+                    : `/assets/curated/${photo.src}.webp`
+                }
                 alt={photo.alt}
                 fill
                 priority

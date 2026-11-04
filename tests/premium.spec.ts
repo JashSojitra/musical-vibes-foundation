@@ -76,7 +76,7 @@ test("premium navigation offers six program routes and visible chapter state", a
     await expect(page.locator("#mobile-menu")).not.toBeVisible();
   } else {
     const toggle = page.getByRole("button", {
-      name: "Program pages",
+      name: "More",
       exact: true,
     });
     await toggle.focus();
