@@ -1,12 +1,12 @@
 # Safe local-content migration
 
-No live writes or asset uploads have been performed. The migration defaults to dry-run; a token alone cannot trigger writing.
+This importer defaults to dry-run; a token alone cannot trigger writing. The legacy dotted-ID import contract was incorrect for public anonymous reads. See [the access diagnosis](PROGRAMS-PUBLIC-ACCESS.md). Do not use the ordinary importer to repair an existing legacy dataset; that requires separate authorization and a backed-up ID/reference migration.
 
 ## Inventory and identity
 
 `npm run sanity:migrate:dry` validates original local file mappings, duplicate IDs/slugs and references without connecting to Sanity. It generates `.tmp/sanity-migration/manifest.json` with document mappings, source filenames, SHA-256/SHA-1 hashes, bytes, slug preservation, count inventory and expected stable collection IDs. Treat the manifest as an operator artifact; keep it privately with the migration backup/receipt.
 
-Expected import: 6 programs, 3 events, 3 Journal archive notes, 12 media records / 12 unique original photographs, 7 FAQs and one settings singleton (32 content documents). Original photographs come from the preserved gallery manifest, not resized WebP derivatives. Program/event/Journal IDs remain unchanged; media document IDs are `media.<local-id>` and retain the original ID in `sourceId`. FAQs use deterministic ordered IDs. All routes retain their slugs.
+Expected import: 6 programs, 3 events, 3 Journal archive notes, 12 media records / 12 unique original photographs, 7 FAQs and one settings singleton (32 content documents). Original photographs come from the preserved gallery manifest, not resized WebP derivatives. New storage IDs use root-safe `mvf-<base64url(source ID)>` identifiers. Program/event/Journal/media logical IDs remain in `sourceId`; Site Settings remains `siteSettings`. FAQs use deterministic ordered source identifiers encoded the same way. All routes and derived collection IDs retain their logical slugs/IDs. No stored Sanity ID may contain a period.
 
 The three notes retain publication date **2026-11-03**. Their original **2025 event dates** stay on referenced events. Body text is converted to Portable Text without inventing updates. Derived Gallery collection IDs and relationships remain unchanged after import.
 

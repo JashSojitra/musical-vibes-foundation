@@ -43,9 +43,15 @@ const mf = new Miniflare(
         queries++;
         return live
           ? fetch(request.url)
-          : new Response(JSON.stringify({ result: documents, ms: 1 }), {
-              headers: { "content-type": "application/json" },
-            });
+          : new Response(
+              JSON.stringify({
+                result: documents.filter((d) => !d._id.includes(".")),
+                ms: 1,
+              }),
+              {
+                headers: { "content-type": "application/json" },
+              },
+            );
       }
       if (url.hostname === "cdn.sanity.io" && !live)
         return new Response(

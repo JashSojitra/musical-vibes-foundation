@@ -6,7 +6,7 @@ Preparation only: no project, dataset, Studio, credentials, dependencies or webh
 
 ## Schema contract
 
-Retain stable local IDs as document IDs through an explicit migration map. Preserve public collection IDs `journal-collection.<local-journal-id>` even if Sanity IDs differ. Do not use titles or slugs as relationship keys.
+Use root-safe Sanity storage IDs with no periods; preserve stable local IDs in `sourceId` through an explicit map. Dotted document IDs are private paths even in a public dataset. Preserve public collection IDs `journal-collection.<local-journal-id>` even when Sanity IDs differ. Do not use titles or slugs as relationship keys. Existing dotted-ID data needs separately authorized repair; see [public access diagnosis](PROGRAMS-PUBLIC-ACCESS.md).
 
 | Schema                   | Required fields and mapping                                                                                                                                                                                                                                                                                                                                                         |
 | ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

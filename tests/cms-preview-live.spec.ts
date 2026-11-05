@@ -1,9 +1,15 @@
 import { expect, test } from "@playwright/test";
+import { auditPublicSanity } from "../scripts/audit-sanity-public.mjs";
 
 test("real Wrangler CMS preview serves public published content without writes", async ({
   page,
   request,
 }) => {
+  const audit = await auditPublicSanity();
+  expect(
+    audit.unreadableReferences,
+    "CMS references must be readable anonymously; dotted IDs require an authorized data repair, not a cache purge",
+  ).toEqual([]);
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.emulateMedia({ reducedMotion: "reduce" });

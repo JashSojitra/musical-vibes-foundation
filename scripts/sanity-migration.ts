@@ -5,6 +5,7 @@ import { createClient } from "@sanity/client";
 import { content } from "../src/data/content";
 import { journalSeed } from "../src/lib/journal";
 import { mapSanity, type CmsDocument } from "../src/lib/sanity-model";
+import { publicContentId, assertNoLegacyPathIds } from "./sanity-public-ids";
 
 async function main() {
   const args = new Set(process.argv.slice(2));
@@ -24,7 +25,7 @@ async function main() {
     _ref: id,
     ...(key ? { _key: key } : {}),
   });
-  const mediaId = (id: string) => `media.${id}`;
+  const mediaId = (id: string) => publicContentId(`media.${id}`);
   const blocks = (paragraphs: string[]) =>
     paragraphs.map((text, i) => ({
       _type: "block",
@@ -34,7 +35,7 @@ async function main() {
       children: [{ _type: "span", _key: `s${i}`, marks: [], text }],
     }));
   const identity = (item: { id: string; slug: string }) => ({
-    _id: item.id,
+    _id: publicContentId(item.id),
     sourceId: item.id,
     slug: { _type: "slug", current: item.slug },
     previousSlugs: [],
@@ -92,8 +93,8 @@ async function main() {
         ...identity({ id, slug: e.slug }),
         _type: "journalEntry",
         body: blocks(paragraphs),
-        event: eventId ? ref(eventId) : undefined,
-        programs: programIds.map((id) => ref(id, id)),
+        event: eventId ? ref(publicContentId(eventId)) : undefined,
+        programs: programIds.map((id) => ref(publicContentId(id), id)),
         photos: photoIds.map((id) => ref(mediaId(id), id)),
       }),
     ),
@@ -117,20 +118,28 @@ async function main() {
       _type: "siteSettings",
       ...content.settings,
       featuredPrograms: content.home.featuredProgramSlugs.map((slug) =>
-        ref(content.programs.find((p) => p.slug === slug)!.id, slug),
+        ref(
+          publicContentId(content.programs.find((p) => p.slug === slug)!.id),
+          slug,
+        ),
       ),
       featuredEvents: content.home.featuredEventSlugs.map((slug) =>
-        ref(content.events.find((e) => e.slug === slug)!.id, slug),
+        ref(
+          publicContentId(content.events.find((e) => e.slug === slug)!.id),
+          slug,
+        ),
       ),
     },
     ...content.faqs.map((f, i) => ({
-      _id: `faq.${String(i + 1).padStart(3, "0")}`,
+      _id: publicContentId(`faq.${String(i + 1).padStart(3, "0")}`),
       _type: "faq",
       ...f,
       order: i,
     })),
   ];
   const ids = new Set(documents.map((d) => d._id));
+  if ([...ids].some((id) => id.includes(".")))
+    throw new Error("Import contains private-path document IDs");
   if (ids.size !== documents.length) throw new Error("Duplicate document IDs");
   function validateReferences(value: unknown): void {
     if (Array.isArray(value)) {
@@ -212,6 +221,28 @@ async function main() {
       { perspective: write ? "raw" : "published" },
     );
     if (write) {
+      const existingIds = existing.map((d) => d._id);
+      function collectExistingReferences(value: unknown): void {
+        if (Array.isArray(value)) value.forEach(collectExistingReferences);
+        else if (value && typeof value === "object") {
+          const object = value as { _ref?: string };
+          if (object._ref) existingIds.push(object._ref);
+          Object.values(value).forEach(collectExistingReferences);
+        }
+      }
+      existing.forEach(collectExistingReferences);
+      assertNoLegacyPathIds(
+        existingIds,
+        new Set([
+          ...content.programs.map((p) => p.id),
+          ...content.events.map((e) => e.id),
+          ...journalSeed.map((e) => e.id),
+          ...content.media.map((m) => `media.${m.id}`),
+          ...content.faqs.map(
+            (_, i) => `faq.${String(i + 1).padStart(3, "0")}`,
+          ),
+        ]),
+      );
       // Never overwrite owner edits. Preflight all collisions before uploading anything.
       for (const d of documents) {
         const found = existing.find((e) => e._id === d._id);

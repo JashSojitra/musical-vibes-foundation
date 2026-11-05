@@ -1,5 +1,7 @@
 # Isolated Sanity CMS preview
 
+**Known live access blocker:** imported dotted document IDs are not anonymously readable. Run `npm run sanity:audit:public` and read [PROGRAMS-PUBLIC-ACCESS.md](PROGRAMS-PUBLIC-ACCESS.md) before deployment. A 200 response with an empty Programs list is not successful content validation. Do not re-import or create duplicate records to work around this.
+
 The only deployment target prepared here is **`musical-vibes-foundation-cms-preview`**, on `*.workers.dev`. It uses `wrangler.cms-preview.jsonc`, a dedicated entry point, and `.open-next-cms-preview/`. The existing `musical-vibes-foundation-demo` configuration/entry point and production domain are unchanged. No deployment or Sanity content/permission change was performed during implementation.
 
 ## Build and runtime configuration
@@ -50,7 +52,7 @@ node scripts/cms-preview-test-server.mjs --live
 
 This serves at `http://127.0.0.1:3014`, allows only tokenless published Sanity queries, and has no test-state update endpoint. It is a local verification harness, not the deploy command. Where approved Sanity photos exist, use the regular Wrangler preview on port 3012 to check actual CDN/Images delivery.
 
-At preparation time the public dataset contained only the Site Settings singleton, with **no published programs, events, Journal entries or approved photos**. An empty Journal/Gallery and neutral photo placeholders are expected until the owner publishes content in the hosted Studio. Live article/CDN-image checks therefore require owner-published content; do not mistake fixture tests for a real Studio round trip.
+At preparation time the anonymous response contained only the Site Settings singleton. The earlier assumption that the dataset itself was empty was incomplete: imported dotted IDs are private paths. The strengthened public audit/live smoke check now rejects the inaccessible references instead of reporting success for empty pages. See the access diagnosis above; do not create duplicate content or rerun the importer as a workaround. Live article/CDN-image checks require anonymously readable owner-published content; do not mistake fixture tests for a real Studio round trip.
 
 ## Launch manually through GitHub Actions
 

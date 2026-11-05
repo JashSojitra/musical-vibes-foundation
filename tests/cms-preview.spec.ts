@@ -12,7 +12,7 @@ const fixture = () => [
     mission: "Community connection",
   },
   {
-    _id: "media.photo",
+    _id: "media-photo",
     _type: "mediaItem",
     sourceId: "song",
     alt: "A community gathering",
@@ -25,7 +25,8 @@ const fixture = () => [
     standaloneGallery: false,
   },
   {
-    _id: "program.music",
+    _id: "program-music",
+    sourceId: "program.music",
     _type: "program",
     slug: { current: "preview-music" },
     title: "Preview music program",
@@ -34,7 +35,7 @@ const fixture = () => [
     number: "01",
     theme: "rose",
     category: "Music",
-    image: { _ref: "media.photo" },
+    image: { _ref: "media-photo" },
     focus: ["Connection"],
     body: [
       {
@@ -54,27 +55,29 @@ const fixture = () => [
     ],
   },
   {
-    _id: "event.gathering",
+    _id: "event-gathering",
+    sourceId: "event.gathering",
     _type: "event",
     slug: { current: "preview-gathering" },
     title: "Preview gathering",
     date: "2025-10-16",
     status: "past",
     description: "A community gathering",
-    image: { _ref: "media.photo" },
-    gallery: [{ _ref: "media.photo" }],
+    image: { _ref: "media-photo" },
+    gallery: [{ _ref: "media-photo" }],
   },
   {
-    _id: "journal.story",
+    _id: "journal-story",
+    sourceId: "journal.story",
     _type: "journalEntry",
     slug: { current: "preview-story" },
     title: "Preview story",
     excerpt: "A shared community moment",
     publishedAt: "2026-11-03",
     kind: "event",
-    event: { _ref: "event.gathering" },
-    programs: [{ _ref: "program.music" }],
-    photos: [{ _ref: "media.photo" }],
+    event: { _ref: "event-gathering" },
+    programs: [{ _ref: "program-music" }],
+    photos: [{ _ref: "media-photo" }],
     body: [
       {
         _type: "block",
@@ -107,6 +110,8 @@ test("CMS SSR, dynamic slugs, images, metadata and Journal/Gallery updates in wo
   expect(response.headers()["x-robots-tag"]).toBe("noindex, nofollow");
   await page.goto("/journal/preview-story");
   await expect(page.locator("h1")).toHaveText("Preview story");
+  await expect(page.locator(".program-menu-links a")).toHaveCount(1);
+  await expect(page.locator(".mobile-programs a")).toHaveCount(1);
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
     "href",
     "https://www.musicalvibesfoundation.com/journal/preview-story",
@@ -138,6 +143,16 @@ test("CMS SSR, dynamic slugs, images, metadata and Journal/Gallery updates in wo
   );
   expect((await request.get("/programs/preview-music")).status()).toBe(200);
   expect((await request.get("/events/preview-gathering")).status()).toBe(200);
+  await page.goto("/programs");
+  await expect(page.locator(".program-row")).toHaveCount(1);
+  await page.goto("/journal");
+  await expect(page.locator(".journal-featured")).toContainText(
+    "Preview story",
+  );
+  await page.goto("/events");
+  await expect(page.locator(".gallery-collection-card")).toContainText(
+    "Preview story",
+  );
   expect((await request.get("/journal/not-published")).status()).toBe(404);
 
   const renamed = fixture();

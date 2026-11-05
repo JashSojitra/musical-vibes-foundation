@@ -13,10 +13,10 @@ const fixture = (): CmsDocument[] => [
     _type: "siteSettings",
     name: "Foundation",
     url: "https://example.org",
-    featuredPrograms: [ref("program.p")],
+    featuredPrograms: [ref("program-p")],
   },
   {
-    _id: "media.p",
+    _id: "media-p",
     _type: "mediaItem",
     sourceId: "p",
     image: {
@@ -29,7 +29,8 @@ const fixture = (): CmsDocument[] => [
     standaloneGallery: false,
   },
   {
-    _id: "media.standalone",
+    _id: "media-standalone",
+    sourceId: "media.standalone",
     _type: "mediaItem",
     image: { asset: ref("image-other-1000x600-jpg") },
     editorialApproval: "approved",
@@ -38,28 +39,30 @@ const fixture = (): CmsDocument[] => [
     standaloneGallery: true,
   },
   {
-    _id: "program.p",
+    _id: "program-p",
+    sourceId: "program.p",
     _type: "program",
     slug: { current: "program" },
     title: "Music",
   },
   {
-    _id: "event.e",
+    _id: "event-e",
+    sourceId: "event.e",
     _type: "event",
     slug: { current: "gathering" },
     date: "2025-10-16",
   },
   {
-    _id: "journal.e",
+    _id: "journal-e",
     _type: "journalEntry",
     sourceId: "journal.original",
     slug: { current: "story" },
     title: "Our gathering",
     publishedAt: "2026-11-03",
     kind: "event",
-    event: ref("event.e"),
-    programs: [ref("program.p"), ref("missing")],
-    photos: [ref("media.p"), ref("media.p"), ref("missing")],
+    event: ref("event-e"),
+    programs: [ref("program-p"), ref("missing")],
+    photos: [ref("media-p"), ref("media-p"), ref("missing")],
     body: [
       {
         _type: "block",
@@ -199,7 +202,12 @@ test("official SDK reads fresh published snapshots across rename, withdrawal and
   const server = createServer((req, res) => {
     requests.push(new URL(req.url!, "http://localhost"));
     res.setHeader("content-type", "application/json");
-    res.end(JSON.stringify({ result: docs, ms: 1 }));
+    res.end(
+      JSON.stringify({
+        result: docs.filter((d) => !d._id.includes(".")),
+        ms: 1,
+      }),
+    );
   });
   await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
   const address = server.address() as { port: number };
