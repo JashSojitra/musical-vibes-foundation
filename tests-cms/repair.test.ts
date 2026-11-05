@@ -4,7 +4,12 @@ import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import { loadBackup, migrationRepairPlan } from "../scripts/sanity-repair";
+import {
+  loadBackup,
+  migrationRepairPlan,
+  assetBackupRequest,
+  repairFetch,
+} from "../scripts/sanity-repair";
 import {
   target,
   hash,
@@ -240,6 +245,119 @@ test("operator CLI exposes only historical migration IDs, never unrelated owner 
   assert.throws(
     () => migrationRepairPlan([doc(content.programs[0].id, "event")]),
     /outside the historical/,
+  );
+});
+
+test("authenticated exports preserve reserved ACL/schema/retention documents without touching permissions", () => {
+  const system = [
+    doc("_.groups.write", "system.group", {
+      grants: [
+        { filter: '_id in path("**")', permissions: ["read", "update"] },
+      ],
+      members: ["owner"],
+    }),
+    doc("_.schemas.musical-vibes", "system.schema", {
+      schema: { example: { _ref: "program.one" } },
+    }),
+    doc("_.retention._maximum_project", "system.retention", { days: 90 }),
+  ];
+  const input = [...fixture(), ...system];
+  const plan = planRepair(input);
+  for (const d of system) {
+    assert.deepEqual(
+      plan.active.find((a) => a._id === d._id),
+      d,
+    );
+    assert.deepEqual(
+      plan.expected.find((a) => a._id === d._id),
+      d,
+    );
+  }
+  assert.ok(
+    plan.mutations.every(
+      (m) =>
+        !m.patch?.id.startsWith("_.") &&
+        !(typeof m.create?._id === "string" && m.create._id.startsWith("_.")),
+    ),
+  );
+  const originals = content.programs.map((p) =>
+    doc(p.id, "program", { slug: { current: p.slug } }),
+  );
+  assert.equal(
+    migrationRepairPlan([...originals, ...system]).expectedPublicCounts.program,
+    6,
+  );
+  assert.throws(
+    () => migrationRepairPlan([...originals, doc("_.owner.secret", "program")]),
+    /outside the historical/,
+  );
+  assert.throws(
+    () =>
+      stateOf(
+        plan,
+        apply(plan).map((d) =>
+          d._id === system[0]._id ? { ...d, members: [] } : d,
+        ),
+      ),
+    /drift/,
+  );
+});
+
+test("backup requests authenticated raw original images, keeps hash checks and confines credentials to the exact CDN project", () => {
+  const image = doc("image-test", "sanity.imageAsset", {
+    url: "https://cdn.sanity.io/images/6jpdhhxg/production/hash-800x600.jpg",
+  });
+  const request = assetBackupRequest(image, "test-credential");
+  assert.equal(request.url.searchParams.has("dlRaw"), true);
+  assert.equal(request.url.searchParams.has("dl"), false);
+  assert.equal(request.options.redirect, "error");
+  assert.equal(
+    new Headers(request.options.headers).get("authorization"),
+    "Bearer test-credential",
+  );
+  const file = assetBackupRequest(
+    doc("file-test", "sanity.fileAsset", {
+      url: "https://cdn.sanity.io/files/6jpdhhxg/production/hash.pdf",
+    }),
+    "test-credential",
+  );
+  assert.equal(new Headers(file.options.headers).has("authorization"), false);
+  for (const url of [
+    "https://other.example/images/6jpdhhxg/production/hash.jpg",
+    "https://cdn.sanity.io/images/other/production/hash.jpg",
+    "https://cdn.sanity.io/images/6jpdhhxg/other/hash.jpg",
+    "http://cdn.sanity.io/images/6jpdhhxg/production/hash.jpg",
+    image.url + "?w=100",
+    "https://user:password@cdn.sanity.io/images/6jpdhhxg/production/hash.jpg",
+    image.url + "#fragment",
+  ])
+    assert.throws(
+      () => assetBackupRequest({ ...image, url }, "test-credential"),
+      /Unexpected asset/,
+    );
+});
+
+test("fetch failures identify the exact request and underlying EACCES without logging credential headers", async () => {
+  const url =
+    "https://6jpdhhxg.api.sanity.io/v2026-11-01/data/export/production";
+  const denied = async () => {
+    throw new TypeError("fetch failed", {
+      cause: Object.assign(new Error("connect"), { code: "EACCES" }),
+    });
+  };
+  await assert.rejects(
+    repairFetch(
+      url,
+      { headers: { Authorization: "Bearer must-not-appear" } },
+      denied,
+    ),
+    (error) => {
+      assert.ok(error instanceof Error);
+      assert.ok(error.message.includes(url));
+      assert.match(error.message, /GET.*EACCES.*network access denied/);
+      assert.ok(!error.message.includes("must-not-appear"));
+      return true;
+    },
   );
 });
 

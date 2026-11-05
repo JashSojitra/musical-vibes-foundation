@@ -35,6 +35,11 @@ export const hash = (value: unknown) =>
 export const baseId = (id: string) => id.replace(/^drafts\./, "");
 const isAsset = (d: Doc) =>
   ["sanity.imageAsset", "sanity.fileAsset"].includes(d._type);
+// Export includes reserved ACL, retention and deployed-schema records. They are opaque,
+// backed up and compared for integrity, never cloned, patched or interpreted as content.
+export const isProtectedSystem = (d: Doc) =>
+  d._id.startsWith("_.") &&
+  ["system.group", "system.retention", "system.schema"].includes(d._type);
 export const publicDocs = (docs: Doc[]) =>
   docs.filter((d) => !d._id.includes("."));
 export const counts = (docs: Doc[]) =>
@@ -109,6 +114,7 @@ export function planRepair(input: Doc[]) {
     throw Error("Reserved guard field already exists");
   const ids: Record<string, string> = Object.create(null);
   for (const d of docs) {
+    if (isProtectedSystem(d)) continue;
     const base = baseId(d._id);
     if (!base.includes(".")) continue;
     if (
@@ -156,6 +162,10 @@ export function planRepair(input: Doc[]) {
   const mutations: Mutation[] = [];
   const active: Doc[] = [];
   for (const d of docs) {
+    if (isProtectedSystem(d)) {
+      active.push(d);
+      continue;
+    }
     const mapped = remap(d, ids) as Doc;
     const cloned = !!ids[d._id];
     if (cloned) {
@@ -208,11 +218,13 @@ export function planRepair(input: Doc[]) {
     active.push(mapped);
   }
   const activeIds = new Set(active.map((d) => d._id));
-  const unresolved = active.flatMap((d) =>
-    references(d)
-      .filter((r) => !r.external && !activeIds.has(r.ref))
-      .map((r) => ({ document: d._id, ...r })),
-  );
+  const unresolved = active
+    .filter((d) => !isProtectedSystem(d))
+    .flatMap((d) =>
+      references(d)
+        .filter((r) => !r.external && !activeIds.has(r.ref))
+        .map((r) => ({ document: d._id, ...r })),
+    );
   if (unresolved.some((r) => !r.weak))
     throw Error(`Unresolved strong references: ${stable(unresolved)}`);
   const publicIds = new Set(publicDocs(active).map((d) => d._id));
@@ -248,6 +260,7 @@ export function planRepair(input: Doc[]) {
         .filter(
           (d) =>
             !isAsset(d) &&
+            !isProtectedSystem(d) &&
             !d._type.startsWith("sanity.") &&
             !mutations.some((m) => m.patch?.id === d._id),
         )

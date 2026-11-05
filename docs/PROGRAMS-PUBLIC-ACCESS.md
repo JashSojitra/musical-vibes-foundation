@@ -1,5 +1,7 @@
 # CMS preview: inaccessible imported content
 
+**Resolved by the separately authorized repair on 2026-11-04.** Anonymous reads now return 6 Programs, 3 Events, 3 Journal entries and 7 FAQs with no unreadable references. Existing photo restrictions and all legacy records remain intact. See [execution evidence](validation/SANITY-ID-REPAIR-2026-11-04.md). The diagnosis below records the original failure and preparation state before that repair.
+
 ## Reproduction and root cause
 
 The deployed `/programs` response and clean Chromium desktop/mobile sessions show zero program rows and zero program navigation links. Cache-busted requests give the same result, with `Cache-Control: no-store`, no Age/ETag and fresh response dates. Events/Journal have no public collections/articles either.

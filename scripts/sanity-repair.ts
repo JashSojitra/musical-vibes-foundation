@@ -15,6 +15,7 @@ import {
   references,
   publicDocs,
   baseId,
+  isProtectedSystem,
   planRepair,
   stateOf,
   assertFresh,
@@ -38,6 +39,7 @@ const migratedIdentities = new Map<string, string>([
 ]);
 export function migrationRepairPlan(docs: Doc[]) {
   for (const d of docs) {
+    if (isProtectedSystem(d)) continue;
     const base = baseId(d._id);
     if (base.includes(".") && migratedIdentities.get(base) !== d._type)
       throw Error(
@@ -62,6 +64,66 @@ function child(dir: string, file: string) {
   if (!rel || rel.startsWith("..") || isAbsolute(rel))
     throw Error("Unsafe artifact path");
   return path;
+}
+export async function repairFetch(
+  url: string | URL,
+  options: RequestInit,
+  fetcher: typeof fetch = fetch,
+) {
+  try {
+    return await fetcher(url, options);
+  } catch (error) {
+    const cause =
+      error instanceof Error
+        ? (error.cause as
+            { code?: string; errors?: { code?: string }[] } | undefined)
+        : undefined;
+    const code =
+      cause?.code ||
+      cause?.errors
+        ?.map((e) => e.code)
+        .filter(Boolean)
+        .join(",") ||
+      "unknown";
+    throw Error(
+      `Request failed: ${options.method || "GET"} ${url} (${code}).${code.includes("EACCES") ? " Local network access denied; run through an approved network-enabled terminal." : " Check network/TLS access before retrying."}`,
+    );
+  }
+}
+export function assetBackupRequest(d: Doc, token: string) {
+  const url = new URL(String(d.url));
+  const assetKind =
+    d._type === "sanity.imageAsset"
+      ? "images"
+      : d._type === "sanity.fileAsset"
+        ? "files"
+        : "";
+  if (
+    !assetKind ||
+    url.protocol !== "https:" ||
+    url.hostname !== "cdn.sanity.io" ||
+    url.port ||
+    url.username ||
+    url.password ||
+    url.hash ||
+    url.search ||
+    !url.pathname.startsWith(
+      `/${assetKind}/${target.projectId}/${target.dataset}/`,
+    )
+  )
+    throw Error(`Unexpected asset URL: ${d._id}`);
+  // dl changes disposition only. dlRaw retrieves the byte-identical uploaded image;
+  // Sanity requires authentication for this documented original-download endpoint.
+  if (assetKind === "images") url.searchParams.set("dlRaw", "");
+  return {
+    url,
+    options: {
+      redirect: "error",
+      ...(assetKind === "images"
+        ? { headers: { Authorization: `Bearer ${token}` } }
+        : {}),
+    } as RequestInit,
+  };
 }
 export async function loadBackup(dir: string) {
   const backup = JSON.parse(
@@ -143,7 +205,7 @@ async function main() {
     perspective: "published",
   });
   const exportRaw = async (): Promise<Doc[]> => {
-    const response = await fetch(
+    const response = await repairFetch(
       `https://${target.projectId}.api.sanity.io/v${target.apiVersion}/data/export/${target.dataset}`,
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -227,18 +289,8 @@ async function main() {
     for (const d of docs.filter((d) =>
       ["sanity.imageAsset", "sanity.fileAsset"].includes(d._type),
     )) {
-      const url = new URL(String(d.url));
-      const assetKind = d._type === "sanity.imageAsset" ? "images" : "files";
-      if (
-        url.protocol !== "https:" ||
-        url.hostname !== "cdn.sanity.io" ||
-        !url.pathname.startsWith(
-          `/${assetKind}/${target.projectId}/${target.dataset}/`,
-        ) ||
-        url.search
-      )
-        throw Error(`Unexpected asset URL: ${d._id}`);
-      const response = await fetch(url, { redirect: "error" }); // Public assets; NEVER send the token to CDN.
+      const { url, options } = assetBackupRequest(d, token);
+      const response = await repairFetch(url, options);
       if (!response.ok)
         throw Error(`Asset backup failed: ${d._id} (${response.status})`);
       const bytes = new Uint8Array(await response.arrayBuffer());
@@ -404,7 +456,7 @@ async function main() {
     ),
   ];
   for (let i = 0; i < refIds.length; i += 50) {
-    const response = await fetch(
+    const response = await repairFetch(
       `https://${target.projectId}.api.sanity.io/v${target.apiVersion}/data/doc/${target.dataset}/${refIds
         .slice(i, i + 50)
         .map(encodeURIComponent)
