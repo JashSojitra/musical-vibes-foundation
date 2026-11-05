@@ -38,7 +38,8 @@
     "cf:deploy:cms-preview": "node scripts/run-cms-preview.mjs deploy",
     "test:cms-preview": "playwright test --config playwright.cms-preview.config.ts",
     "test:cms-preview:live": "playwright test --config playwright.cms-preview-live.config.ts",
-    "sanity:audit:public": "node scripts/audit-sanity-public.mjs"
+    "sanity:audit:public": "node scripts/audit-sanity-public.mjs",
+    "sanity:repair": "tsx scripts/sanity-repair.ts"
   },
   "dependencies": {
     "@portabletext/react": "^8.0.1",

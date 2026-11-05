@@ -1,6 +1,6 @@
 # Safe local-content migration
 
-This importer defaults to dry-run; a token alone cannot trigger writing. The legacy dotted-ID import contract was incorrect for public anonymous reads. See [the access diagnosis](PROGRAMS-PUBLIC-ACCESS.md). Do not use the ordinary importer to repair an existing legacy dataset; that requires separate authorization and a backed-up ID/reference migration.
+This importer defaults to dry-run; a token alone cannot trigger writing. The legacy dotted-ID import contract was incorrect for public anonymous reads. See [the access diagnosis](PROGRAMS-PUBLIC-ACCESS.md). Do not use the ordinary importer to repair an existing legacy dataset; use the separately authorized [backed-up ID/reference repair procedure](SANITY-ID-REPAIR.md), which preserves current Studio documents instead of replaying seed content.
 
 ## Inventory and identity
 
