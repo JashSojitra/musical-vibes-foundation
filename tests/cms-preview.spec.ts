@@ -238,3 +238,76 @@ test("empty CMS stays usable without exposing local demo photographs", async ({
     200,
   );
 });
+
+test("owner uploads and homepage choices render from one published story", async ({
+  page,
+  request,
+}) => {
+  const data = fixture().map((d) =>
+    d._type === "journalEntry"
+      ? {
+          ...d,
+          kind: "update",
+          event: undefined,
+          photos: [],
+          body: [],
+          excerpt: "An afternoon together",
+          showInGallery: true,
+          photoRightsConfirmed: true,
+          storyPhotos: Array.from({ length: 24 }, (_, i) => ({
+            _key: `upload-${i}`,
+            asset: { _ref: "image-abcdef-1600x1000-webp" },
+            assetExists: true,
+            cover: i === 5,
+            caption: `Moment ${i}`,
+            decorative: i === 6,
+          })),
+        }
+      : d._type === "siteSettings"
+        ? {
+            ...d,
+            heroHeadline: "Come together",
+            heroEmphasis: "Share a song.",
+            heroDescription: "Owner introduction",
+            heroCtaLabel: "Join us",
+            heroCtaHref: "/contact",
+            heroImage: { _ref: "media-photo" },
+            featuredStories: [{ _ref: "journal-story" }],
+            featuredPrograms: [{ _ref: "program-music" }],
+            featuredEvents: [{ _ref: "event-gathering" }],
+          }
+        : d,
+  );
+  await request.post("/__fixture", { data });
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  await expect(page.locator("h1")).toContainText("Come together");
+  await expect(
+    page.getByRole("link", { name: "Join us", exact: true }),
+  ).toHaveAttribute("href", "/contact");
+  await expect(page.locator(".journal-preview")).toContainText("Preview story");
+  await expect(page.locator(".upcoming-section")).toContainText(
+    "Preview gathering",
+  );
+  await page.goto("/journal/preview-story");
+  await expect(page.locator(".journal-article-photo figcaption")).toHaveText(
+    "Moment 5",
+  );
+  await expect(page.locator(".journal-article-body")).toContainText(
+    "An afternoon together",
+  );
+  await page
+    .getByRole("link", { name: "Explore this story in photographs" })
+    .click();
+  await expect(page.locator(".selected-collection h2")).toHaveText(
+    "Preview story",
+  );
+  await expect(page.locator(".gallery-photo")).toHaveCount(24);
+  await request.post("/__fixture", {
+    data: data.map((d) =>
+      d._type === "journalEntry" ? { ...d, photoRightsConfirmed: false } : d,
+    ),
+  });
+  await page.goto("/journal/preview-story");
+  await expect(page.locator(".journal-article-photo")).toHaveCount(0);
+});

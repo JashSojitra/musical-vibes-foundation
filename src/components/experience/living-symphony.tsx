@@ -1,5 +1,5 @@
 import Image from "next/image";
-import type { MediaAsset } from "@/types/content";
+import type { MediaAsset, SiteContent } from "@/types/content";
 import { Action, Arrow, TextLink } from "../ui";
 import SoundSculpture from "./sound-sculpture";
 
@@ -7,10 +7,12 @@ export default function LivingSymphony({
   singer,
   circle,
   picnic,
+  home,
 }: {
   singer: MediaAsset;
   circle: MediaAsset;
   picnic: MediaAsset;
+  home?: SiteContent["home"];
 }) {
   return (
     <div className="living-symphony">
@@ -23,17 +25,17 @@ export default function LivingSymphony({
             Musical Vibes Foundation / The art of connection
           </p>
           <h1 id="home-title" data-title>
-            Life sounds
+            {home?.heroHeadline || "Life sounds"}
             <br />
-            <em>better together.</em>
+            <em>{home?.heroEmphasis || "better together."}</em>
           </h1>
           <p>
-            Music, wellness, and meaningful connection for seniors and our wider
-            community. Rooted in Brampton. Open to you.
+            {home?.heroDescription ||
+              "Music, wellness, and meaningful connection for seniors and our wider community. Rooted in Brampton. Open to you."}
           </p>
           <div className="overture-actions">
-            <Action href="/programs" light>
-              Find your rhythm
+            <Action href={home?.heroCtaHref || "/programs"} light>
+              {home?.heroCtaLabel || "Find your rhythm"}
             </Action>
             <a className="symphony-story-link" href="#our-story">
               Discover our story <Arrow down />
@@ -64,8 +66,12 @@ export default function LivingSymphony({
             />
           </div>
           <figcaption>
-            <span>A voice. A moment. A connection.</span>
-            <small>Seniors Meet · June 2025</small>
+            <span>
+              {home?.heroImageId
+                ? singer.caption
+                : "A voice. A moment. A connection."}
+            </span>
+            {!home?.heroImageId && <small>Seniors Meet · June 2025</small>}
           </figcaption>
         </figure>
         <nav className="overture-index" aria-label="Explore the homepage">

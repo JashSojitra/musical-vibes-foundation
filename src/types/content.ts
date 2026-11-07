@@ -65,6 +65,8 @@ export interface JournalEntry {
   eventId?: string;
   programIds: string[];
   photoIds: string[];
+  showInGallery?: boolean;
+  featuredOnHome?: boolean;
 }
 
 export interface GalleryCollection {
@@ -97,5 +99,15 @@ export interface SiteContent {
   events: CommunityEvent[];
   media: MediaAsset[];
   faqs: FAQ[];
-  home: { featuredProgramSlugs: string[]; featuredEventSlugs: string[] };
+  home: {
+    featuredProgramSlugs: string[];
+    featuredEventSlugs: string[];
+    featuredStoryIds?: string[];
+    heroImageId?: string;
+    heroHeadline?: string;
+    heroEmphasis?: string;
+    heroDescription?: string;
+    heroCtaLabel?: string;
+    heroCtaHref?: string;
+  };
 }

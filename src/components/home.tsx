@@ -1,19 +1,27 @@
 import { unavailableMedia } from "@/lib/media-placeholder";
 import { getSiteContent, getMedia } from "@/lib/content";
-import { Action, Eyebrow, Invitation } from "./ui";
+import { Action, Eyebrow, Invitation, TextLink } from "./ui";
 import JournalPreview from "./journal-preview";
 import LivingSymphony from "./experience/living-symphony";
 import ProgramJourney from "./experience/program-journey";
 import CommunityMemories from "./experience/community-memories";
 
 export default async function Home() {
-  const { programs, media, home } = await getSiteContent();
+  const { programs, events, media, home } = await getSiteContent();
   const picnic = await getMedia("picnic");
   const singer = await getMedia("june-song");
   const circle = await getMedia("circle");
+  const featuredEvents = home.featuredEventSlugs.flatMap((slug) =>
+    events.filter((event) => event.slug === slug),
+  );
   return (
     <>
-      <LivingSymphony singer={singer} circle={circle} picnic={picnic} />
+      <LivingSymphony
+        singer={media.find((photo) => photo.id === home.heroImageId) ?? singer}
+        circle={circle}
+        picnic={picnic}
+        home={home}
+      />
 
       <ProgramJourney
         programs={
@@ -35,6 +43,21 @@ export default async function Home() {
       />
 
       <JournalPreview />
+      {featuredEvents.length > 0 && (
+        <section className="upcoming-section wrap">
+          <Eyebrow>EVENTS & GATHERINGS</Eyebrow>
+          {featuredEvents.map((event) => (
+            <article key={event.id}>
+              <h2>{event.title}</h2>
+              <p>{event.dateLabel}</p>
+              <p>{event.description}</p>
+              <TextLink href={`/events/${event.slug}`}>
+                Explore this gathering
+              </TextLink>
+            </article>
+          ))}
+        </section>
+      )}
 
       <section className="home-support wrap">
         <Eyebrow>COMPASSION, PUT INTO PRACTICE</Eyebrow>

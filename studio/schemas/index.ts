@@ -1,3 +1,4 @@
+import { StoryPhotosInput } from "../components/StoryPhotosInput";
 import { defineField, defineType } from "sanity";
 
 const string = (name: string, title: string, mandatory = true) =>
@@ -123,12 +124,10 @@ const body = defineField({
                 title: "Web address",
                 type: "url",
                 validation: (r) =>
-                  r
-                    .required()
-                    .uri({
-                      scheme: ["http", "https", "mailto", "tel"],
-                      allowRelative: true,
-                    }),
+                  r.required().uri({
+                    scheme: ["http", "https", "mailto", "tel"],
+                    allowRelative: true,
+                  }),
               },
             ],
           },
@@ -155,12 +154,22 @@ const choice = (
 export const schemaTypes = [
   defineType({
     name: "journalEntry",
-    title: "Journal entry",
+    title: "Update or story",
     type: "document",
+    initialValue: () => ({
+      slug: { _type: "slug", current: `story-${crypto.randomUUID()}` },
+    }),
+    fieldsets: [
+      {
+        name: "details",
+        title: "More options & website address",
+        options: { collapsible: true, collapsed: true },
+      },
+    ],
     fields: [
       ...identity,
-      prose("excerpt", "Short summary"),
-      body,
+      prose("excerpt", "Description"),
+      { ...body, validation: undefined, title: "Longer story (optional)" },
       choice("kind", "Story type", ["event", "update", "news"], "update"),
       defineField({
         name: "publishedAt",
@@ -176,17 +185,76 @@ export const schemaTypes = [
         title: "Related event",
         type: "reference",
         to: [{ type: "event" }],
-        validation: (r) =>
-          r.custom((value, context) =>
-            context.document?.kind === "event" && !value
-              ? "Choose the gathering this story describes."
-              : true,
-          ),
         description:
-          "Event stories with an event and approved photographs automatically appear in Gallery.",
+          "Optional: connect this story to an event. Gallery does not require one.",
       }),
       references("programs", "Related programs", "program"),
-      references("photos", "Photographs (drag to reorder)", "mediaItem"),
+      defineField({
+        name: "storyPhotos",
+        components: { input: StoryPhotosInput },
+        title: "Upload photographs (select multiple files, drag to reorder)",
+        type: "array",
+        of: [
+          {
+            type: "image",
+            options: { hotspot: true },
+            fields: [
+              string("alt", "Description (optional)", false),
+              string("caption", "Caption (optional)", false),
+              defineField({
+                name: "decorative",
+                title: "Decorative image (silent for screen readers)",
+                type: "boolean",
+                initialValue: false,
+              }),
+              defineField({
+                name: "cover",
+                title: "Use as story cover",
+                type: "boolean",
+                initialValue: false,
+              }),
+            ],
+          },
+        ],
+        description:
+          "Upload 10–20 or more at once. First photo is the cover unless you select one. Files in this dataset are public: upload only photographs you have permission to share.",
+        validation: (r) =>
+          r.custom((value) =>
+            (value || []).filter((p) => (p as { cover?: boolean })?.cover)
+              .length > 1
+              ? "Choose only one cover photograph."
+              : true,
+          ),
+      }),
+      defineField({
+        name: "photoRightsConfirmed",
+        title: "I have permission to publish all uploaded photographs",
+        type: "boolean",
+        initialValue: false,
+        description:
+          "Confirm once for this batch, and check again whenever adding photos. Keep permission evidence privately. Unconfirmed photos never appear on the website.",
+      }),
+      defineField({
+        name: "showInGallery",
+        title: "Also show this story in Gallery",
+        type: "boolean",
+        initialValue: true,
+      }),
+      defineField({
+        name: "featuredOnHome",
+        title: "Feature on homepage",
+        type: "boolean",
+        initialValue: false,
+      }),
+      {
+        ...references(
+          "photos",
+          "Previously published photographs (optional)",
+          "mediaItem",
+        ),
+        description:
+          "Reuse existing Photos records without reuploading. Their individual approval settings still apply.",
+      },
       defineField({
         name: "seoTitle",
         title: "Search title (optional)",
@@ -199,7 +267,38 @@ export const schemaTypes = [
         type: "text",
         validation: (r) => r.max(180),
       }),
-    ],
+    ]
+      .map((field) => ({
+        ...field,
+        fieldset: [
+          "slug",
+          "previousSlugs",
+          "kind",
+          "event",
+          "programs",
+          "photos",
+          "seoTitle",
+          "seoDescription",
+          "body",
+        ].includes(field.name)
+          ? "details"
+          : undefined,
+      }))
+      .sort((a, b) => {
+        const order = [
+          "title",
+          "excerpt",
+          "publishedAt",
+          "storyPhotos",
+          "photoRightsConfirmed",
+          "showInGallery",
+          "featuredOnHome",
+        ];
+        return (
+          (order.includes(a.name) ? order.indexOf(a.name) : 99) -
+          (order.includes(b.name) ? order.indexOf(b.name) : 99)
+        );
+      }),
     preview: { select: { title: "title", subtitle: "publishedAt" } },
   }),
   defineType({
@@ -273,7 +372,17 @@ export const schemaTypes = [
         description:
           "Public dataset: uploaded files are public. Never upload consent forms or private documents.",
       }),
-      string("alt", "Describe the photograph for screen readers"),
+      string(
+        "alt",
+        "Describe the photograph for screen readers (optional)",
+        false,
+      ),
+      defineField({
+        name: "decorative",
+        title: "Decorative image",
+        type: "boolean",
+        initialValue: false,
+      }),
       string("caption", "Caption", false),
       choice(
         "category",
@@ -329,6 +438,10 @@ export const schemaTypes = [
     name: "siteSettings",
     title: "Site Settings",
     type: "document",
+    groups: [
+      { name: "homepage", title: "Homepage", default: true },
+      { name: "contact", title: "Contact & organization" },
+    ],
     fields: [
       string("name", "Organization name"),
       defineField({
@@ -360,9 +473,41 @@ export const schemaTypes = [
           },
         ],
       }),
+      string("heroHeadline", "Hero headline", false),
+      string("heroEmphasis", "Hero second line", false),
+      string("heroDescription", "Hero introduction", false),
+      string("heroCtaLabel", "Button text", false),
+      defineField({
+        name: "heroCtaHref",
+        title: "Button destination",
+        type: "url",
+        validation: (r) =>
+          r.uri({ scheme: ["https", "http"], allowRelative: true }),
+      }),
+      { ...image, name: "heroImage", title: "Hero photograph" },
+      references(
+        "featuredStories",
+        "Featured stories (in order)",
+        "journalEntry",
+      ),
       references("featuredPrograms", "Featured programs", "program"),
       references("featuredEvents", "Featured events", "event"),
-    ],
+    ].map((field) => ({
+      ...field,
+      group: [
+        "heroHeadline",
+        "heroEmphasis",
+        "heroDescription",
+        "heroCtaLabel",
+        "heroCtaHref",
+        "heroImage",
+        "featuredStories",
+        "featuredPrograms",
+        "featuredEvents",
+      ].includes(field.name)
+        ? "homepage"
+        : "contact",
+    })),
   }),
   defineType({
     name: "faq",

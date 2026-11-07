@@ -57,8 +57,10 @@ export function deriveGalleryCollections(
     .filter(
       (entry) =>
         isPublishedEntry(entry, today) &&
-        entry.kind === "event" &&
-        !!entry.eventId,
+        (entry.showInGallery === true ||
+          (entry.showInGallery !== false &&
+            entry.kind === "event" &&
+            !!entry.eventId)),
     )
     .flatMap((entry) => {
       const photos = [...new Set(entry.photoIds)].flatMap((id) =>

@@ -6,7 +6,7 @@ export async function readSanitySnapshot(client: SanityClient) {
   if (!projectId || !dataset)
     throw new Error("Missing Sanity project or dataset");
   const docs = await client.fetch<CmsDocument[]>(
-    '*[_type in ["journalEntry", "event", "program", "mediaItem", "siteSettings", "faq"]]{..., "assetExists": defined(image.asset->._id)}',
+    '*[_type in ["journalEntry", "event", "program", "mediaItem", "siteSettings", "faq"]]{..., "assetExists": defined(image.asset->._id), storyPhotos[]{..., "assetExists": defined(asset->._id)}}',
     {},
     { cache: "no-store", perspective: "published" },
   );

@@ -33,7 +33,41 @@ export function mapSanity(
   projectId: string,
   dataset: string,
 ) {
-  const docs = documents.filter(publicDocument);
+  const docs = documents.filter(publicDocument).map((d) => ({ ...d }));
+  // Embedded uploads belong to this published story; they never grant approval to legacy media.
+  for (const story of docs.filter((d) => d._type === "journalEntry")) {
+    const uploads = Array.isArray(story.storyPhotos)
+      ? (story.storyPhotos as Array<Record<string, unknown>>)
+      : [];
+    const approved = story.photoRightsConfirmed === true;
+    const ordered = [
+      ...uploads.filter((p) => p.cover === true),
+      ...uploads.filter((p) => p.cover !== true),
+    ];
+    story.photos = [
+      ...ordered.flatMap((photo) => {
+        if (!approved || typeof photo._key !== "string") return [];
+        const id = `${story._id}-photo-${photo._key}`;
+        docs.push({
+          _id: id,
+          _type: "mediaItem",
+          image: photo,
+          assetExists: photo.assetExists,
+          alt:
+            photo.decorative === true
+              ? ""
+              : (typeof photo.alt === "string" && photo.alt.trim()) ||
+                `${story.title || "Community story"} — photograph ${uploads.indexOf(photo) + 1}`,
+          decorative: photo.decorative === true,
+          caption: photo.caption,
+          editorialApproval: "approved",
+          publicationEnabled: true,
+        });
+        return [{ _ref: id }];
+      }),
+      ...(Array.isArray(story.photos) ? story.photos : []),
+    ];
+  }
   const identities = new Map(docs.map((d) => [d._id, d.sourceId || d._id]));
   const resolve = (value: unknown) => identities.get(ref(value) ?? "");
   const resolveMany = (value: unknown) =>
@@ -54,8 +88,7 @@ export function mapSanity(
         !match ||
         d.assetExists === false ||
         d.editorialApproval !== "approved" ||
-        d.publicationEnabled !== true ||
-        !text(d, "alt")
+        d.publicationEnabled !== true
       )
         return [];
       return [
@@ -69,7 +102,12 @@ export function mapSanity(
             .url(),
           width: Number(match[1]),
           height: Number(match[2]),
-          alt: text(d, "alt"),
+          alt:
+            d.decorative === true
+              ? ""
+              : text(d, "alt").trim() ||
+                text(d, "caption").trim() ||
+                "Musical Vibes Foundation community photograph",
           caption: text(d, "caption"),
           category: (d.category || "Seniors Club") as MediaAsset["category"],
           source: text(d, "source"),
@@ -133,8 +171,11 @@ export function mapSanity(
       previousSlugs: strings(d.previousSlugs),
       title: text(d, "title"),
       excerpt: text(d, "excerpt"),
-      paragraphs: paragraphs(d),
+      paragraphs: paragraphs(d).length ? paragraphs(d) : [text(d, "excerpt")],
       body: body(d),
+      showInGallery:
+        typeof d.showInGallery === "boolean" ? d.showInGallery : undefined,
+      featuredOnHome: d.featuredOnHome === true,
       seoTitle: text(d, "seoTitle"),
       seoDescription: text(d, "seoDescription"),
       status: "published",
@@ -169,6 +210,15 @@ export function mapSanity(
         category: d.category as SiteContent["faqs"][number]["category"],
       })),
     home: {
+      heroImageId: resolve(settings.heroImage),
+      heroHeadline: text(settings, "heroHeadline"),
+      heroEmphasis: text(settings, "heroEmphasis"),
+      heroDescription: text(settings, "heroDescription"),
+      heroCtaLabel: text(settings, "heroCtaLabel"),
+      heroCtaHref: /^(\/(?!\/)|https?:\/\/)/.test(text(settings, "heroCtaHref"))
+        ? text(settings, "heroCtaHref")
+        : undefined,
+      featuredStoryIds: resolveMany(settings.featuredStories),
       featuredProgramSlugs: resolveMany(settings.featuredPrograms).flatMap(
         (id) => programs.filter((p) => p.id === id).map((p) => p.slug),
       ),

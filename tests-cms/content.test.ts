@@ -124,7 +124,6 @@ test("approval revocation and broken assets withdraw photos from every public mo
     { editorialApproval: "pending" },
     { publicationEnabled: false },
     { image: { asset: ref("broken") } },
-    { alt: "" },
     { assetExists: false },
   ]) {
     const docs = fixture();
@@ -251,4 +250,57 @@ test("official SDK reads fresh published snapshots across rename, withdrawal and
       server.close((error) => (error ? reject(error) : resolve())),
     );
   }
+});
+
+test("owner story uploads share one publication, support cover, fallback and decorative photos", () => {
+  const docs = fixture();
+  const story = docs[5];
+  story.kind = "update";
+  delete story.event;
+  story.photos = [];
+  story.body = [];
+  story.excerpt = "A community afternoon";
+  story.showInGallery = true;
+  story.storyPhotos = Array.from({ length: 24 }, (_, i) => ({
+    _key: `photo-${i}`,
+    asset: ref("image-abcdef-1200x800-jpg"),
+    cover: i === 10,
+    decorative: i === 11,
+  }));
+  assert.equal(
+    adapt(docs).getEntryPhotos(adapt(docs).getJournalEntries()[0]).length,
+    0,
+  );
+  story.photoRightsConfirmed = true;
+  const mapped = mapSanity(docs, "6jpdhhxg", "production");
+  const adapter = adapt(docs);
+  const photos = adapter.getEntryPhotos(adapter.getJournalEntries()[0]);
+  assert.equal(photos.length, 24);
+  assert.match(photos[0].id, /photo-10$/);
+  assert.match(photos[0].alt, /Our gathering/);
+  assert.equal(photos.find((p) => p.id.endsWith("photo-11"))?.alt, "");
+  assert.deepEqual(mapped.entries[0].paragraphs, ["A community afternoon"]);
+  assert.equal(adapter.getGalleryCollections()[0].photos.length, 24);
+  story.showInGallery = false;
+  assert.equal(adapt(docs).getGalleryCollections().length, 1); // standalone archive only
+  story.photoRightsConfirmed = false;
+  assert.equal(
+    adapt(docs).getEntryPhotos(adapt(docs).getJournalEntries()[0]).length,
+    0,
+  );
+  assert.equal((story.storyPhotos as unknown[]).length, 24); // input not mutated
+});
+
+test("optional legacy descriptions have accessible fallback; decorative images stay silent", () => {
+  const docs = fixture();
+  docs[1].alt = "";
+  let photo = mapSanity(docs, "6jpdhhxg", "production").source.media.find(
+    (p) => p.id === "p",
+  )!;
+  assert.match(photo.alt, /community photograph/);
+  docs[1].decorative = true;
+  photo = mapSanity(docs, "6jpdhhxg", "production").source.media.find(
+    (p) => p.id === "p",
+  )!;
+  assert.equal(photo.alt, "");
 });

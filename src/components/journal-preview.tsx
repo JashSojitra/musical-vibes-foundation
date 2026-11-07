@@ -1,3 +1,4 @@
+import { getSiteContent } from "@/lib/content";
 import Image from "next/image";
 import Link from "next/link";
 import { getPublicContent, journalDate } from "@/lib/journal";
@@ -5,7 +6,15 @@ import { Eyebrow, TextLink } from "./ui";
 
 export default async function JournalPreview() {
   const adapter = await getPublicContent();
-  const entries = adapter.getJournalEntries().slice(0, 3);
+  const { home } = await getSiteContent();
+  const all = adapter.getJournalEntries();
+  const selected = (home.featuredStoryIds || []).flatMap((id) =>
+    all.filter((entry) => entry.id === id),
+  );
+  const flagged = all.filter((entry) => entry.featuredOnHome);
+  const entries = (
+    selected.length ? selected : flagged.length ? flagged : all
+  ).slice(0, 3);
   if (!entries.length) return null;
   return (
     <section

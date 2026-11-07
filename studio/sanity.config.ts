@@ -15,12 +15,18 @@ export default defineConfig({
         S.list()
           .title("Foundation content")
           .items([
-            S.documentTypeListItem("journalEntry").title(
-              "Journal / Weekly Updates",
-            ),
+            S.documentTypeListItem("journalEntry").title("Updates & Stories"),
             S.documentTypeListItem("event").title("Events"),
             S.documentTypeListItem("program").title("Programs"),
-            S.documentTypeListItem("mediaItem").title("Media Library"),
+            S.documentTypeListItem("mediaItem").title("Photos"),
+            S.listItem()
+              .title("Homepage")
+              .child(
+                S.document()
+                  .schemaType("siteSettings")
+                  .documentId("siteSettings")
+                  .views([S.view.form()]),
+              ),
             S.listItem()
               .title("Site Settings")
               .child(

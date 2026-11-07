@@ -4,17 +4,19 @@ Open the Studio address provided by the maintainer and sign in with your invited
 
 ## Write an update or event story
 
-1. Open **Journal / Weekly Updates**, choose **Create**, enter a title and press **Generate** beside Website address. Add a short summary and your full story. Headings, lists, bold, italic and links are available in the story editor.
-2. Choose **Update**, **News** or **Event**. For an Event story, select the actual gathering under Related event; create that event first if needed. Its gathering date is separate from the Journal publication date. Add related programs when useful.
-3. Choose photographs from **Media Library**. Reuse existing records; do not upload the same photograph again for Gallery. Drag the references to choose their order. The first approved photograph leads the article.
-4. Use today's publication date unless the story has a specific editorial date. A future date keeps a published story hidden until that UTC day. This is a website visibility rule, not Sanity's paid scheduled publishing; publishing is still a manual action.
-5. Check the text and photographs, then **Publish**. Refresh the website and check Journal. An Event story with a related event and at least one approved public photograph also appears automatically as a Gallery collection with the same title. Follow the photograph link to Gallery and the story link back to Journal. No extra Gallery entry is needed.
+1. Open **Updates & Stories**, choose **Create**, and enter the title, Description and publication date. A website address is supplied automatically; you can Generate a title-based address before first publication if preferred. Longer story text and related Events/Programs are optional.
+2. In **Upload photographs**, select or drop 10–20 or more files together. Drag photos to reorder. The first photo is the cover; open another photo and select **Use as story cover** to override it (only one cover). Each photo has optional Description and Caption fields, plus a Decorative switch for images that screen readers should skip. Missing descriptions fall back to the story title and photo number. Add meaningful descriptions when the image conveys information the story does not explain.
+3. Check **I have permission to publish all uploaded photographs** once for the batch after reviewing rights in your private records. Any photo edit clears this confirmation, so confirm again when finished. Unconfirmed uploads stay off the website, even if the story is published. Never upload private files: asset URLs are public immediately.
+4. Leave **Also show this story in Gallery** on to create its Gallery collection automatically; switch it off for a Journal-only story. No Event record or second Gallery entry is required. **Feature on homepage** is optional.
+5. Press **Publish**. The same published title, description, date and photographs drive Journal and Gallery. Future publication dates stay hidden until that UTC day; publishing is manual and does not use paid scheduling.
+
+Existing stories keep their photographs and addresses. Previously published photographs can be selected by reference; their separate approval and public visibility settings still apply. Older Event stories retain their automatic Gallery behavior until you explicitly change the Gallery switch.
 
 There is no private website preview in this release. Review drafts in Studio; after publishing, check the website on a phone and desktop. Ask the maintainer for a supervised preview if a change needs review before public publication. Existing published text remains visible while you edit its next draft.
 
 ## Add or withdraw photographs
 
-In **Media Library**, create a photograph record, upload the original once, write a useful screen-reader description and a caption, and choose its category. Use the image crop/hotspot control to keep the subject visible. For example, describe the action and setting without adding unnecessary personal information.
+In **Photos**, create a photograph record, upload the original once, write a useful screen-reader description and a caption, and choose its category. Use the image crop/hotspot control to keep the subject visible. For example, describe the action and setting without adding unnecessary personal information.
 
 New photographs start **pending**, with **Allow on the public website** turned off. Check permission and rights in your private records first. Then choose **approved**, switch public visibility on and **Publish** the media record. Both approval and visibility are required. A photograph can be used by several stories and programs without duplicating the file.
 
@@ -32,10 +34,16 @@ Use the document menu's **Unpublish** to withdraw a Journal story. Its Gallery c
 
 **Events:** enter the actual date, optional display date/location, description and upcoming/past status. Update status after a gathering. Journal stories link to this record. The Events page uses Gallery for its past memories rather than a second archive to maintain.
 
-**Programs:** edit the headline, description, full story, focus points, photo and colour. Keep the address history when changing a URL. Homepage featured-program choices are under Site Settings. The approved visual design and fixed introductory page copy remain maintained in the website code.
+**Programs:** edit the headline, description, full story, focus points, photo and colour. Keep the address history when changing a URL. Homepage featured-program choices are under Homepage.
 
-**Site Settings:** keep organization/contact details and optional social links current. Select featured programs and events by their records. The current homepage presents selected programs; upcoming Events are driven by status, while past-photo previews are automatic. Featured-event selections are retained for future placements and do not create a separate Events archive.
+**Homepage:** choose an approved Photos record as the hero image, edit the two headline lines, introduction, button label and destination. Empty fields retain the existing design defaults. Select featured stories in order (published and date-visible only); otherwise stories flagged for the homepage appear, falling back to the latest stories. Select Programs and Events in order. Featured Events appear in a homepage gathering section; event cover photos and program cover photos are chosen on their own records. Homepage and Site Settings edit tabs on the same existing singleton; no content is copied.
+
+**Site Settings:** use Contact & organization to keep contact details, mission and social links current.
 
 **FAQs:** edit the question/answer, choose a category, and set Display order (smaller numbers first). Publish the changes.
 
-Published changes appear on the next fresh website request in CMS mode. Reload an already open page before checking. If something is missing, check Publish, publication date, event relation, media approval and visibility first. Ask the maintainer if the site reports a content error; never paste API tokens into a content field. Ask them to keep private dataset backups and review monthly Free-plan quotas periodically.
+Published changes appear on the next fresh website request in CMS mode. Reload an already open page before checking. If something is missing, check Publish, publication date, Gallery switch, batch rights confirmation, media approval and visibility first. Ask the maintainer if the site reports a content error; never paste API tokens into a content field. Ask them to keep private dataset backups and review monthly Free-plan quotas periodically.
+
+## Maintainer: legacy duplicate inventory
+
+Do not rerun an importer or repair live data to tidy the menu. Run `npx tsx scripts/sanity-duplicates.ts /path/to/documents.ndjson` on a privately held authenticated export (JSON arrays also work). It reports dotted legacy IDs and possible duplicates by source identity or slug without any network calls, deletion or mutations. Anonymous public queries cannot reliably detect private dotted IDs. Review candidates manually: a match is not authorization to merge or remove anything. Keep all current `mvf-*` identities, owner edits, slug history, image assets and permissions.
