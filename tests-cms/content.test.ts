@@ -267,11 +267,7 @@ test("owner story uploads share one publication, support cover, fallback and dec
     cover: i === 10,
     decorative: i === 11,
   }));
-  assert.equal(
-    adapt(docs).getEntryPhotos(adapt(docs).getJournalEntries()[0]).length,
-    0,
-  );
-  story.photoRightsConfirmed = true;
+  story.photoRightsConfirmed = false; // obsolete flag does not gate embedded images
   const mapped = mapSanity(docs, "6jpdhhxg", "production");
   const adapter = adapt(docs);
   const photos = adapter.getEntryPhotos(adapter.getJournalEntries()[0]);
@@ -283,10 +279,13 @@ test("owner story uploads share one publication, support cover, fallback and dec
   assert.equal(adapter.getGalleryCollections()[0].photos.length, 24);
   story.showInGallery = false;
   assert.equal(adapt(docs).getGalleryCollections().length, 1); // standalone archive only
-  story.photoRightsConfirmed = false;
+  story._id = "drafts.hidden-upload";
+  assert.equal(adapt(docs).getJournalEntries().length, 0);
   assert.equal(
-    adapt(docs).getEntryPhotos(adapt(docs).getJournalEntries()[0]).length,
-    0,
+    adapt(docs)
+      .getPublicPhotos()
+      .some((p) => p.id.includes("hidden-upload")),
+    false,
   );
   assert.equal((story.storyPhotos as unknown[]).length, 24); // input not mutated
 });
@@ -303,4 +302,82 @@ test("optional legacy descriptions have accessible fallback; decorative images s
     (p) => p.id === "p",
   )!;
   assert.equal(photo.alt, "");
+});
+
+test("real published 2026-11-10 payload keeps pending legacy photographs private", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const stories = JSON.parse(
+    await readFile(
+      new URL("./fixtures/published-story-photos.json", import.meta.url),
+      "utf8",
+    ),
+  );
+  const records = JSON.parse(
+    await readFile(
+      new URL("./fixtures/published-photo-records.json", import.meta.url),
+      "utf8",
+    ),
+  );
+  const { source, entries } = mapSanity(
+    [fixture()[0], ...records, ...stories],
+    "6jpdhhxg",
+    "production",
+  );
+  const adapter = createContentAdapter(source, entries, "2026-11-10");
+  const entry = adapter.getJournalEntry("test-8th-november")!;
+  assert.ok(entry);
+  assert.equal(adapter.getEntryPhotos(entry).length, 0);
+  assert.ok(stories.every((story: CmsDocument) => story.storyPhotos === null));
+  assert.equal(
+    records.find(
+      (d: CmsDocument) => d._id === "06195726-d7cc-45df-b0f8-9772367129bc",
+    ).editorialApproval,
+    "pending",
+  );
+});
+
+test("embedded reorder, removal, selected cover, multiple recaps and unpublish update derived links", () => {
+  const docs = fixture();
+  const story = docs[5];
+  story.showInGallery = true;
+  story.photos = [];
+  const photo = (key: string, cover = false) => ({
+    _key: key,
+    asset: ref("image-abcdef-1200x800-jpg"),
+    cover,
+  });
+  story.storyPhotos = [photo("a"), photo("b"), photo("c", true)];
+  docs.push({
+    ...story,
+    _id: "second",
+    sourceId: "second",
+    slug: { current: "second" },
+  });
+  let adapter = adapt(docs);
+  assert.equal(
+    adapter.getJournalEntries().filter((e) => e.eventId === "event.e").length,
+    2,
+  );
+  assert.equal(adapter.getGalleryCollections()[0].eventSlug, "gathering");
+  assert.deepEqual(
+    adapter
+      .getEntryPhotos(adapter.getJournalEntry("story")!)
+      .map((p) => p.id.split("-photo-")[1]),
+    ["c", "a", "b"],
+  );
+  story.storyPhotos = [photo("b"), photo("a")];
+  adapter = adapt(docs);
+  assert.deepEqual(
+    adapter
+      .getEntryPhotos(adapter.getJournalEntry("story")!)
+      .map((p) => p.id.split("-photo-")[1]),
+    ["b", "a"],
+  );
+  story._id = "drafts.withdrawn";
+  adapter = adapt(docs);
+  assert.equal(adapter.getJournalEntry("story"), undefined);
+  assert.equal(
+    adapter.getGalleryCollections().some((c) => c.journalSlug === "story"),
+    false,
+  );
 });

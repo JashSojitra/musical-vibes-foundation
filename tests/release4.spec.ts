@@ -134,7 +134,7 @@ test("More navigation supports pointer, click, keyboard, Escape and mobile tap",
       "Programs",
       "Events",
       "Gallery",
-      "Journal",
+      "Updates",
       "Contact",
       "More",
     ]);
@@ -165,7 +165,7 @@ test("More navigation supports pointer, click, keyboard, Escape and mobile tap",
     await page.locator(".program-menu-links a").last().focus();
     await page.keyboard.press("Tab");
     await expect(more).toHaveAttribute("aria-expanded", "false");
-    await page.locator('.desktop-nav a[href="/journal"]').click();
+    await page.locator('.desktop-nav a[href="/updates"]').click();
   } else {
     const menu = page.getByRole("button", { name: "Menu", exact: false });
     await menu.click();
@@ -174,24 +174,24 @@ test("More navigation supports pointer, click, keyboard, Escape and mobile tap",
     await page.keyboard.press("Escape");
     await expect(menu).toBeFocused();
     await menu.click();
-    await page.locator('#mobile-menu a[href="/journal"]').click();
+    await page.locator('#mobile-menu a[href="/updates"]').click();
   }
-  await expect(page).toHaveURL(/\/journal$/);
+  await expect(page).toHaveURL(/\/updates$/);
   const navigation =
     info.project.name === "desktop" ? ".desktop-nav" : ".mobile-menu-links";
   await expect(
-    page.locator(`${navigation} a[href="/journal"]`),
+    page.locator(`${navigation} a[href="/updates"]`),
   ).toHaveAttribute("aria-current", "page");
 });
 
 test("Journal, derived gallery and Events teaser form a complete visitor journey", async ({
   page,
 }) => {
-  await page.goto("/journal");
+  await page.goto("/updates");
   await expect(page.locator(".journal-featured")).toBeVisible();
   await expect(page.locator(".journal-recent article")).toHaveCount(2);
   await page.locator(".journal-featured .text-link").click();
-  await expect(page).toHaveURL(/\/journal\/.+/);
+  await expect(page).toHaveURL(/\/updates\/.+/);
   const title = await page.locator("h1").innerText();
   await expect(page.locator(".journal-meta")).toContainText("Gathering:");
   await expect(
@@ -202,7 +202,7 @@ test("Journal, derived gallery and Events teaser form a complete visitor journey
     .click();
   await expect(page).toHaveURL(/\/gallery\?collection=journal-collection/);
   await expect(page.locator(".selected-collection h2")).toHaveText(title);
-  await page.getByRole("link", { name: "Read the Journal story" }).click();
+  await page.getByRole("link", { name: "Read the Update" }).click();
   await expect(page.locator("h1")).toHaveText(title);
   await page.goto("/events");
   await expect(page.locator(".event-archive h2")).toHaveText(
@@ -237,13 +237,13 @@ test("routes, floating Contact, metadata and image loading remain healthy", asyn
     "/programs",
     "/events",
     "/gallery",
-    "/journal",
+    "/updates",
     "/get-involved",
     "/contact",
     "/faq",
     ...content.programs.map((item) => `/programs/${item.slug}`),
     ...content.events.map((item) => `/events/${item.slug}`),
-    ...journalSeed.map((item) => `/journal/${item.slug}`),
+    ...journalSeed.map((item) => `/updates/${item.slug}`),
   ]) {
     expect((await page.goto(route))?.status(), route).toBe(200);
     await expect(page.locator("h1")).toHaveCount(1);
@@ -276,9 +276,9 @@ test("routes, floating Contact, metadata and image loading remain healthy", asyn
   expect(errors).toEqual([]);
   const sitemap = await (await page.request.get("/sitemap.xml")).text();
   for (const entry of journalSeed)
-    expect(sitemap).toContain(`/journal/${entry.slug}`);
+    expect(sitemap).toContain(`/updates/${entry.slug}`);
   expect(
-    (await page.goto("/journal/a-draft-that-is-not-published"))?.status(),
+    (await page.goto("/updates/a-draft-that-is-not-published"))?.status(),
   ).toBe(404);
   await page.goto("/");
   await page
@@ -305,4 +305,14 @@ test("reduced motion preserves the hero, More control and gallery experience", a
   await expect(page.locator(".lightbox-caption")).toContainText("2 / 2");
   await page.keyboard.press("Escape");
   await expect(page.locator(".gallery-photo button").first()).toBeFocused();
+});
+
+test("historical Journal URLs redirect to canonical Updates without losing the slug", async ({
+  page,
+}) => {
+  await page.goto("/journal");
+  await expect(page).toHaveURL(/\/updates$/);
+  const entry = journalSeed[0];
+  await page.goto(`/journal/${entry.slug}`);
+  await expect(page).toHaveURL(new RegExp(`/updates/${entry.slug}$`));
 });

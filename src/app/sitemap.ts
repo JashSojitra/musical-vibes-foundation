@@ -9,7 +9,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/programs",
     "/events",
     "/gallery",
-    "/journal",
+    "/updates",
     "/get-involved",
     "/contact",
     "/faq",
@@ -17,7 +17,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...events.map((item) => `/events/${item.slug}`),
     ...(await getPublicContent())
       .getJournalEntries()
-      .map((item) => `/journal/${item.slug}`),
+      .map((item) => `/updates/${item.slug}`),
   ].map((path) => ({
     url: settings.url + path,
     changeFrequency: "monthly" as const,

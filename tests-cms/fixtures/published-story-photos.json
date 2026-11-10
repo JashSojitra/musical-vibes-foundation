@@ -1,0 +1,113 @@
+[
+  {
+    "_id": "5616f846-7b1b-4264-9c96-e76c0fe846e6",
+    "_type": "journalEntry",
+    "event": {
+      "_ref": "event.seniors-club-christmas-2025",
+      "_type": "reference"
+    },
+    "photoRightsConfirmed": null,
+    "photos": [
+      {
+        "_key": "684655caa80d",
+        "_ref": "06195726-d7cc-45df-b0f8-9772367129bc",
+        "_type": "reference"
+      },
+      {
+        "_key": "606401e37161",
+        "_ref": "2bbaa698-b9c9-494f-a0d4-1bb0618dd5c3",
+        "_type": "reference"
+      }
+    ],
+    "publishedAt": "2026-11-08",
+    "showInGallery": null,
+    "slug": {
+      "_type": "slug",
+      "current": "test-8th-november"
+    },
+    "storyPhotos": null,
+    "title": "Test 8th november"
+  },
+  {
+    "_id": "mvf-am91cm5hbC5ldmVudC5kaXdhbGktY2VsZWJyYXRpb25zLTIwMjU",
+    "_type": "journalEntry",
+    "event": {
+      "_ref": "mvf-ZXZlbnQuZGl3YWxpLWNlbGVicmF0aW9ucy0yMDI1",
+      "_type": "reference"
+    },
+    "photoRightsConfirmed": null,
+    "photos": [
+      {
+        "_key": "diwali",
+        "_ref": "mvf-bWVkaWEuZGl3YWxp",
+        "_type": "reference"
+      },
+      {
+        "_key": "diwali-portrait",
+        "_ref": "mvf-bWVkaWEuZGl3YWxpLXBvcnRyYWl0",
+        "_type": "reference"
+      }
+    ],
+    "publishedAt": "2026-11-03",
+    "showInGallery": null,
+    "slug": {
+      "_type": "slug",
+      "current": "diwali-celebrations-2025"
+    },
+    "storyPhotos": null,
+    "title": "Diwali, shared together"
+  },
+  {
+    "_id": "mvf-am91cm5hbC5ldmVudC5zZW5pb3JzLWNsdWItY2hyaXN0bWFzLTIwMjU",
+    "_type": "journalEntry",
+    "event": {
+      "_ref": "mvf-ZXZlbnQuc2VuaW9ycy1jbHViLWNocmlzdG1hcy0yMDI1",
+      "_type": "reference"
+    },
+    "photoRightsConfirmed": null,
+    "photos": [
+      {
+        "_key": "christmas",
+        "_ref": "mvf-bWVkaWEuY2hyaXN0bWFz",
+        "_type": "reference"
+      }
+    ],
+    "publishedAt": "2026-11-03",
+    "showInGallery": null,
+    "slug": {
+      "_type": "slug",
+      "current": "seniors-club-christmas-2025"
+    },
+    "storyPhotos": null,
+    "title": "A celebration in good company"
+  },
+  {
+    "_id": "mvf-am91cm5hbC5ldmVudC5zZW5pb3JzLWNsdWItcGljbmljLTIwMjU",
+    "_type": "journalEntry",
+    "event": {
+      "_ref": "mvf-ZXZlbnQuc2VuaW9ycy1jbHViLXBpY25pYy0yMDI1",
+      "_type": "reference"
+    },
+    "photoRightsConfirmed": null,
+    "photos": [
+      {
+        "_key": "picnic",
+        "_ref": "mvf-bWVkaWEucGljbmlj",
+        "_type": "reference"
+      },
+      {
+        "_key": "picnic-table",
+        "_ref": "mvf-bWVkaWEucGljbmljLXRhYmxl",
+        "_type": "reference"
+      }
+    ],
+    "publishedAt": "2026-11-03",
+    "showInGallery": null,
+    "slug": {
+      "_type": "slug",
+      "current": "seniors-club-picnic-2025"
+    },
+    "storyPhotos": null,
+    "title": "A little sunshine. A lot of connection."
+  }
+]

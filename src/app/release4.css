@@ -511,3 +511,28 @@ body:has(dialog[open]) .floating-contact {
     transform: none;
   }
 }
+
+/* Keep existing editorial typography and colours; reserve consistent image space. */
+.update-thumbnail {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: var(--ivory, #f3eee7);
+  overflow: hidden;
+}
+.update-thumbnail img {
+  object-fit: cover;
+}
+.journal-recent article {
+  grid-template-columns: minmax(90px, 180px) 100px 1fr auto;
+}
+@media (max-width: 700px) {
+  .journal-recent article {
+    grid-template-columns: 28% 1fr;
+  }
+  .journal-recent article > div {
+    grid-column: 2;
+  }
+}

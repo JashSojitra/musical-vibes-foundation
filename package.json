@@ -26,6 +26,7 @@
     "cf:preview:demo": "opennextjs-cloudflare preview --config wrangler.demo.jsonc",
     "cf:deploy:demo": "opennextjs-cloudflare deploy --config wrangler.demo.jsonc",
     "test:cms": "tsx --test tests-cms/*.test.ts",
+    "test:studio-upload": "node scripts/test-story-upload.mjs",
     "sanity:migrate:dry": "tsx scripts/sanity-migration.ts --dry-run",
     "sanity:migrate:write": "tsx scripts/sanity-migration.ts --write",
     "sanity:migrate:verify": "tsx scripts/sanity-migration.ts --verify",

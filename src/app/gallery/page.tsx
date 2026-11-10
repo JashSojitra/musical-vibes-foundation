@@ -50,6 +50,7 @@ export default async function Gallery({
         <h2 id="gallery-stories-title">
           Every gathering has <em>a story.</em>
         </h2>
+        <Link href="/events">See upcoming events</Link>
         <GalleryPreview
           collections={collections.filter((collection) => collection.journalId)}
         />
@@ -58,9 +59,12 @@ export default async function Gallery({
             <p className="eyebrow">SELECTED COLLECTION</p>
             <h2>{selected.title}</h2>
             {selected.journalSlug ? (
-              <Link href={`/journal/${selected.journalSlug}`}>
-                Read the Journal story <ArrowIcon />
+              <Link href={`/updates/${selected.journalSlug}`}>
+                Read the Update <ArrowIcon />
               </Link>
+            ) : null}
+            {selected.eventSlug ? (
+              <Link href={`/events/${selected.eventSlug}`}>Related event</Link>
             ) : null}
             <Link href="/gallery">Show all photographs</Link>
           </div>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import GalleryPreview from "@/components/gallery-preview";
 import { getPublicContent } from "@/lib/journal";
 import { notFound } from "next/navigation";
 import { getEvent, getEvents, getMedia } from "@/lib/content";
@@ -38,7 +39,8 @@ export default async function EventDetail({
     event = await getEvent(slug);
   if (!event) notFound();
   const image = await getMedia(event.imageId);
-  const stories = (await getPublicContent())
+  const adapter = await getPublicContent();
+  const stories = adapter
     .getJournalEntries()
     .filter((entry) => entry.eventId === event.id);
   return (
@@ -118,10 +120,19 @@ export default async function EventDetail({
           )}
         </section>
       ) : null}
+      <section className="wrap" aria-label="Photo collections from this event">
+        <GalleryPreview
+          collections={adapter
+            .getGalleryCollections()
+            .filter((collection) =>
+              stories.some((story) => story.id === collection.journalId),
+            )}
+        />
+      </section>
       <div className="event-back wrap">
         {stories.map((story) => (
-          <Link key={story.id} href={`/journal/${story.slug}`}>
-            Read {story.title} in the Journal
+          <Link key={story.id} href={`/updates/${story.slug}`}>
+            Read {story.title} in Updates
           </Link>
         ))}
         <TextLink href="/events">Back to all events</TextLink>

@@ -91,7 +91,7 @@ const identity = [
     ],
     validation: (r) => r.unique(),
     description:
-      "Keep all earlier slugs here so old links redirect. Enter only the last part, without /journal/, /events/ or /programs/.",
+      "Keep all earlier slugs here so old links redirect. Enter only the last part, without /updates/, /events/ or /programs/.",
   }),
 ];
 const body = defineField({
@@ -175,10 +175,16 @@ export const schemaTypes = [
         name: "publishedAt",
         title: "Publication date",
         type: "date",
-        initialValue: () => new Date().toISOString().slice(0, 10),
+        initialValue: () =>
+          new Intl.DateTimeFormat("en-CA", {
+            timeZone: "America/Toronto",
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+          }).format(new Date()),
         validation: (r) => r.required(),
         description:
-          "The date readers see. Future-dated stories stay hidden until that UTC day; this is not scheduled publishing.",
+          "The date readers see. Future-dated stories stay hidden until that UTC day (initial date uses America/Toronto); this is not scheduled publishing.",
       }),
       defineField({
         name: "event",
@@ -194,6 +200,7 @@ export const schemaTypes = [
         components: { input: StoryPhotosInput },
         title: "Upload photographs (select multiple files, drag to reorder)",
         type: "array",
+        options: { layout: "grid", sortable: true },
         of: [
           {
             type: "image",
@@ -210,6 +217,7 @@ export const schemaTypes = [
               defineField({
                 name: "cover",
                 title: "Use as story cover",
+                hidden: true,
                 type: "boolean",
                 initialValue: false,
               }),
@@ -228,11 +236,11 @@ export const schemaTypes = [
       }),
       defineField({
         name: "photoRightsConfirmed",
-        title: "I have permission to publish all uploaded photographs",
         type: "boolean",
-        initialValue: false,
+        hidden: true,
+        readOnly: true,
         description:
-          "Confirm once for this batch, and check again whenever adding photos. Keep permission evidence privately. Unconfirmed photos never appear on the website.",
+          "Retained legacy value; embedded photos follow the Update publication.",
       }),
       defineField({
         name: "showInGallery",
@@ -290,7 +298,6 @@ export const schemaTypes = [
           "excerpt",
           "publishedAt",
           "storyPhotos",
-          "photoRightsConfirmed",
           "showInGallery",
           "featuredOnHome",
         ];
@@ -313,7 +320,7 @@ export const schemaTypes = [
         type: "date",
         validation: (r) => r.required(),
         description:
-          "Actual event date, separate from a Journal story's publication date.",
+          "Actual event date, separate from a Update's publication date.",
       }),
       string("dateLabel", "Date as displayed", false),
       choice("status", "Event status", ["upcoming", "past"], "upcoming"),
@@ -412,7 +419,7 @@ export const schemaTypes = [
         type: "boolean",
         initialValue: false,
         description:
-          "Leave off for story-only photographs. Gallery stories appear automatically when the Journal entry is published.",
+          "Leave off for story-only photographs. Gallery stories appear automatically when the Update is published.",
       }),
       defineField({
         name: "consent",

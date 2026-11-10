@@ -93,7 +93,7 @@ test("demo responses and static files carry noindex and security headers", async
   );
   for (const path of [
     "/",
-    "/journal",
+    "/updates",
     "/gallery?collection=standalone.community-archive",
     "/contact",
     "/assets/legacy/logo.png",

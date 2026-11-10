@@ -102,19 +102,19 @@ test("CMS SSR, dynamic slugs, images, metadata and Journal/Gallery updates in wo
   request,
 }) => {
   await request.post("/__fixture", { data: fixture() });
-  const response = await request.get("/journal/preview-story");
+  const response = await request.get("/updates/preview-story");
   expect(response.status()).toBe(200);
   const html = await response.text();
   expect(html).toContain("A real CMS-rendered article body");
   expect(response.headers()["cache-control"]).toBe("no-store");
   expect(response.headers()["x-robots-tag"]).toBe("noindex, nofollow");
-  await page.goto("/journal/preview-story");
+  await page.goto("/updates/preview-story");
   await expect(page.locator("h1")).toHaveText("Preview story");
   await expect(page.locator(".program-menu-links a")).toHaveCount(1);
   await expect(page.locator(".mobile-programs a")).toHaveCount(1);
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
     "href",
-    "https://www.musicalvibesfoundation.com/journal/preview-story",
+    "https://www.musicalvibesfoundation.com/updates/preview-story",
   );
   await expect(page.locator('meta[name="description"]')).toHaveAttribute(
     "content",
@@ -136,16 +136,16 @@ test("CMS SSR, dynamic slugs, images, metadata and Journal/Gallery updates in wo
   await expect(page.locator(".selected-collection h2")).toHaveText(
     "Preview story",
   );
-  await page.getByRole("link", { name: "Read the Journal story" }).click();
-  await expect(page).toHaveURL(/\/journal\/preview-story$/);
+  await page.getByRole("link", { name: "Read the Update" }).click();
+  await expect(page).toHaveURL(/\/updates\/preview-story$/);
   expect(await (await request.get("/sitemap.xml")).text()).toContain(
-    "/journal/preview-story",
+    "/updates/preview-story",
   );
   expect((await request.get("/programs/preview-music")).status()).toBe(200);
   expect((await request.get("/events/preview-gathering")).status()).toBe(200);
   await page.goto("/programs");
   await expect(page.locator(".program-row")).toHaveCount(1);
-  await page.goto("/journal");
+  await page.goto("/updates");
   await expect(page.locator(".journal-featured")).toContainText(
     "Preview story",
   );
@@ -153,7 +153,7 @@ test("CMS SSR, dynamic slugs, images, metadata and Journal/Gallery updates in wo
   await expect(page.locator(".gallery-collection-card")).toContainText(
     "Preview story",
   );
-  expect((await request.get("/journal/not-published")).status()).toBe(404);
+  expect((await request.get("/updates/not-published")).status()).toBe(404);
 
   const renamed = fixture();
   renamed[4].title = "Renamed story";
@@ -165,27 +165,27 @@ test("CMS SSR, dynamic slugs, images, metadata and Journal/Gallery updates in wo
         : d,
     ),
   });
-  const redirect = await request.get("/journal/preview-story", {
+  const redirect = await request.get("/updates/preview-story", {
     maxRedirects: 0,
     headers: { "user-agent": "facebookexternalhit/1.1" },
   });
   expect(redirect.status()).toBe(308);
-  expect(redirect.headers().location).toBe("/journal/renamed-story");
-  await page.goto("/journal/preview-story");
-  await expect(page).toHaveURL(/\/journal\/renamed-story$/);
+  expect(redirect.headers().location).toBe("/updates/renamed-story");
+  await page.goto("/updates/preview-story");
+  await expect(page).toHaveURL(/\/updates\/renamed-story$/);
   await page.goto("/gallery?collection=journal-collection.journal.story");
   await expect(page.locator(".selected-collection h2")).toHaveText(
     "Renamed story",
   );
   expect(await (await request.get("/sitemap.xml")).text()).toContain(
-    "/journal/renamed-story",
+    "/updates/renamed-story",
   );
 
   const withdrawn = fixture().map((d) =>
     d._type === "mediaItem" ? { ...d, editorialApproval: "pending" } : d,
   );
   await request.post("/__fixture", { data: withdrawn });
-  await page.goto("/journal/preview-story");
+  await page.goto("/updates/preview-story");
   await expect(page.locator(".journal-article-photo")).toHaveCount(0);
   await page.goto("/programs/preview-music");
   await expect(page.locator(".program-detail-hero img")).toHaveAttribute(
@@ -197,9 +197,9 @@ test("CMS SSR, dynamic slugs, images, metadata and Journal/Gallery updates in wo
   await request.post("/__fixture", {
     data: fixture().filter((d) => d._type !== "journalEntry"),
   });
-  expect((await request.get("/journal/preview-story")).status()).toBe(404);
+  expect((await request.get("/updates/preview-story")).status()).toBe(404);
   expect(await (await request.get("/sitemap.xml")).text()).not.toContain(
-    "/journal/preview-story",
+    "/updates/preview-story",
   );
 });
 
@@ -216,7 +216,7 @@ test("empty CMS stays usable without exposing local demo photographs", async ({
     "/about",
     "/programs",
     "/events",
-    "/journal",
+    "/updates",
     "/gallery",
     "/contact",
     "/faq",
@@ -289,7 +289,7 @@ test("owner uploads and homepage choices render from one published story", async
   await expect(page.locator(".upcoming-section")).toContainText(
     "Preview gathering",
   );
-  await page.goto("/journal/preview-story");
+  await page.goto("/updates/preview-story");
   await expect(page.locator(".journal-article-photo figcaption")).toHaveText(
     "Moment 5",
   );
@@ -308,6 +308,15 @@ test("owner uploads and homepage choices render from one published story", async
       d._type === "journalEntry" ? { ...d, photoRightsConfirmed: false } : d,
     ),
   });
-  await page.goto("/journal/preview-story");
-  await expect(page.locator(".journal-article-photo")).toHaveCount(0);
+  await page.goto("/updates/preview-story");
+  await expect(page.locator(".journal-article-photo")).toHaveCount(1);
+  await expect(page.locator(".event-detail-gallery figure")).toHaveCount(23);
+  await request.post("/__fixture", {
+    data: data.filter((d) => d._type !== "journalEntry"),
+  });
+  expect((await request.get("/updates/preview-story")).status()).toBe(404);
+  await page.goto("/gallery");
+  await expect(
+    page.getByRole("link", { name: "Read Preview story", exact: true }),
+  ).toHaveCount(0);
 });

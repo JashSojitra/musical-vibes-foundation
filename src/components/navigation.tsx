@@ -17,7 +17,7 @@ const links = [
   ["Programs", "/programs"],
   ["Events", "/events"],
   ["Gallery", "/gallery"],
-  ["Journal", "/journal"],
+  ["Updates", "/updates"],
   ["Contact", "/contact"],
 ];
 export default function Navigation({

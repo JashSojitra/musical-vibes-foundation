@@ -94,6 +94,14 @@ export function createContentAdapter(
   const eligiblePhotos = source.media.filter(isPublicMedia);
   const photoById = new Map(eligiblePhotos.map((photo) => [photo.id, photo]));
   const collections = deriveGalleryCollections(entries, source.media, today);
+  for (const collection of collections) {
+    const entry = publicEntries.find(
+      (item) => item.id === collection.journalId,
+    );
+    collection.eventSlug = source.events.find(
+      (event) => event.id === entry?.eventId,
+    )?.slug;
+  }
   const standalone = eligiblePhotos.filter((photo) => photo.standaloneGallery);
   const galleryIds = new Set(
     [

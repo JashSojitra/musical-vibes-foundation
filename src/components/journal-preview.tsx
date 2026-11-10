@@ -23,14 +23,14 @@ export default async function JournalPreview() {
     >
       <div className="section-heading">
         <div>
-          <Eyebrow>THE COMMUNITY JOURNAL</Eyebrow>
+          <Eyebrow>UPDATES & STORIES</Eyebrow>
           <h2 id="journal-preview-title">
             Stories that bring us
             <br />
             <em>a little closer.</em>
           </h2>
         </div>
-        <TextLink href="/journal">Read the Journal</TextLink>
+        <TextLink href="/updates">Read Updates</TextLink>
       </div>
       <div className="journal-preview-list">
         {entries.map((entry) => {
@@ -39,7 +39,7 @@ export default async function JournalPreview() {
             <article key={entry.id}>
               {photo ? (
                 <Link
-                  href={`/journal/${entry.slug}`}
+                  href={`/updates/${entry.slug}`}
                   className="journal-preview-image"
                 >
                   <Image
@@ -49,19 +49,26 @@ export default async function JournalPreview() {
                     sizes="(max-width:700px) 88vw, 30vw"
                   />
                 </Link>
-              ) : null}
+              ) : (
+                <div
+                  className="journal-preview-image update-thumbnail"
+                  aria-hidden="true"
+                >
+                  MVF
+                </div>
+              )}
               <div>
                 <p className="journal-meta">
-                  Archive note ·{" "}
+                  Update ·{" "}
                   <time dateTime={entry.publishedAt}>
                     {journalDate(entry.publishedAt)}
                   </time>
                 </p>
                 <h3>
-                  <Link href={`/journal/${entry.slug}`}>{entry.title}</Link>
+                  <Link href={`/updates/${entry.slug}`}>{entry.title}</Link>
                 </h3>
                 <p>{entry.excerpt}</p>
-                <TextLink href={`/journal/${entry.slug}`}>
+                <TextLink href={`/updates/${entry.slug}`}>
                   Read the story
                 </TextLink>
               </div>

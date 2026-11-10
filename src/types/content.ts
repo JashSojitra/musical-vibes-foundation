@@ -73,6 +73,7 @@ export interface GalleryCollection {
   id: string;
   title: string;
   photos: MediaAsset[];
+  eventSlug?: string;
   journalSlug?: string;
   journalId?: string;
 }

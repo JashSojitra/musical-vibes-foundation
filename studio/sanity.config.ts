@@ -27,6 +27,7 @@ export default defineConfig({
                   .documentId("siteSettings")
                   .views([S.view.form()]),
               ),
+            S.documentTypeListItem("faq").title("FAQs"),
             S.listItem()
               .title("Site Settings")
               .child(
@@ -34,7 +35,6 @@ export default defineConfig({
                   .schemaType("siteSettings")
                   .documentId("siteSettings"),
               ),
-            S.documentTypeListItem("faq").title("FAQs"),
           ]),
     }),
   ],

@@ -44,6 +44,24 @@ export default function GalleryPreview({
           ))}
         </div>
       ) : null}
+      {collections.map((collection) =>
+        collection.journalSlug ? (
+          <p key={collection.id}>
+            <Link href={`/updates/${collection.journalSlug}`}>
+              Read {collection.title}
+            </Link>
+            {collection.eventSlug ? (
+              <>
+                {" "}
+                ·{" "}
+                <Link href={`/events/${collection.eventSlug}`}>
+                  Related event
+                </Link>
+              </>
+            ) : null}
+          </p>
+        ) : null,
+      )}
       <TextLink href="/gallery">Explore our memories</TextLink>
     </div>
   );

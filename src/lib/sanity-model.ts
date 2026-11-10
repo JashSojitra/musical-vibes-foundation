@@ -39,14 +39,13 @@ export function mapSanity(
     const uploads = Array.isArray(story.storyPhotos)
       ? (story.storyPhotos as Array<Record<string, unknown>>)
       : [];
-    const approved = story.photoRightsConfirmed === true;
     const ordered = [
       ...uploads.filter((p) => p.cover === true),
       ...uploads.filter((p) => p.cover !== true),
     ];
     story.photos = [
       ...ordered.flatMap((photo) => {
-        if (!approved || typeof photo._key !== "string") return [];
+        if (typeof photo._key !== "string") return [];
         const id = `${story._id}-photo-${photo._key}`;
         docs.push({
           _id: id,
@@ -57,7 +56,7 @@ export function mapSanity(
             photo.decorative === true
               ? ""
               : (typeof photo.alt === "string" && photo.alt.trim()) ||
-                `${story.title || "Community story"} — photograph ${uploads.indexOf(photo) + 1}`,
+                `Photograph ${uploads.indexOf(photo) + 1} accompanying “${story.title || "Community update"}” (description not provided)`,
           decorative: photo.decorative === true,
           caption: photo.caption,
           editorialApproval: "approved",
@@ -107,7 +106,7 @@ export function mapSanity(
               ? ""
               : text(d, "alt").trim() ||
                 text(d, "caption").trim() ||
-                "Musical Vibes Foundation community photograph",
+                "Musical Vibes Foundation community photograph (description not provided)",
           caption: text(d, "caption"),
           category: (d.category || "Seniors Club") as MediaAsset["category"],
           source: text(d, "source"),

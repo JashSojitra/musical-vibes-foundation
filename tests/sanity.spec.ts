@@ -66,7 +66,7 @@ test("CMS Portable Text keeps editorial styling and safe links at every viewport
   const html = renderToStaticMarkup(
     createElement(EditorialBody, { body, paragraphs: [] }),
   );
-  await page.goto("/journal/diwali-celebrations-2025");
+  await page.goto("/updates/diwali-celebrations-2025");
   // Use the real article container/CSS with SDK-rendered rich content; no live writes are needed.
   const article = page.locator(".journal-article-body > div").first();
   await article.evaluate((element, markup) => {
