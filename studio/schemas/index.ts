@@ -1,5 +1,9 @@
 import { StoryPhotosInput } from "../components/StoryPhotosInput";
 import { defineField, defineType } from "sanity";
+import {
+  publicReferenceOptions,
+  validatePublicReference,
+} from "./public-references";
 
 const string = (name: string, title: string, mandatory = true) =>
   defineField({
@@ -21,7 +25,14 @@ const references = (name: string, title: string, type: string) =>
     name,
     title,
     type: "array",
-    of: [{ type: "reference", to: [{ type }] }],
+    of: [
+      {
+        type: "reference",
+        to: [{ type }],
+        options: publicReferenceOptions,
+        validation: (r) => r.custom(validatePublicReference),
+      },
+    ],
     validation: (r) => r.unique(),
   });
 const image = defineField({
@@ -29,6 +40,8 @@ const image = defineField({
   title: "Featured photograph",
   type: "reference",
   to: [{ type: "mediaItem" }],
+  options: publicReferenceOptions,
+  validation: (r) => r.custom(validatePublicReference),
   description:
     "Select a Media Library record. Only approved, publicly enabled photographs appear on the website.",
 });
@@ -191,6 +204,8 @@ export const schemaTypes = [
         title: "Related event",
         type: "reference",
         to: [{ type: "event" }],
+        options: publicReferenceOptions,
+        validation: (r) => r.custom(validatePublicReference),
         description:
           "Optional: connect this story to an event. Gallery does not require one.",
       }),
