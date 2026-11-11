@@ -492,6 +492,32 @@ img {
   color: #66545f;
 }
 
+.footer-credit {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 18px;
+  margin-top: 24px;
+  color: #66545f;
+  font-size: 11px;
+  line-height: 1.7;
+  text-align: center;
+}
+.footer-credit nav {
+  display: flex;
+  gap: 16px;
+}
+.footer-credit a {
+  display: inline-block;
+  padding-block: 5px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.footer-credit a:hover {
+  color: var(--plum);
+}
+
 /* Shared editorial elements. */
 .photo {
   min-width: 0;

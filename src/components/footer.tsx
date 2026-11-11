@@ -66,6 +66,27 @@ export default function Footer({ settings }: { settings: SiteSettings }) {
           Back to content <ArrowIcon direction="up" />
         </a>
       </div>
+      <div className="footer-credit">
+        <span>Thoughtfully designed &amp; developed by Jash Sojitra</span>
+        <nav aria-label="Developer profiles">
+          <a
+            href="https://www.linkedin.com/in/jashsojitra/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Jash Sojitra on LinkedIn (opens in a new tab)"
+          >
+            LinkedIn
+          </a>
+          <a
+            href="https://github.com/JashSojitra"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Jash Sojitra on GitHub (opens in a new tab)"
+          >
+            GitHub
+          </a>
+        </nav>
+      </div>
     </footer>
   );
 }
