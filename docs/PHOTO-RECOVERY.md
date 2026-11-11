@@ -24,6 +24,41 @@ All original binaries are under **ignored** `.tmp/photo-recovery/objects/<sha256
 
 ## Safe preparation against current content
 
+### Use the existing November 11 backup in one step
+
+With Node 22.14–24, dependencies installed, the existing operator token already in
+`SANITY_REPAIR_TOKEN`, and the recovered originals retained locally, run from the
+project root:
+
+```powershell
+npm run production:content:plan -- .tmp/sanity-repair/photos-20261111-013321 - .tmp/photo-recovery
+```
+
+This single command checks the backup receipt, every backed-up original, the
+current authenticated dataset export, and every recovered binary used in the
+photo proposal. It writes `.tmp/sanity-repair/photos-20261111-013321/production-plan.json`
+privately, including `historicalPhotoMigration`; a separate `photos:plan` run is
+unnecessary. It does not upload images or change Sanity. Do not copy the token or
+private artifacts to a worker or put them in command arguments.
+
+The reported recovery result was 307/307 references, 299 unique binaries and zero
+failures; the backup reportedly contains 20 original asset binaries. These are
+operator results, not independently verified in the fixture-only worker snapshot.
+The command fails closed if local artifacts are absent/corrupt, the token is
+missing/rejected, the dataset has changed, or a report already exists. If a report
+already exists, preserve it by moving it to a uniquely named private archive file
+in the same ignored backup directory before repeating the command. Dataset drift
+requires a new authenticated backup using the procedure below; never edit receipt
+hashes to bypass it. A successful run does not prove full-read ACL coverage: the
+operator must have independently verified that credential's access.
+
+Both photo modules retain native Node CLI entry points and exported library
+functions. CLI awaits live inside async functions so tsx can import them from the
+CommonJS-transformed production TypeScript entry point. `npm run test:production-plan`
+includes that import regression and the actual npm planner command with synthetic
+backup/originals and an intercepted GET export. No private data or live requests
+are used by those tests.
+
 First follow `PRODUCTION-LAUNCH.md` and `SANITY-ID-REPAIR.md`: pause writers, take a new complete authenticated documents-and-original-assets backup, verify hashes and independently verify the credential's full-read ACL. Never use the old empty tar. Do not print credentials. Use a new private backup directory each time.
 
 ```powershell

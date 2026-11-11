@@ -7,6 +7,29 @@ export const origin = "https://www.musicalvibesfoundation.com";
 export const sha = (bytes, algorithm = "sha256") =>
   createHash(algorithm).update(bytes).digest("hex");
 const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+// Windows scanners/readers can briefly deny replacing an existing file. Retry
+// only sharing/permission errors, keep the old checkpoint intact, and fail with
+// the original filesystem error if the bounded window does not clear.
+export async function replaceFile(
+  source,
+  destination,
+  { renameFile = rename, sleep = pause, platform = process.platform } = {},
+) {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      await renameFile(source, destination);
+      return;
+    } catch (error) {
+      if (
+        platform !== "win32" ||
+        !["EPERM", "EACCES", "EBUSY"].includes(error.code) ||
+        attempt >= 5
+      )
+        throw error;
+      await sleep(25 * 2 ** attempt);
+    }
+  }
+}
 export function sourceURL(source) {
   const u = new URL(
     source.startsWith("../assets/") ? source.slice(2) : source,
@@ -166,7 +189,7 @@ export async function recover({
         resolve(dir, "inventory.next.json"),
         JSON.stringify(data, null, 2) + "\n",
       );
-      await rename(
+      await replaceFile(
         resolve(dir, "inventory.next.json"),
         resolve(dir, "inventory.json"),
       );
@@ -286,7 +309,7 @@ export async function recover({
               resolve(dir, `${row.local}.${sha(row.source).slice(0, 12)}.next`),
               bytes,
             );
-            await rename(
+            await replaceFile(
               resolve(dir, `${row.local}.${sha(row.source).slice(0, 12)}.next`),
               resolve(dir, row.local),
             );
@@ -298,7 +321,13 @@ export async function recover({
         await save();
       }
     }
-    await Promise.all(Array.from({ length: concurrency }, worker));
+    // A checkpoint failure must not release the directory lock while another
+    // worker is still fetching/writing. Promise.all rejects before those settle.
+    const results = await Promise.allSettled(
+      Array.from({ length: concurrency }, worker),
+    );
+    const failure = results.find((result) => result.status === "rejected");
+    if (failure) throw failure.reason;
     const seen = new Map();
     for (const row of rows.filter((r) => r.status === "success")) {
       if (seen.has(row.sha256)) row.duplicateOf = seen.get(row.sha256);

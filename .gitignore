@@ -11,6 +11,10 @@ test-results/
 playwright-report/
 .tmp/
 
+# Local historical backups and pre-migration owner originals
+/sanity-backup.tar.gz
+/archive/
+
 # Local agent/account state and credentials
 .agents/
 .codex/

@@ -9,7 +9,7 @@ export const suspectedIds = [
   "a257f306-d199-4d83-bfe0-780ffc2c121b",
 ];
 // Explicit legacy seed identities, corroborated by preserved source labels; no fuzzy title match.
-const historical = {
+export const historicalAlbumSources = {
   "Diwali Celebrations (Oct 16 2025)": "journal.event.diwali-celebrations-2025",
   "Seniors Meet (Aug 21 2025)": "journal.event.seniors-club-picnic-2025",
   "Seniors Club Christmas Celebration (Dec 8 2025)":
@@ -75,7 +75,7 @@ export function photoPlan(docs, albums, recovered) {
     });
   }
   const albumProposals = albums.map((a) => {
-    const sourceId = historical[a.title];
+    const sourceId = historicalAlbumSources[a.title];
     const slug = a.title
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
@@ -261,4 +261,3 @@ if (
     process.exitCode = 1;
   });
 }
-

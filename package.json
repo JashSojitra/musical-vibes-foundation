@@ -42,13 +42,15 @@
     "sanity:audit:public": "node scripts/audit-sanity-public.mjs",
     "sanity:repair": "tsx scripts/sanity-repair.ts",
     "production:content:plan": "tsx scripts/production-content-audit.ts",
-    "test:production-plan": "node --test tests-cms/production-plan.test.mjs",
+    "test:production-plan": "node --test tests-cms/production-plan.test.mjs tests-cms/production-tsx.test.mjs",
     "cf:build:production": "node scripts/build-production.mjs",
     "cf:dry-run:production": "node scripts/run-production.mjs dry-run",
     "cf:deploy:production": "node scripts/run-production.mjs deploy",
     "photos:recover": "node scripts/recover-photos.mjs",
     "photos:plan": "node scripts/photo-import-plan.mjs",
-    "test:photo-recovery": "node --test tests-cms/photo-recovery.test.mjs"
+    "test:photo-recovery": "node --test tests-cms/photo-recovery.test.mjs",
+    "photos:import": "tsx scripts/historical-import.ts",
+    "test:historical-import": "tsx --test tests-cms/historical-import.test.mjs tests-cms/historical-import-cli.test.ts"
   },
   "dependencies": {
     "@portabletext/react": "^8.0.1",

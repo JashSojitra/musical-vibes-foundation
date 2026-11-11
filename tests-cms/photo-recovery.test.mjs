@@ -8,6 +8,7 @@ import {
   inspect,
   sourceURL,
   inventory,
+  replaceFile,
 } from "../scripts/recover-photos.mjs";
 import {
   photoPlan,
@@ -35,6 +36,54 @@ const fixture = async () => ({
 const load = async (dir) =>
   JSON.parse(await readFile(join(dir, "inventory.json"), "utf8"));
 const docs = [{ _id: "owner", _rev: "rev", _type: "siteSettings" }];
+
+test("Windows replacement retries transient sharing failures but bounds persistent denials", async () => {
+  let calls = 0;
+  const waits = [];
+  const denied = Object.assign(Error("sharing violation"), { code: "EPERM" });
+  const options = {
+    platform: "win32",
+    sleep: async (ms) => {
+      waits.push(ms);
+    },
+    renameFile: async () => {
+      if (++calls < 3) throw denied;
+    },
+  };
+  await replaceFile("next", "checkpoint", options);
+  assert.equal(calls, 3);
+  assert.deepEqual(waits, [25, 50]);
+  calls = 0;
+  await assert.rejects(
+    replaceFile("next", "checkpoint", {
+      ...options,
+      renameFile: async () => {
+        calls++;
+        throw denied;
+      },
+    }),
+    (error) => error === denied,
+  );
+  assert.equal(calls, 6);
+  for (const [platform, code] of [
+    ["linux", "EPERM"],
+    ["win32", "ENOENT"],
+  ]) {
+    calls = 0;
+    await assert.rejects(
+      replaceFile("next", "checkpoint", {
+        ...options,
+        platform,
+        renameFile: async () => {
+          calls++;
+          throw Object.assign(Error("stop"), { code });
+        },
+      }),
+      { code },
+    );
+    assert.equal(calls, 1);
+  }
+});
 test("origin allowlist and image validation fail closed", () => {
   for (const s of [
     "https://evil.example/assets/a.jpg",
@@ -261,6 +310,48 @@ test("refuses a shared recovery directory lock and resumes a partial checkpoint"
     fetcher: async () => new Response(image),
   });
   assert.equal(report.successful, 2);
+});
+
+test("checkpoint filesystem failure keeps the lock until every worker settles", async () => {
+  const options = await fixture();
+  const { mkdir } = await import("node:fs/promises");
+  // Portable real filesystem failure, including Windows: the staging file is a directory.
+  await mkdir(join(options.dir, "inventory.next.json"));
+  let release;
+  const blocked = new Promise((resolve) => {
+    release = resolve;
+  });
+  const pending = recover({
+    ...options,
+    fetcher: async (url) => {
+      if (url.endsWith("2.jpg")) await blocked;
+      return new Response(image);
+    },
+  });
+  const outcome = pending.then(
+    () => "resolved",
+    () => "rejected",
+  );
+  try {
+    assert.equal(
+      await Promise.race([
+        outcome,
+        new Promise((resolve) => setTimeout(() => resolve("blocked"), 100)),
+      ]),
+      "blocked",
+      "A failed worker must not release another worker's lock",
+    );
+    await readFile(join(options.dir, "recovery.lock"));
+  } finally {
+    release();
+    await outcome;
+  }
+  await assert.rejects(pending, (error) =>
+    ["EISDIR", "EACCES", "EPERM"].includes(error.code),
+  );
+  await assert.rejects(readFile(join(options.dir, "recovery.lock")), {
+    code: "ENOENT",
+  });
 });
 test("cleanup follows Media Library references without looping or crossing datasets", () => {
   const records = [
