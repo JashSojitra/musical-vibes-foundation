@@ -40,7 +40,12 @@
     "test:cms-preview": "playwright test --config playwright.cms-preview.config.ts",
     "test:cms-preview:live": "playwright test --config playwright.cms-preview-live.config.ts",
     "sanity:audit:public": "node scripts/audit-sanity-public.mjs",
-    "sanity:repair": "tsx scripts/sanity-repair.ts"
+    "sanity:repair": "tsx scripts/sanity-repair.ts",
+    "production:content:plan": "tsx scripts/production-content-audit.ts",
+    "test:production-plan": "node --test tests-cms/production-plan.test.mjs",
+    "cf:build:production": "node scripts/build-production.mjs",
+    "cf:dry-run:production": "node scripts/run-production.mjs dry-run",
+    "cf:deploy:production": "node scripts/run-production.mjs deploy"
   },
   "dependencies": {
     "@portabletext/react": "^8.0.1",

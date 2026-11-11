@@ -44,3 +44,5 @@ docs/validation/**/*.json
 
 # Independent Studio generated runtime
 studio/.sanity/
+
+.open-next-production/

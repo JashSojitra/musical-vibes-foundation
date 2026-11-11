@@ -43,6 +43,7 @@
     ".open-next-staging",
     ".wrangler",
     "studio",
-    ".open-next-cms-preview"
+    ".open-next-cms-preview",
+    ".open-next-production"
   ]
 }
