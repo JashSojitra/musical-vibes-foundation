@@ -45,7 +45,10 @@
     "test:production-plan": "node --test tests-cms/production-plan.test.mjs",
     "cf:build:production": "node scripts/build-production.mjs",
     "cf:dry-run:production": "node scripts/run-production.mjs dry-run",
-    "cf:deploy:production": "node scripts/run-production.mjs deploy"
+    "cf:deploy:production": "node scripts/run-production.mjs deploy",
+    "photos:recover": "node scripts/recover-photos.mjs",
+    "photos:plan": "node scripts/photo-import-plan.mjs",
+    "test:photo-recovery": "node --test tests-cms/photo-recovery.test.mjs"
   },
   "dependencies": {
     "@portabletext/react": "^8.0.1",

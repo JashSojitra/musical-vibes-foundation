@@ -2,13 +2,14 @@ import { readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { loadBackup, repairFetch } from "./sanity-repair";
 import { hash, target } from "./sanity-repair-plan";
+import { verifiedPhotoPlan } from "./photo-import-plan.mjs";
 import { productionPlan } from "./production-content-plan.mjs";
 
 async function main() {
-  const [dir, cleanupFile, ...extra] = process.argv.slice(2);
+  const [dir, cleanupFile, photoDir, ...extra] = process.argv.slice(2);
   if (!dir || extra.length)
     throw Error(
-      "Usage: tsx scripts/production-content-audit.ts <verified-backup-dir> [explicit-cleanup-ids.json]",
+      "Usage: tsx scripts/production-content-audit.ts <verified-backup-dir> [explicit-cleanup-ids.json | -] [photo-recovery-dir]",
     );
   const token = process.env.SANITY_REPAIR_TOKEN;
   if (!token)
@@ -37,9 +38,10 @@ async function main() {
   const albums = JSON.parse(
     await readFile("docs/legacy-snapshot/gallery-index.json", "utf8"),
   );
-  const ids = cleanupFile
-    ? JSON.parse(await readFile(cleanupFile, "utf8"))
-    : [];
+  const ids =
+    cleanupFile && cleanupFile !== "-"
+      ? JSON.parse(await readFile(cleanupFile, "utf8"))
+      : [];
   if (
     !Array.isArray(ids) ||
     ids.some((id) => typeof id !== "string") ||
@@ -47,10 +49,23 @@ async function main() {
   )
     throw Error("Cleanup list must contain unique exact IDs");
   const report = productionPlan(docs, albums, ids);
+  const historicalPhotoMigration = photoDir
+    ? await verifiedPhotoPlan(
+        docs,
+        albums,
+        JSON.parse(await readFile(resolve(photoDir, "inventory.json"), "utf8")),
+        resolve(photoDir),
+      )
+    : undefined;
   await writeFile(
     resolve(dir, "production-plan.json"),
     JSON.stringify(
-      { target, backupHash: backup.documentsHash, ...report },
+      {
+        target,
+        backupHash: backup.documentsHash,
+        ...report,
+        historicalPhotoMigration,
+      },
       null,
       2,
     ) + "\n",
