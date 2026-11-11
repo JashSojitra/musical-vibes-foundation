@@ -325,10 +325,7 @@ export async function recover({
     await unlink(resolve(dir, "recovery.lock"));
   }
 }
-if (
-  process.argv[1] &&
-  import.meta.url === pathToFileURL(resolve(process.argv[1])).href
-) {
+async function runCli() {
   const args = process.argv.slice(2);
   if (args.some((a) => !["--offline"].includes(a)))
     throw Error(
@@ -341,4 +338,14 @@ if (
       offline: args.includes("--offline"),
     }),
   );
+}
+
+if (
+  process.argv[1] &&
+  import.meta.url === pathToFileURL(resolve(process.argv[1])).href
+) {
+  runCli().catch((error) => {
+    console.error(error.message);
+    process.exitCode = 1;
+  });
 }

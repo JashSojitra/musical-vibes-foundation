@@ -227,10 +227,7 @@ export async function verifiedPhotoPlan(docs, albums, recovered, dir) {
   }
   return plan;
 }
-if (
-  process.argv[1] &&
-  import.meta.url === pathToFileURL(resolve(process.argv[1])).href
-) {
+async function runCli() {
   const [file, ...extra] = process.argv.slice(2);
   if (!file || extra.length)
     throw Error("Usage: npm run photos:plan -- <fresh-private-export.ndjson>");
@@ -254,3 +251,14 @@ if (
   );
   console.log("Private proposal saved in .tmp/photo-recovery. No CMS writes.");
 }
+
+if (
+  process.argv[1] &&
+  import.meta.url === pathToFileURL(resolve(process.argv[1])).href
+) {
+  runCli().catch((error) => {
+    console.error(error.message);
+    process.exitCode = 1;
+  });
+}
+
