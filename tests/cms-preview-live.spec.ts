@@ -37,6 +37,7 @@ test("real Wrangler CMS preview serves public published content without writes",
   page,
   request,
 }, testInfo) => {
+  test.setTimeout(180000);
   const audit = await auditPublicSanity();
   const snapshot = await readSanitySnapshot(
     createClient({

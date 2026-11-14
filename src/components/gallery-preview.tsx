@@ -7,14 +7,16 @@ export const collectionHref = (id: string) =>
   `/gallery?collection=${encodeURIComponent(id)}`;
 export default function GalleryPreview({
   collections,
+  limit = 3,
 }: {
   collections: GalleryCollection[];
+  limit?: number;
 }) {
   return (
     <div className="gallery-archive-preview">
       {collections.length ? (
         <div className="gallery-collection-cards">
-          {collections.slice(0, 3).map((collection) => (
+          {collections.slice(0, limit).map((collection) => (
             <Link
               href={collectionHref(collection.id)}
               className="gallery-collection-card"

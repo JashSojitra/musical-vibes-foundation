@@ -17,7 +17,7 @@ export async function auditPublicSanity() {
     perspective: "published",
   });
   const docs = await client.fetch(
-    '*[_type in ["program","event","journalEntry","mediaItem","siteSettings","faq"]]',
+    '*[_type in ["program","event","journalEntry","mediaItem","galleryAlbum","siteSettings","faq"]]',
     {},
     { cache: "no-store", perspective: "published" },
   );
@@ -50,6 +50,7 @@ export async function auditPublicSanity() {
         "event",
         "journalEntry",
         "mediaItem",
+        "galleryAlbum",
         "siteSettings",
         "faq",
       ].map((type) => [type, docs.filter((d) => d._type === type).length]),

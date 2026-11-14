@@ -166,6 +166,83 @@ const choice = (
 
 export const schemaTypes = [
   defineType({
+    name: "galleryAlbum",
+    title: "Gallery album",
+    type: "document",
+    fields: [
+      defineField({
+        name: "sourceId",
+        type: "string",
+        readOnly: true,
+        hidden: true,
+      }),
+      string("title", "Album title"),
+      defineField({
+        name: "order",
+        title: "Album display order",
+        type: "number",
+        validation: (r) => r.integer().min(0),
+      }),
+      defineField({
+        name: "albumPhotos",
+        title: "Album photographs (drag to reorder)",
+        type: "array",
+        components: { input: StoryPhotosInput },
+        options: { layout: "grid", sortable: true },
+        of: [
+          {
+            type: "image",
+            options: { hotspot: true },
+            fields: [
+              string("alt", "Description (optional)", false),
+              string("caption", "Caption (optional)", false),
+              defineField({
+                name: "decorative",
+                title: "Decorative image",
+                type: "boolean",
+                initialValue: false,
+              }),
+            ],
+          },
+        ],
+        validation: (r) => r.required().min(1),
+        description:
+          "First photograph is the album cover. Publishing an approved, enabled album makes its photographs visible without publishing an Update article.",
+      }),
+      choice(
+        "editorialApproval",
+        "Editorial publication approval",
+        ["pending", "approved", "rejected"],
+        "pending",
+      ),
+      defineField({
+        name: "publicationEnabled",
+        title: "Allow album on the public Gallery",
+        type: "boolean",
+        initialValue: false,
+        description:
+          "Enable only after checking rights and permission outside this public dataset. Approval is also required.",
+      }),
+      defineField({
+        name: "journalEntry",
+        title: "Related published Update (optional)",
+        type: "reference",
+        to: [{ type: "journalEntry" }],
+        options: publicReferenceOptions,
+        validation: (r) => r.custom(validatePublicReference),
+        description:
+          "Optional reading link. Do not publish a draft Update just to publish this album.",
+      }),
+    ],
+    preview: {
+      select: {
+        title: "title",
+        subtitle: "editorialApproval",
+        media: "albumPhotos.0",
+      },
+    },
+  }),
+  defineType({
     name: "journalEntry",
     title: "Update or story",
     type: "document",

@@ -51,9 +51,12 @@ export default async function Gallery({
           Every gathering has <em>a story.</em>
         </h2>
         <Link href="/events">See upcoming events</Link>
-        <GalleryPreview
-          collections={collections.filter((collection) => collection.journalId)}
-        />
+        {!selected ? (
+          <GalleryPreview
+            collections={collections}
+            limit={collections.length}
+          />
+        ) : null}
         {selected ? (
           <div className="selected-collection" id="collection">
             <p className="eyebrow">SELECTED COLLECTION</p>

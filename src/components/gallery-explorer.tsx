@@ -12,13 +12,13 @@ const categories = [
 ] as const;
 export default function GalleryExplorer({ media }: { media: MediaAsset[] }) {
   const [category, setCategory] = useState<string>("All moments");
-  const [selected, setSelected] = useState<string | null>(null);
+  const [selected, setSelected] = useState<number | null>(null);
   const dialog = useRef<HTMLDialogElement>(null);
   const opener = useRef<HTMLButtonElement | null>(null);
   const filtered = media.filter(
     (item) => category === "All moments" || item.category === category,
   );
-  const index = filtered.findIndex((item) => item.id === selected);
+  const index = selected ?? -1;
   const photo = filtered[index];
   const close = () => {
     dialog.current?.close();
@@ -26,20 +26,18 @@ export default function GalleryExplorer({ media }: { media: MediaAsset[] }) {
     opener.current?.focus();
   };
   const step = (direction: number) =>
-    setSelected(
-      filtered[(index + direction + filtered.length) % filtered.length].id,
-    );
+    setSelected((index + direction + filtered.length) % filtered.length);
   useEffect(() => {
-    if (!selected) return;
+    if (selected === null) return;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = previousOverflow;
     };
   }, [selected]);
-  function open(photo: MediaAsset, event: React.MouseEvent<HTMLButtonElement>) {
+  function open(index: number, event: React.MouseEvent<HTMLButtonElement>) {
     opener.current = event.currentTarget;
-    setSelected(photo.id);
+    setSelected(index);
     dialog.current?.showModal();
   }
   return (
@@ -67,11 +65,11 @@ export default function GalleryExplorer({ media }: { media: MediaAsset[] }) {
       <div className="editorial-gallery">
         {filtered.map((item, i) => (
           <figure
-            key={item.id}
+            key={`${item.id}-${i}`}
             className={`gallery-photo gallery-shape-${i % 5}`}
           >
             <button
-              onClick={(event) => open(item, event)}
+              onClick={(event) => open(i, event)}
               aria-label={`Open photograph: ${item.alt}`}
             >
               <Image
@@ -151,6 +149,13 @@ export default function GalleryExplorer({ media }: { media: MediaAsset[] }) {
             </div>
             <div className="lightbox-caption" aria-live="polite">
               <p>{photo.caption}</p>
+              <a
+                href={photo.originalSrc ?? photo.src}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                View full-resolution photograph
+              </a>
               <span>
                 {index + 1} / {filtered.length}
               </span>

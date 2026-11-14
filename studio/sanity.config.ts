@@ -19,6 +19,7 @@ export default defineConfig({
             S.documentTypeListItem("event").title("Events"),
             S.documentTypeListItem("program").title("Programs"),
             S.documentTypeListItem("mediaItem").title("Photos"),
+            S.documentTypeListItem("galleryAlbum").title("Gallery albums"),
             S.listItem()
               .title("Homepage")
               .child(

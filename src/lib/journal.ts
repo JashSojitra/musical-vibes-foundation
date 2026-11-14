@@ -93,16 +93,29 @@ export function createContentAdapter(
     );
   const eligiblePhotos = source.media.filter(isPublicMedia);
   const photoById = new Map(eligiblePhotos.map((photo) => [photo.id, photo]));
-  const collections = deriveGalleryCollections(entries, source.media, today);
+  const albums = source.galleryAlbums ?? [];
+  const collections = [
+    ...albums.map((album) => ({ ...album })),
+    ...deriveGalleryCollections(entries, source.media, today).filter(
+      (collection) =>
+        !albums.some((album) => album.journalId === collection.journalId),
+    ),
+  ];
   for (const collection of collections) {
     const entry = publicEntries.find(
       (item) => item.id === collection.journalId,
     );
+    collection.journalSlug = entry?.slug;
     collection.eventSlug = source.events.find(
       (event) => event.id === entry?.eventId,
     )?.slug;
   }
-  const standalone = eligiblePhotos.filter((photo) => photo.standaloneGallery);
+  const albumPhotoIds = new Set(
+    albums.flatMap((album) => album.photos.map((photo) => photo.id)),
+  );
+  const standalone = eligiblePhotos.filter(
+    (photo) => photo.standaloneGallery && !albumPhotoIds.has(photo.id),
+  );
   const galleryIds = new Set(
     [
       ...standalone,

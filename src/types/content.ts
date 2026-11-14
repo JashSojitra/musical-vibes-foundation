@@ -4,6 +4,7 @@ export type Theme = "plum" | "rose" | "sage" | "gold" | "ivory";
 export interface MediaAsset {
   id: string;
   src: string;
+  originalSrc?: string;
   alt: string;
   width: number;
   height: number;
@@ -99,6 +100,7 @@ export interface SiteContent {
   programs: Program[];
   events: CommunityEvent[];
   media: MediaAsset[];
+  galleryAlbums?: GalleryCollection[];
   faqs: FAQ[];
   home: {
     featuredProgramSlugs: string[];

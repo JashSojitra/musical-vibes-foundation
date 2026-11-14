@@ -1,5 +1,79 @@
 import { test, expect } from "@playwright/test";
 
+test("independent album publication preserves repeated photo positions without publishing its Update", async ({
+  page,
+  request,
+}) => {
+  const first = "image-24eecf209f2b132a55c68eadf5ba512720fe9a03-4000x2252-jpg";
+  const second = "image-6c8d0d9db54256460ae654e7c5e0491144d94e71-1600x1066-jpg";
+  const album = {
+    _id: "independent-album",
+    _type: "galleryAlbum",
+    title: "Recovered album",
+    editorialApproval: "approved",
+    publicationEnabled: true,
+    albumPhotos: [first, second, first].map((id, i) => ({
+      _type: "image",
+      _key: `position-${i}`,
+      asset: { _ref: id },
+      assetExists: true,
+    })),
+  };
+  await request.post("/__fixture", {
+    data: [
+      fixture()[0],
+      album,
+      {
+        ...album,
+        _id: "withheld-album",
+        title: "Withheld album",
+        publicationEnabled: false,
+      },
+      {
+        _id: "drafts.unpublished",
+        _type: "journalEntry",
+        slug: { current: "unpublished" },
+        title: "Unpublished article",
+        storyPhotos: album.albumPhotos,
+      },
+    ],
+  });
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/gallery");
+  await expect(page.locator(".gallery-collection-card")).toHaveCount(1);
+  await page.locator(".gallery-collection-card").click();
+  await expect(page.locator(".selected-collection h2")).toHaveText(
+    "Recovered album",
+  );
+  await expect(page.locator(".gallery-photo")).toHaveCount(3);
+  await page.locator(".gallery-photo button").nth(2).click();
+  await expect(page.locator(".lightbox-caption")).toContainText("3 / 3");
+  await expect(page.locator(".lightbox-stage img")).toHaveAttribute(
+    "src",
+    /24eecf/,
+  );
+  await expect(
+    page.getByRole("link", { name: "View full-resolution photograph" }),
+  ).toHaveAttribute("href", /24eecf.*\.jpg$/);
+  await page
+    .getByRole("button", { name: "Next photograph", exact: true })
+    .click();
+  await expect(page.locator(".lightbox-caption")).toContainText("1 / 3");
+  await page.keyboard.press("ArrowRight");
+  await expect(page.locator(".lightbox-caption")).toContainText("2 / 3");
+  await expect(page.locator(".lightbox-stage img")).toHaveAttribute(
+    "src",
+    /6c8d0d/,
+  );
+  await page.keyboard.press("Escape");
+  await expect(page.locator("dialog.lightbox")).not.toBeVisible();
+  expect((await request.get("/updates/unpublished")).status()).toBe(404);
+  await page.goto("/updates");
+  await expect(page.locator(".journal-index")).not.toContainText(
+    "Unpublished article",
+  );
+});
+
 const fixture = () => [
   {
     _id: "siteSettings",

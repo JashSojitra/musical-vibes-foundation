@@ -67,6 +67,64 @@ export function mapSanity(
       ...(Array.isArray(story.photos) ? story.photos : []),
     ];
   }
+  // Albums publish photographs independently; never read or publish a draft Update.
+  const albums = docs
+    .filter(
+      (d) =>
+        d._type === "galleryAlbum" &&
+        d.editorialApproval === "approved" &&
+        d.publicationEnabled === true,
+    )
+    .sort(
+      (a, b) =>
+        Number(a.order || 0) - Number(b.order || 0) ||
+        a._id.localeCompare(b._id),
+    );
+  const photoByAsset = new Map(
+    docs
+      .filter(
+        (d) =>
+          d._type === "mediaItem" &&
+          d.editorialApproval === "approved" &&
+          d.publicationEnabled === true &&
+          d.assetExists !== false,
+      )
+      .map((d) => [
+        ref((d.image as { asset?: unknown } | undefined)?.asset),
+        d._id,
+      ]),
+  );
+  for (const album of albums) {
+    album.photos = (
+      Array.isArray(album.albumPhotos)
+        ? (album.albumPhotos as Array<Record<string, unknown>>)
+        : []
+    ).flatMap((photo, index) => {
+      const asset = ref(photo.asset);
+      if (!asset || photo.assetExists === false) return [];
+      let id = photoByAsset.get(asset);
+      if (!id) {
+        id = `gallery-photo-${asset}`;
+        docs.push({
+          _id: id,
+          _type: "mediaItem",
+          image: photo,
+          assetExists: photo.assetExists,
+          alt:
+            photo.decorative === true
+              ? ""
+              : (typeof photo.alt === "string" && photo.alt.trim()) ||
+                `Photograph ${index + 1} from “${album.title || "Community album"}” (description not provided)`,
+          decorative: photo.decorative,
+          caption: photo.caption,
+          editorialApproval: "approved",
+          publicationEnabled: true,
+        });
+        photoByAsset.set(asset, id);
+      }
+      return [{ _ref: id }];
+    });
+  }
   const identities = new Map(docs.map((d) => [d._id, d.sourceId || d._id]));
   const resolve = (value: unknown) => identities.get(ref(value) ?? "");
   const resolveMany = (value: unknown) =>
@@ -99,6 +157,7 @@ export function mapSanity(
             .fit("max")
             .auto("format")
             .url(),
+          originalSrc: builder.image({ asset: image!.asset }).url(),
           width: Number(match[1]),
           height: Number(match[2]),
           alt:
@@ -200,6 +259,54 @@ export function mapSanity(
     programs,
     events,
     media,
+    galleryAlbums: albums.flatMap((album) => {
+      const photos = (
+        Array.isArray(album.albumPhotos)
+          ? (album.albumPhotos as Array<Record<string, unknown>>)
+          : []
+      ).flatMap((image) => {
+        if (image.assetExists === false) return [];
+        const id = identities.get(photoByAsset.get(ref(image.asset)) ?? "");
+        const photo = media.find((item) => item.id === id);
+        if (!photo) return [];
+        const hotspot = image.hotspot as { x: number; y: number } | undefined;
+        return [
+          {
+            ...photo,
+            src:
+              image.crop || hotspot
+                ? builder
+                    .image(image)
+                    .width(Math.min(1920, photo.width))
+                    .fit("max")
+                    .auto("format")
+                    .url()
+                : photo.src,
+            alt:
+              image.decorative === true
+                ? ""
+                : typeof image.alt === "string" && image.alt.trim()
+                  ? image.alt.trim()
+                  : photo.alt,
+            caption:
+              typeof image.caption === "string" ? image.caption : photo.caption,
+            position: hotspot
+              ? `${hotspot.x * 100}% ${hotspot.y * 100}%`
+              : photo.position,
+          },
+        ];
+      });
+      return photos.length
+        ? [
+            {
+              id: album.sourceId || album._id,
+              title: text(album, "title"),
+              photos,
+              journalId: resolve(album.journalEntry),
+            },
+          ]
+        : [];
+    }),
     faqs: docs
       .filter((d) => d._type === "faq")
       .sort((a, b) => Number(a.order || 0) - Number(b.order || 0))

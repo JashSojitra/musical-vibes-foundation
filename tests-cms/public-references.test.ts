@@ -52,14 +52,14 @@ test("Studio rejects inaccessible existing references and restricts all content 
     assert.equal(typeof validatePublicReference({ _ref: ref }), "string");
   assert.match(publicReferenceOptions.filter, /string::split/);
   const schema = readFileSync("studio/schemas/index.ts", "utf8");
-  // Shared array helper, shared image field and Update's Related event field.
-  assert.equal((schema.match(/type: "reference"/g) || []).length, 3);
+  // Shared helpers, Update's event and Gallery album's published Update link.
+  assert.equal((schema.match(/type: "reference"/g) || []).length, 4);
   assert.equal(
     (schema.match(/options: publicReferenceOptions/g) || []).length,
-    3,
+    4,
   );
   assert.equal(
     (schema.match(/custom\(validatePublicReference\)/g) || []).length,
-    3,
+    4,
   );
 });
