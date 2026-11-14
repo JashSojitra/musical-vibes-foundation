@@ -26,6 +26,7 @@
     "cf:preview:demo": "opennextjs-cloudflare preview --config wrangler.demo.jsonc",
     "cf:deploy:demo": "opennextjs-cloudflare deploy --config wrangler.demo.jsonc",
     "test:cms": "tsx --test tests-cms/*.test.ts",
+    "test:owner-preview": "node scripts/test-owner-preview.mjs",
     "test:studio-upload": "node scripts/test-story-upload.mjs",
     "sanity:migrate:dry": "tsx scripts/sanity-migration.ts --dry-run",
     "sanity:migrate:write": "tsx scripts/sanity-migration.ts --write",
@@ -50,6 +51,7 @@
     "photos:plan": "node scripts/photo-import-plan.mjs",
     "test:photo-recovery": "node --test tests-cms/photo-recovery.test.mjs",
     "photos:import": "tsx scripts/historical-import.ts",
+    "sanity:cleanup": "tsx scripts/historical-cleanup.ts",
     "test:historical-import": "tsx --test tests-cms/historical-import.test.mjs tests-cms/historical-import-cli.test.ts"
   },
   "dependencies": {

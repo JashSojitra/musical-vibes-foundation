@@ -3,7 +3,7 @@ import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { resolve, sep } from "node:path";
 import { photoPlan, historicalAlbumSources } from "./photo-import-plan.mjs";
-import { inspect } from "./recover-photos.mjs";
+import { inspect, imageOrientation } from "./recover-photos.mjs";
 /** Only fixed, locally authored messages may be shown by the CLI. */
 export class ImportError extends Error {
   constructor(message) {
@@ -92,7 +92,7 @@ function identities(docs) {
   }
 }
 export function assetId(p) {
-  return `image-${p.sha1}-${p.width}x${p.height}-${p.format === "jpeg" ? "jpg" : p.format}`;
+  return `image-${p.sha1}-${p.assetWidth || p.width}x${p.assetHeight || p.height}-${p.format === "jpeg" ? "jpg" : p.format}`;
 }
 function assetMatches(d, p) {
   return (
@@ -100,11 +100,17 @@ function assetMatches(d, p) {
     d._type === "sanity.imageAsset" &&
     d.sha1hash === p.sha1 &&
     d.size === p.bytes &&
-    d.metadata?.dimensions?.width === p.width &&
-    d.metadata?.dimensions?.height === p.height
+    d.metadata?.dimensions?.width === (p.assetWidth || p.width) &&
+    d.metadata?.dimensions?.height === (p.assetHeight || p.height)
   );
 }
-export async function makePlan(docs, albums, inventory, dir) {
+export async function makePlan(
+  docs,
+  albums,
+  inventory,
+  dir,
+  { orientationAware = true } = {},
+) {
   docs = documents(docs);
   identities(docs);
   if (inventory.photos.some((p) => p.status !== "success"))
@@ -112,13 +118,20 @@ export async function makePlan(docs, albums, inventory, dir) {
   const proposal = photoPlan(docs, albums, inventory);
   if (new Set(albums.map((a) => a.title)).size !== albums.length)
     throw new ImportError("Duplicate album titles");
-  const imports = proposal.imports.map((p) => {
+  const imports = [];
+  for (const p of proposal.imports) {
     const rows = inventory.photos.filter((r) => r.sha256 === p.sha256);
     if (
       rows.some((r) => r.bytes !== rows[0].bytes || r.format !== rows[0].format)
     )
       throw new ImportError("Conflicting binary metadata");
     const item = { ...p, bytes: rows[0].bytes, format: rows[0].format };
+    const bytes = await photoBytes(dir, item);
+    if (orientationAware) {
+      item.orientation = imageOrientation(bytes);
+      item.assetWidth = item.orientation >= 5 ? item.height : item.width;
+      item.assetHeight = item.orientation >= 5 ? item.width : item.height;
+    }
     if (
       docs.some(
         (d) => d._id === assetId(item) && d._type !== "sanity.imageAsset",
@@ -135,11 +148,10 @@ export async function makePlan(docs, albums, inventory, dir) {
       (matches.length && !assetMatches(matches[0], item))
     )
       throw new ImportError("Ambiguous or inconsistent asset identity");
-    return { ...item, assetId: assetId(item) };
-  });
+    imports.push({ ...item, assetId: assetId(item) });
+  }
   if (new Set(imports.map((p) => p.assetId)).size !== imports.length)
     throw new ImportError("SHA1 identity collision");
-  for (const p of imports) await photoBytes(dir, p);
   const drafts = [];
   for (const a of proposal.albumProposals) {
     const source = historicalAlbumSources[a.album];
@@ -175,6 +187,7 @@ export async function makePlan(docs, albums, inventory, dir) {
   identities([...docs, ...drafts]);
   const body = {
     format: 1,
+    ...(orientationAware ? { orientationVersion: 1 } : {}),
     target,
     before: docs,
     inventoryHash: digest(inventory),
@@ -211,7 +224,9 @@ export async function validateFiles(plan, inventory, albums, dir) {
     digest(albums) !== plan.albumsHash
   )
     throw new ImportError("Inventory/album drift");
-  const rebuilt = await makePlan(plan.before, albums, inventory, dir);
+  const rebuilt = await makePlan(plan.before, albums, inventory, dir, {
+    orientationAware: plan.orientationVersion === 1,
+  });
   if (rebuilt.hash !== plan.hash)
     throw new ImportError("Plan no longer reproducible");
 }
@@ -245,6 +260,37 @@ export function initialState(plan) {
     receipts: [],
   };
 }
+/** Counts only: document identities, field values and credentials never enter CLI diagnostics.
+ * Classification describes differences, not whether an owner authorized them.
+ */
+export function datasetDrift(expected, current) {
+  const before = new Map(expected.map((d) => [d._id, d]));
+  const after = new Map(current.map((d) => [d._id, d]));
+  const result = {
+    added: 0,
+    removed: 0,
+    contentChanged: 0,
+    revisionOnly: 0,
+    metadataOnly: 0,
+  };
+  for (const d of current) {
+    const old = before.get(d._id);
+    if (!old) result.added++;
+    else if (stable(authored(old)) !== stable(authored(d)))
+      result.contentChanged++;
+    else if (old._rev !== d._rev) result.revisionOnly++;
+    else if (stable(old) !== stable(d)) result.metadataOnly++;
+  }
+  for (const d of expected) if (!after.has(d._id)) result.removed++;
+  return result;
+}
+function driftError(expected, current) {
+  const diff = datasetDrift(expected, current);
+  return new ImportError(
+    `Dataset drift: added=${diff.added}, removed=${diff.removed}, content-changed=${diff.contentChanged}, revision-only=${diff.revisionOnly}, metadata-only=${diff.metadataOnly}. ` +
+      "Authorization cannot be inferred. Stop; retain the plan, backup and checkpoints. Review a fresh full authenticated backup privately. With no pending request, create a new plan in a new run directory and validate before renewed approval; never edit hashes or revisions to bypass this guard. With a pending request, reconcile its outcome first; never replay or reset the checkpoint.",
+  );
+}
 export function reconcile(plan, state, current) {
   assertPlan(plan);
   documents(current);
@@ -252,9 +298,7 @@ export function reconcile(plan, state, current) {
   if (state.format !== 1 || state.planHash !== plan.hash)
     throw new ImportError("Checkpoint belongs to another plan");
   if (digest(sorted(current)) !== digest(sorted(state.expected)))
-    throw new ImportError(
-      "Dataset drift / owner edits; stop and review a new backup",
-    );
+    throw driftError(state.expected, current);
   return {
     before: plan.before.length,
     after: current.length,
@@ -280,21 +324,37 @@ function mutationBatch(plan, state) {
     throw new ImportError("Draft transaction exceeds safe limit");
   return mutations;
 }
-function resolvePending(plan, state, current) {
+async function resolvePending(plan, state, current, dir) {
   const pending = state.pending;
   if (!pending) return;
   documents(current);
   identities(current);
   if (pending.kind === "upload") {
     const p = plan.imports.find((p) => p.sha256 === pending.sha256);
-    const found = current.find((d) => d._id === p.assetId);
-    if (!assetMatches(found, p))
+    const orientation = imageOrientation(await photoBytes(dir, p));
+    const canonical = {
+      ...p,
+      assetWidth: orientation >= 5 ? p.height : p.width,
+      assetHeight: orientation >= 5 ? p.width : p.height,
+    };
+    const found = current.find((d) => d._id === assetId(canonical));
+    if (!assetMatches(found, canonical))
       throw new ImportError(
         "Unresolved upload response: no verified asset; do not retry blindly",
       );
     if (digest(sorted(current)) !== digest(expectedWith(state, [found])))
       throw new ImportError("Dataset drift while reconciling upload");
     state.uploads[p.sha256] = found._id;
+    if (found._id !== p.assetId) {
+      state.requiresReplan = true;
+      state.receipts.push({
+        kind: "verified-orientation-correction",
+        sha256: p.sha256,
+        orientation,
+        plannedAssetId: p.assetId,
+        observedAssetId: found._id,
+      });
+    }
   } else {
     const old = new Map(state.expected.map((d) => [d._id, d]));
     const added = new Map(plan.drafts.map((d) => [d._id, d]));
@@ -356,10 +416,26 @@ export async function runPhase({
     throw new ImportError("Invalid retry/rate limit");
   let current = await api.export();
   if (state.pending) {
-    resolvePending(plan, state, current);
+    await resolvePending(plan, state, current, dir);
     await save(state);
   }
   const report = reconcile(plan, state, current);
+  if (state.requiresReplan) {
+    if (phase === "verify")
+      throw new ImportError(
+        "Legacy orientation plan is incomplete; retain its receipt and verify the new reviewed plan instead",
+      );
+    if (write)
+      throw new ImportError(
+        "Verified EXIF-oriented outcome; this legacy plan cannot write again. Preserve this run, take a fresh backup and review a new orientation-aware plan.",
+      );
+    return {
+      ...report,
+      dryRun: true,
+      status:
+        "Pending original verified with EXIF display dimensions; fresh backup and orientation-aware plan required; no writes",
+    };
+  }
   if (phase === "verify") {
     if (
       state.drafts !== "complete" ||
@@ -374,6 +450,10 @@ export async function runPhase({
       dryRun: true,
       requiredConfirmation: `${phase === "upload" ? "PUBLIC-PHOTOS" : "UNPUBLISHED-DRAFTS"} ${target.projectId}/${target.dataset} ${plan.hash}`,
     };
+  if (plan.orientationVersion !== 1)
+    throw new ImportError(
+      "Legacy plans are read-only; take a fresh backup and validate an orientation-aware plan before writes",
+    );
   const phrase = `${phase === "upload" ? "PUBLIC-PHOTOS" : "UNPUBLISHED-DRAFTS"} ${target.projectId}/${target.dataset} ${plan.hash}`;
   if (confirmation !== phrase)
     throw new ImportError(
@@ -435,8 +515,12 @@ export async function runPhase({
               : "Upload stopped; reconcile with resume before further writes",
           );
         }
-        resolvePending(plan, state, await api.export());
+        await resolvePending(plan, state, await api.export(), dir);
         await save(state);
+        if (state.requiresReplan)
+          throw new ImportError(
+            "Verified EXIF outcome requires a fresh backup and plan before further writes",
+          );
         break;
       }
       progress({ phase, completed: index + 1, total: plan.imports.length });
@@ -469,7 +553,7 @@ export async function runPhase({
           "Draft transaction stopped; resume must reconcile, never replay",
         );
       }
-      resolvePending(plan, state, await api.export());
+      await resolvePending(plan, state, await api.export(), dir);
       await save(state);
     }
   }

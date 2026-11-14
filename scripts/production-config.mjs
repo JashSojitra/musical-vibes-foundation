@@ -104,6 +104,11 @@ export function validateBundle() {
   assert.deepEqual(receipt.publicVars, publicVars);
   assert.equal(receipt.configHash, digest(readFileSync(configFile)));
   assert.equal(
+    receipt.headersHash,
+    digest(readFileSync("cloudflare/demo-headers.mjs")),
+    "Security headers changed; rebuild the bundle",
+  );
+  assert.equal(
     receipt.wrapperHash,
     digest(readFileSync("cloudflare/production-worker.mjs")),
     "Worker wrapper changed; rebuild Production",

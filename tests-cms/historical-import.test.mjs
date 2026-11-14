@@ -20,6 +20,7 @@ import {
 import {
   recover,
   inventory as recoveryInventory,
+  imageOrientation,
 } from "../scripts/recover-photos.mjs";
 const image = Buffer.from(
   "ffd8ffc00011080002000303012200021100031100ffd9",
@@ -34,6 +35,121 @@ const doc = (_id, _type, extra = {}) => ({
 const owner = doc("owner", "siteSettings", {
   title: "Owner content",
   nested: { caption: "Keep", crop: { top: 0.3 }, ref: { _ref: "keep" } },
+});
+
+test("EXIF display identities preserve originals and reconcile legacy pending uploads without replay", async () => {
+  const sharp = (await import("sharp")).default;
+  const bytes = await sharp({
+    create: { width: 3, height: 2, channels: 3, background: "red" },
+  })
+    .withMetadata({ orientation: 6 })
+    .jpeg()
+    .toBuffer();
+  assert.equal(imageOrientation(bytes), 6);
+  const dir = await mkdtemp(join(tmpdir(), "mvf-exif-"));
+  const albums = [
+    {
+      title: "EXIF fixture",
+      photos: ["../assets/exif.jpg"],
+      videos: [],
+      malformed: [],
+    },
+  ];
+  await recover({
+    dir,
+    albums,
+    interval: 0,
+    retries: 0,
+    fetcher: async () => new Response(bytes),
+  });
+  const inventory = JSON.parse(
+    await readFile(join(dir, "inventory.json"), "utf8"),
+  );
+  const legacy = await makePlan([owner], albums, inventory, dir, {
+    orientationAware: false,
+  });
+  await validateFiles(legacy, inventory, albums, dir);
+  const fixed = await makePlan([owner], albums, inventory, dir);
+  const p = fixed.imports[0];
+  assert.equal(p.width, 3);
+  assert.equal(p.height, 2);
+  assert.equal(p.assetWidth, 2);
+  assert.equal(p.assetHeight, 3);
+  assert.match(p.assetId, /-2x3-jpg$/);
+  assert.equal(fixed.drafts[0].storyPhotos[0].asset._ref, p.assetId);
+  const asset = doc(p.assetId, "sanity.imageAsset", {
+    sha1hash: p.sha1,
+    size: p.bytes,
+    metadata: { dimensions: { width: 2, height: 3 } },
+  });
+  const state = initialState(legacy);
+  state.pending = {
+    kind: "upload",
+    sha256: p.sha256,
+    beforeHash: digest(state.expected),
+  };
+  let saves = 0;
+  const options = {
+    plan: legacy,
+    state,
+    phase: "upload",
+    dir,
+    save: async () => {
+      saves++;
+    },
+    api: {
+      export: async () => [owner, asset],
+      upload: async () => assert.fail("must not replay"),
+      mutate: async () => assert.fail("must not probe or mutate"),
+    },
+  };
+  const result = await runPhase(options);
+  assert.match(result.status, /fresh backup/);
+  assert.equal(saves, 1);
+  assert.equal(state.pending, null);
+  assert.equal(state.uploads[p.sha256], p.assetId);
+  assert.equal(state.requiresReplan, true);
+  await assert.rejects(runPhase({ ...options, phase: "verify" }), /incomplete/);
+  await assert.rejects(
+    runPhase({
+      ...options,
+      write: true,
+      confirmation: `PUBLIC-PHOTOS ${target.projectId}/${target.dataset} ${legacy.hash}`,
+    }),
+    /cannot write again/,
+  );
+  const reused = await makePlan([owner, asset], albums, inventory, dir);
+  assert.equal(reused.imports[0].action, "reuse-existing-asset");
+  assert.equal(reused.imports[0].assetId, p.assetId);
+  const wrong = initialState(legacy);
+  wrong.pending = { kind: "upload", sha256: p.sha256 };
+  await assert.rejects(
+    runPhase({
+      ...options,
+      state: wrong,
+      api: {
+        ...options.api,
+        export: async () => [
+          owner,
+          { ...asset, metadata: { dimensions: { width: 3, height: 2 } } },
+        ],
+      },
+    }),
+    /no verified asset/,
+  );
+  const edited = initialState(legacy);
+  edited.pending = { kind: "upload", sha256: p.sha256 };
+  await assert.rejects(
+    runPhase({
+      ...options,
+      state: edited,
+      api: {
+        ...options.api,
+        export: async () => [{ ...owner, title: "Owner edit" }, asset],
+      },
+    }),
+    /Dataset drift/,
+  );
 });
 const album = (title, paths) => ({
   title,

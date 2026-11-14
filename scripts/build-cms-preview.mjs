@@ -114,6 +114,7 @@ writeFileSync(
   readFileSync("public/_headers", "utf8") +
     "\n/*\n" +
     Object.entries(demoHeaders)
+      .filter(([name]) => name === "X-Robots-Tag")
       .map(([k, v]) => `  ${k}: ${v}`)
       .join("\n") +
     "\n",
@@ -125,6 +126,7 @@ writeFileSync(
       worker: workerName,
       publicVars,
       configHash: digest(readFileSync(configFile)),
+      headersHash: digest(readFileSync("cloudflare/demo-headers.mjs")),
       wrapperHash: digest(readFileSync("cloudflare/cms-preview-worker.mjs")),
       artifactHash: artifactHash(),
       builtAt: new Date().toISOString(),

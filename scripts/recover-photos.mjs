@@ -6,6 +6,72 @@ import { pathToFileURL } from "node:url";
 export const origin = "https://www.musicalvibesfoundation.com";
 export const sha = (bytes, algorithm = "sha256") =>
   createHash(algorithm).update(bytes).digest("hex");
+/** EXIF orientation changes display dimensions without changing original bytes. */
+export function imageOrientation(bytes) {
+  function tiff(data) {
+    if (data.subarray(0, 6).toString("hex") === "457869660000")
+      data = data.subarray(6);
+    const little = data.toString("ascii", 0, 2) === "II";
+    if (data.length < 8 || (!little && data.toString("ascii", 0, 2) !== "MM"))
+      throw Error("Invalid EXIF header");
+    const u16 = (offset) =>
+      little ? data.readUInt16LE(offset) : data.readUInt16BE(offset);
+    const u32 = (offset) =>
+      little ? data.readUInt32LE(offset) : data.readUInt32BE(offset);
+    if (u16(2) !== 42) throw Error("Invalid EXIF TIFF");
+    const offset = u32(4);
+    if (!offset) return 1;
+    if (offset < 8 || offset + 2 > data.length)
+      throw Error("Invalid EXIF directory");
+    const count = u16(offset);
+    if (offset + 2 + count * 12 > data.length)
+      throw Error("Truncated EXIF directory");
+    for (let i = 0; i < count; i++) {
+      const entry = offset + 2 + i * 12;
+      if (u16(entry) !== 0x112) continue;
+      const orientation = u16(entry + 8);
+      if (
+        u16(entry + 2) !== 3 ||
+        u32(entry + 4) !== 1 ||
+        orientation < 1 ||
+        orientation > 8
+      )
+        throw Error("Invalid EXIF orientation");
+      return orientation;
+    }
+    return 1;
+  }
+  if (bytes[0] === 255 && bytes[1] === 216) {
+    let offset = 2;
+    while (offset + 4 <= bytes.length && bytes[offset] === 255) {
+      while (bytes[offset] === 255) offset++;
+      const marker = bytes[offset++];
+      if (marker === 218 || marker === 217) break;
+      const size = bytes.readUInt16BE(offset);
+      if (size < 2 || offset + size > bytes.length)
+        throw Error("Invalid EXIF segment");
+      if (
+        marker === 225 &&
+        bytes.toString("hex", offset + 2, offset + 8) === "457869660000"
+      )
+        return tiff(bytes.subarray(offset + 2, offset + size));
+      offset += size;
+    }
+  } else if (
+    bytes.toString("ascii", 0, 4) === "RIFF" &&
+    bytes.toString("ascii", 8, 12) === "WEBP"
+  ) {
+    for (let offset = 12; offset + 8 <= bytes.length;) {
+      const size = bytes.readUInt32LE(offset + 4);
+      if (offset + 8 + size > bytes.length)
+        throw Error("Invalid WebP EXIF chunk");
+      if (bytes.toString("ascii", offset, offset + 4) === "EXIF")
+        return tiff(bytes.subarray(offset + 8, offset + 8 + size));
+      offset += 8 + size + (size % 2);
+    }
+  }
+  return 1;
+}
 const pause = (ms) => new Promise((r) => setTimeout(r, ms));
 // Windows scanners/readers can briefly deny replacing an existing file. Retry
 // only sharing/permission errors, keep the old checkpoint intact, and fail with

@@ -230,7 +230,7 @@ export default function Navigation({
                   <em>shared rhythm.</em>
                 </p>
                 <Link href="/programs" onClick={closeSubmenu}>
-                  All six programs{" "}
+                  All programs{" "}
                   <span aria-hidden="true">
                     <ArrowIcon />
                   </span>

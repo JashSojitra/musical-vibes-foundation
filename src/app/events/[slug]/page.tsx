@@ -2,8 +2,8 @@ import Link from "next/link";
 import GalleryPreview from "@/components/gallery-preview";
 import { getPublicContent } from "@/lib/journal";
 import { notFound } from "next/navigation";
-import { getEvent, getEvents, getMedia } from "@/lib/content";
-import { pageMetadata } from "@/lib/metadata";
+import { getEvent, getEvents, getMedia, getSiteContent } from "@/lib/content";
+import { pageMetadata, eventSchema } from "@/lib/metadata";
 import {
   Action,
   Breadcrumbs,
@@ -11,6 +11,7 @@ import {
   Invitation,
   Photo,
   TextLink,
+  StructuredData,
 } from "@/components/ui";
 // New CMS slugs must render on request, never enter on-demand static generation.
 export const dynamic = "force-dynamic";
@@ -38,6 +39,8 @@ export default async function EventDetail({
   const { slug } = await params,
     event = await getEvent(slug);
   if (!event) notFound();
+  const { settings } = await getSiteContent();
+  const schema = eventSchema(event, settings.url);
   const image = await getMedia(event.imageId);
   const adapter = await getPublicContent();
   const stories = adapter
@@ -45,6 +48,7 @@ export default async function EventDetail({
     .filter((entry) => entry.eventId === event.id);
   return (
     <>
+      {schema ? <StructuredData data={schema} /> : null}
       <header className="event-detail-intro wrap">
         <Breadcrumbs
           items={[{ label: "Events", href: "/events" }, { label: event.title }]}

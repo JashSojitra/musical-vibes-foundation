@@ -45,6 +45,8 @@ export default async function RootLayout({
         <StructuredData
           data={{
             ...organizationSchema,
+            "@id": `${settings.url.replace(/\/$/, "")}/#organization`,
+            logo: `${settings.url.replace(/\/$/, "")}/assets/legacy/logo.png`,
             name: settings.name,
             url: settings.url,
             email: settings.email,

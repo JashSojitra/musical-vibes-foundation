@@ -389,6 +389,7 @@ test("approved Journal/Gallery relationships and logical collection identities s
 });
 
 test("backup requires the correct target, complete raw documents and original verified asset bytes", async () => {
+  await mkdir(resolve(".tmp"), { recursive: true });
   const dir = await mkdtemp(resolve(".tmp/repair-backup-test-"));
   const bytes = Buffer.from("original asset binary");
   const docs = [

@@ -2,7 +2,7 @@ import { loadBackup } from "./sanity-repair";
 import { ImportError } from "./historical-import.mjs";
 import { runCLI } from "./historical-import-cli.mjs";
 runCLI(process.argv.slice(2), { loadBackup }).catch((error: unknown) => {
-  // SDK/network/parse exceptions may contain private values; only our fixed errors are printable.
+  // SDK/network/parse exceptions may contain private values; only our authored, count-only errors are printable.
   const code = (error as NodeJS.ErrnoException)?.code;
   const reason =
     error instanceof ImportError

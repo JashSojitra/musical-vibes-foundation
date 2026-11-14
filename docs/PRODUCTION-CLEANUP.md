@@ -1,4 +1,6 @@
-# Proposed cleanup review — NO deletion authorized
+# Historical cleanup review and authorization history
+
+The observations below retain their original dates and authorization status. The developer's 2026-11-13 instruction separately authorizes removal of the two exact test stories and only demonstrably redundant records among the six documented legacy/repaired Update/Event pairs. The new [scoped executor](HISTORICAL-CLEANUP.md) requires a fresh backup, exact IDs/revisions, full reference analysis and survivor verification. It preserves differing owner fields and all uploaded assets. See the current finalization report for operations actually completed; this historical inspection list alone is not blanket deletion authority.
 
 Anonymous observation only, 2026-11-10. Full raw inbound references (drafts, releases, private paths, unknown types) are unavailable until authenticated inventory. Every item remains blocked. Never remove automated tests or uploaded assets.
 

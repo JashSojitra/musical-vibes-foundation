@@ -1,0 +1,26 @@
+{
+  "expected": [
+    {
+      "_id": "owner-private-id",
+      "_type": "journalEntry",
+      "_rev": "r1",
+      "title": "Private owner text",
+      "_updatedAt": "2026-11-01T00:00:00Z"
+    },
+    { "_id": "removed", "_type": "faq", "_rev": "r2" },
+    { "_id": "revision", "_type": "program", "_rev": "r3" },
+    { "_id": "metadata", "_type": "event", "_rev": "r4", "_updatedAt": "old" }
+  ],
+  "current": [
+    {
+      "_id": "owner-private-id",
+      "_type": "journalEntry",
+      "_rev": "r5",
+      "title": "An authorized edit, still stale",
+      "_updatedAt": "2026-11-02T00:00:00Z"
+    },
+    { "_id": "added", "_type": "faq", "_rev": "r6" },
+    { "_id": "revision", "_type": "program", "_rev": "r7" },
+    { "_id": "metadata", "_type": "event", "_rev": "r4", "_updatedAt": "new" }
+  ]
+}

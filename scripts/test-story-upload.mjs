@@ -31,7 +31,7 @@ await writeFile(
   `
 import React,{useState} from 'react';
 import {createRoot} from 'react-dom/client';
-import {StoryPhotosInput} from '${process.cwd()}/studio/components/StoryPhotosInput';
+import {StoryPhotosInput} from ${JSON.stringify(join(process.cwd(), "studio/components/StoryPhotosInput").replaceAll("\\", "/"))};
 function Fixture(){
  const [value,change]=useState([{_key:'existing',caption:'Existing photograph',cover:true}]);
  return <><StoryPhotosInput id="fixture" value={value} onChange={(patches)=>change(previous=>{
@@ -97,15 +97,13 @@ try {
   const covers = JSON.parse(await page.locator("#value").textContent());
   assert.equal(covers.filter((v) => v.cover).length, 1);
   assert.equal(covers[4].cover, true);
-  await page
-    .locator("input[type=file]")
-    .setInputFiles([
-      {
-        name: "clear.png",
-        mimeType: "image/png",
-        buffer: Buffer.from("fixture"),
-      },
-    ]);
+  await page.locator("input[type=file]").setInputFiles([
+    {
+      name: "clear.png",
+      mimeType: "image/png",
+      buffer: Buffer.from("fixture"),
+    },
+  ]);
   await page.getByRole("button", { name: "Clear error" }).click();
   assert.equal(
     JSON.parse(await page.locator("#value").textContent()).length,

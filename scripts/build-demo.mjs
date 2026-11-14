@@ -61,6 +61,7 @@ writeFileSync(
   base +
     "\n/*\n" +
     Object.entries(demoHeaders)
+      .filter(([name]) => name === "X-Robots-Tag")
       .map(([name, value]) => `  ${name}: ${value}`)
       .join("\n") +
     "\n",

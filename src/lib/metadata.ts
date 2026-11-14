@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { CommunityEvent } from "@/types/content";
 import { content } from "@/data/content";
 export function pageMetadata(
   title: string,
@@ -45,3 +46,24 @@ export const organizationSchema = {
     addressCountry: "CA",
   },
 };
+
+/** Use only recorded facts; incomplete historical entries receive no Event markup. */
+export function eventSchema(event: CommunityEvent, siteUrl: string) {
+  if (!event.location?.trim() || !/^\d{4}-\d{2}-\d{2}$/.test(event.date))
+    return null;
+  const parsed = new Date(`${event.date}T00:00:00Z`);
+  if (
+    !Number.isFinite(parsed.valueOf()) ||
+    parsed.toISOString().slice(0, 10) !== event.date
+  )
+    return null;
+  return {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    name: event.title,
+    description: event.description,
+    startDate: event.date,
+    url: `${siteUrl.replace(/\/$/, "")}/events/${event.slug}`,
+    location: { "@type": "Place", name: event.location },
+  };
+}

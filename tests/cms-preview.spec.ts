@@ -97,6 +97,90 @@ const fixture = () => [
   },
 ];
 
+test("built CMS navigation, contact and footer support keyboard use at each viewport", async ({
+  page,
+  request,
+}, info) => {
+  await request.post("/__fixture", { data: fixture() });
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  await page.keyboard.press("Tab");
+  await expect(
+    page.getByRole("link", { name: "Skip to content" }),
+  ).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(page.locator("main")).toBeFocused();
+  const more = page.getByRole("button", { name: "More", exact: true });
+  if (await more.isVisible()) {
+    await more.click();
+    await expect(more).toHaveAttribute("aria-expanded", "true");
+    await more.press("Escape");
+    await expect(more).toHaveAttribute("aria-expanded", "false");
+    await expect(more).toBeFocused();
+  } else {
+    const menu = page.getByRole("button", { name: /Menu/ });
+    await menu.click();
+    await expect(page.locator("#mobile-menu")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(page.locator("#mobile-menu")).not.toBeVisible();
+    await expect(menu).toBeFocused();
+  }
+  await page.goto("/contact");
+  await page.getByRole("button", { name: "Prepare my email" }).click();
+  await expect(page.locator("#contact-name")).toBeFocused();
+  await page.getByLabel("Your name").fill("Fixture visitor");
+  await page.getByLabel("Email address").fill("visitor@example.org");
+  await page
+    .getByLabel("Your message")
+    .fill("A fixture enquiry with & and ? characters.");
+  await page.getByRole("button", { name: "Prepare my email" }).focus();
+  await page.keyboard.press("Enter");
+  await expect(
+    page.getByRole("link", { name: "Open my email draft" }),
+  ).toHaveAttribute("href", /^mailto:hello@example\.org\?/);
+  const credit = page.locator(".footer-credit");
+  await credit.scrollIntoViewIfNeeded();
+  await expect(credit).toContainText(
+    "Thoughtfully designed & developed by Jash Sojitra",
+  );
+  const profiles = credit.getByRole("navigation", {
+    name: "Developer profiles",
+  });
+  const linkedIn = profiles.getByRole("link", { name: /LinkedIn/ });
+  await linkedIn.focus();
+  await page.keyboard.press("Tab");
+  await expect(profiles.getByRole("link", { name: /GitHub/ })).toBeFocused();
+  expect(await page.locator("img:not([alt])").count()).toBe(0);
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  await page.screenshot({
+    path: `.tmp/finalization-${info.project.name}-contact.png`,
+    fullPage: true,
+  });
+});
+
+test("root CMS failure shows a generic recovery screen and recovers when content returns", async ({
+  page,
+  request,
+}) => {
+  await request.post("/__fixture", { data: [] });
+  await page.goto("/");
+  await expect(
+    page.getByRole("heading", { name: "We couldn’t load the website." }),
+  ).toBeVisible();
+  await expect(page.getByRole("button", { name: "Try again" })).toBeVisible();
+  await expect(page.locator("body")).not.toContainText("siteSettings");
+  await request.post("/__fixture", { data: fixture() });
+  await page.getByRole("button", { name: "Try again" }).click();
+  await expect(page.locator("h1")).toHaveCount(1);
+  await expect(
+    page.getByRole("heading", { name: "We couldn’t load the website." }),
+  ).toHaveCount(0);
+});
+
 test("CMS SSR, dynamic slugs, images, metadata and Journal/Gallery updates in workerd", async ({
   page,
   request,

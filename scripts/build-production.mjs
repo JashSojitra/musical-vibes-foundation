@@ -119,6 +119,7 @@ writeFileSync(
       worker: workerName,
       publicVars,
       configHash: digest(readFileSync(configFile)),
+      headersHash: digest(readFileSync("cloudflare/demo-headers.mjs")),
       wrapperHash: digest(readFileSync("cloudflare/production-worker.mjs")),
       routingHash: digest(readFileSync("cloudflare/production-routing.mjs")),
       artifactHash: artifactHash(),
