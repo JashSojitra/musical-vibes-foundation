@@ -2,6 +2,7 @@ import { createClient } from "@sanity/client";
 import { basename } from "node:path";
 import { publicVars } from "./cms-preview-config.mjs";
 import { referenceOrigins } from "./sanity-reference-origins.mjs";
+import { mediaVisibility } from "./sanity-media-visibility.mjs";
 
 /** No token, mutation, or permission change. Uses the same project/version/perspective as the Worker. */
 export async function auditPublicSanity() {
@@ -42,6 +43,7 @@ export async function auditPublicSanity() {
     dataset,
     apiVersion,
     perspective: "published",
+    mediaVisibility: mediaVisibility(docs, origins),
     counts: Object.fromEntries(
       [
         "program",

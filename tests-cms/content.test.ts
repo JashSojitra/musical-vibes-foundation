@@ -79,6 +79,40 @@ const adapt = (docs = fixture()) => {
   return createContentAdapter(source, entries, "2026-11-04");
 };
 
+test("uploaded photos withheld by approval stay absent; draft imports do not restore them", () => {
+  const docs = fixture();
+  docs[1].editorialApproval = "pending";
+  docs[1].publicationEnabled = false;
+  docs.push({
+    ...docs[5],
+    _id: "drafts.historical-import",
+    storyPhotos: [
+      { _key: "imported", asset: ref("image-imported-1200x800-jpg") },
+    ],
+  });
+  const { source, entries } = mapSanity(docs, "6jpdhhxg", "production");
+  const adapter = createContentAdapter(source, entries, "2026-11-04");
+  assert.equal(
+    source.media.some((photo) => photo.id === "p"),
+    false,
+  );
+  assert.equal(
+    source.media.some((photo) => photo.src.includes("imported")),
+    false,
+  );
+  assert.equal(adapter.getJournalEntries().length, 1);
+  assert.deepEqual(adapter.getEntryPhotos(adapter.getJournalEntries()[0]), []);
+  assert.equal(
+    adapter.getGalleryCollections().some((c) => c.journalId),
+    false,
+  );
+  assert.equal(
+    source.media.length,
+    1,
+    "the approved standalone photo remains available",
+  );
+});
+
 test("published perspective defense excludes drafts and release versions", () => {
   const docs = fixture();
   docs.push(
