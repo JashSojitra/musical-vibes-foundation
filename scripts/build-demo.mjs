@@ -8,7 +8,7 @@ import {
   writeFileSync,
 } from "node:fs";
 import { basename, dirname, resolve } from "node:path";
-import { demoHeaders } from "../cloudflare/demo-headers.mjs";
+import { previewAssetHeaders } from "../cloudflare/demo-headers.mjs";
 import { CACHE_DIR } from "@opennextjs/cloudflare/overrides/incremental-cache/static-assets-incremental-cache";
 import { publicDemoAssetPaths, publicDemoMedia } from "./public-demo-media.mjs";
 const require = createRequire(import.meta.url);
@@ -56,13 +56,4 @@ cpSync(resolve(".open-next/cache"), resolve(demoOutput, "assets", CACHE_DIR), {
 // Static assets bypass the Worker: apply the same demo-only headers there.
 const file = resolve(demoOutput, "assets/_headers");
 const base = readFileSync("public/_headers", "utf8");
-writeFileSync(
-  file,
-  base +
-    "\n/*\n" +
-    Object.entries(demoHeaders)
-      .filter(([name]) => name === "X-Robots-Tag")
-      .map(([name, value]) => `  ${name}: ${value}`)
-      .join("\n") +
-    "\n",
-);
+writeFileSync(file, previewAssetHeaders(base));

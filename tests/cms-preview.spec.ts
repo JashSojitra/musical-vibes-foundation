@@ -166,6 +166,11 @@ test("root CMS failure shows a generic recovery screen and recovers when content
   page,
   request,
 }) => {
+  const logo = await request.get("/assets/legacy/logo.png");
+  expect(logo.status()).toBe(200);
+  expect(logo.headers()["x-content-type-options"]).toBe("nosniff");
+  expect(logo.headers()["x-frame-options"]).toBe("DENY");
+  expect(logo.headers()["x-robots-tag"]).toBe("noindex, nofollow");
   await request.post("/__fixture", { data: [] });
   await page.goto("/");
   await expect(

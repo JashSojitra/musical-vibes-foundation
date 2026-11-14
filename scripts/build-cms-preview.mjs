@@ -10,7 +10,7 @@ import {
 } from "node:fs";
 import { resolve } from "node:path";
 import { CACHE_DIR } from "@opennextjs/cloudflare/overrides/incremental-cache/static-assets-incremental-cache";
-import { demoHeaders } from "../cloudflare/demo-headers.mjs";
+import { previewAssetHeaders } from "../cloudflare/demo-headers.mjs";
 import {
   root,
   staging,
@@ -111,13 +111,7 @@ if (existsSync(resolve(output, "cache")))
   });
 writeFileSync(
   resolve(output, "assets/_headers"),
-  readFileSync("public/_headers", "utf8") +
-    "\n/*\n" +
-    Object.entries(demoHeaders)
-      .filter(([name]) => name === "X-Robots-Tag")
-      .map(([k, v]) => `  ${k}: ${v}`)
-      .join("\n") +
-    "\n",
+  previewAssetHeaders(readFileSync("public/_headers", "utf8")),
 );
 writeFileSync(
   resolve(output, "cms-preview-build.json"),

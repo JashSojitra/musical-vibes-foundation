@@ -11,7 +11,11 @@ import {
 } from "../scripts/historical-import.mjs";
 import { eventSchema, pageMetadata } from "../src/lib/metadata";
 import type { CommunityEvent } from "../src/types/content";
-import { demoHeaders, securityHeaders } from "../cloudflare/demo-headers.mjs";
+import {
+  demoHeaders,
+  securityHeaders,
+  previewAssetHeaders,
+} from "../cloudflare/demo-headers.mjs";
 
 const fixture = JSON.parse(
   readFileSync("tests-cms/fixtures/dataset-drift.json", "utf8"),
@@ -165,4 +169,16 @@ test("static assets carry common security headers without production noindex", (
     assert.ok(headers.includes(`  ${name}: ${value}`));
   }
   assert.doesNotMatch(headers, /noindex|nofollow/i);
+  const preview = previewAssetHeaders(headers);
+  assert.equal(
+    preview.split(/\r?\n/).filter((line) => line === "/*").length,
+    1,
+  );
+  for (const [name, value] of Object.entries(demoHeaders))
+    assert.ok(preview.includes(`  ${name}: ${value}`));
+  assert.throws(() => previewAssetHeaders(preview), /Invalid/);
+  assert.throws(
+    () => previewAssetHeaders(headers + "\n/*\n  X-Robots-Tag: noindex\n"),
+    /one shared/,
+  );
 });
