@@ -1,5 +1,8 @@
 # Historical photograph visibility — 2026-11-14
 
+Earlier visibility snapshot. The subsequent [complete independent Gallery implementation](HISTORICAL-GALLERIES-2026-11-14.md)
+makes all 14 historical albums browsable while retaining the 11 draft Updates.
+
 Completed on `feat/sanity-cms` with owner authorization to publish recovered historical
 photographs. Reviewed and applied investigation patch
 `4a2d3dab1b434e8daf29d5a5c2d4c167.patch`; its changes add diagnostics and tests,

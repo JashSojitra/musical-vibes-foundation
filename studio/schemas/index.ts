@@ -187,7 +187,6 @@ export const schemaTypes = [
         name: "albumPhotos",
         title: "Album photographs (drag to reorder)",
         type: "array",
-        components: { input: StoryPhotosInput },
         options: { layout: "grid", sortable: true },
         of: [
           {
