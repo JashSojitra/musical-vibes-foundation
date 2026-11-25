@@ -1,3 +1,4 @@
+import { foundationEmail, foundationUrl } from "./identity";
 import type { SiteContent } from "@/types/content";
 import { mediaAssets } from "./media";
 
@@ -5,8 +6,8 @@ import { mediaAssets } from "./media";
 export const content: SiteContent = {
   settings: {
     name: "Musical Vibes Foundation",
-    url: "https://www.musicalvibesfoundation.com",
-    email: "meenumalik77@gmail.com",
+    url: foundationUrl,
+    email: foundationEmail,
     phone: "+1 (416) 832-6970",
     location: "Brampton, Ontario, Canada",
     mission: "Empowering lives through music, wellness, and community support.",
@@ -214,8 +215,7 @@ export const content: SiteContent = {
     },
     {
       question: "How can I join a program?",
-      answer:
-        "Email meenumalik77@gmail.com or call +1 (416) 832-6970 to ask about current availability, schedules, and how to take part.",
+      answer: `Email ${foundationEmail} or call +1 (416) 832-6970 to ask about current availability, schedules, and how to take part.`,
       category: "Taking part",
     },
     {

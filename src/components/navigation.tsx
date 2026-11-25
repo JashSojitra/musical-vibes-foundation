@@ -1,4 +1,5 @@
 "use client";
+import { foundationLogo } from "@/data/identity";
 import ArrowIcon from "@/components/arrow-icon";
 import Image from "next/image";
 import type { MediaAsset } from "@/types/content";
@@ -120,12 +121,12 @@ export default function Navigation({
           aria-label="Musical Vibes Foundation home"
         >
           <Image
-            src="/assets/legacy/logo.png"
+            src={foundationLogo}
             alt="Musical Vibes Foundation"
-            width={1001}
-            height={335}
+            width={480}
+            height={480}
             priority
-            sizes="168px"
+            sizes="56px"
           />
         </Link>
         <nav
@@ -290,11 +291,11 @@ export default function Navigation({
         <div className="mobile-menu-top">
           <span id="menu-title">
             <Image
-              src="/assets/legacy/logo.png"
+              src={foundationLogo}
               alt="Musical Vibes Foundation"
-              width={1001}
-              height={335}
-              sizes="160px"
+              width={480}
+              height={480}
+              sizes="72px"
             />
             <span className="menu-label">Explore our foundation</span>
           </span>

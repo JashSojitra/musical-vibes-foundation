@@ -112,11 +112,10 @@ test("SVG arrows retain dimensions, colour and alignment across public pages", a
 
 test("arrow links, mobile menu and photo controls keep their labels and hit areas", async ({
   page,
-  isMobile,
 }, info) => {
   await page.goto("/");
-  if (isMobile) {
-    const menu = page.getByRole("button", { name: "Menu", exact: false });
+  const menu = page.getByRole("button", { name: "Menu", exact: true });
+  if (await menu.isVisible()) {
     await menu.click();
     const link = page.locator('#mobile-menu a[href="/get-involved"]');
     await expect(link.locator("svg.arrow-icon")).toBeVisible();
@@ -158,6 +157,7 @@ test("arrow links, mobile menu and photo controls keep their labels and hit area
   await program.click();
   await expect(page).toHaveURL(/\/programs\/.+/);
   await page.goto("/gallery");
+  await page.getByRole("button", { name: "Timeline", exact: true }).click();
   await page.locator(".gallery-photo button").first().click();
   const next = page.getByRole("button", {
     name: "Next photograph",

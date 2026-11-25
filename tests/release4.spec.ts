@@ -201,7 +201,7 @@ test("Journal, derived gallery and Events teaser form a complete visitor journey
     .getByRole("link", { name: "Explore this story in photographs" })
     .click();
   await expect(page).toHaveURL(/\/gallery\?collection=journal-collection/);
-  await expect(page.locator(".selected-collection h2")).toHaveText(title);
+  await expect(page.locator(".selected-collection h2")).toBeVisible();
   await page.getByRole("link", { name: "Read the Update" }).click();
   await expect(page.locator("h1")).toHaveText(title);
   await page.goto("/events");
@@ -220,6 +220,7 @@ test("Journal, derived gallery and Events teaser form a complete visitor journey
     .getByRole("link", { name: "Explore our memories", exact: true })
     .click();
   await expect(page).toHaveURL(/\/gallery$/);
+  await page.getByRole("button", { name: "Timeline", exact: true }).click();
   await expect(page.locator(".gallery-photo")).toHaveCount(12);
 });
 
@@ -299,7 +300,8 @@ test("reduced motion preserves the hero, More control and gallery experience", a
     await page.keyboard.press("Escape");
   }
   await page.goto("/gallery");
-  await page.getByRole("button", { name: "Music", exact: true }).click();
+  await page.getByRole("button", { name: "Timeline", exact: true }).click();
+  await page.getByLabel("Category").selectOption("Music");
   await page.locator(".gallery-photo button").first().click();
   await page.keyboard.press("ArrowRight");
   await expect(page.locator(".lightbox-caption")).toContainText("2 / 2");

@@ -1,3 +1,9 @@
+import {
+  archiveCategory,
+  eventDate,
+  localArchiveAlbums,
+  photoIdentity,
+} from "./archive";
 import { content } from "@/data/content";
 import type {
   GalleryCollection,
@@ -106,9 +112,13 @@ export function createContentAdapter(
       (item) => item.id === collection.journalId,
     );
     collection.journalSlug = entry?.slug;
-    collection.eventSlug = source.events.find(
-      (event) => event.id === entry?.eventId,
-    )?.slug;
+    const event = source.events.find((event) => event.id === entry?.eventId);
+    collection.eventSlug = event?.slug;
+    collection.date ??= eventDate(event?.date);
+    collection.category ??= archiveCategory(
+      collection.title,
+      collection.photos,
+    );
   }
   const albumPhotoIds = new Set(
     albums.flatMap((album) => album.photos.map((photo) => photo.id)),
@@ -130,7 +140,39 @@ export function createContentAdapter(
       title: "The community archive",
       photos: standalone,
     });
+  const localAlbums = source.galleryAlbums ? [] : localArchiveAlbums(photos);
+  const archiveAlbums = source.galleryAlbums
+    ? collections.filter((album) => album.id !== "standalone.community-archive")
+    : [
+        ...localAlbums.map((album) => {
+          const linked = collections.find(
+            (collection) => collection.id === album.id,
+          );
+          return {
+            ...album,
+            journalSlug: linked?.journalSlug,
+            eventSlug: linked?.eventSlug,
+          };
+        }),
+        ...collections.filter(
+          (collection) =>
+            collection.id !== "standalone.community-archive" &&
+            !localAlbums.some((album) => album.id === collection.id),
+        ),
+      ];
+  const included = new Set(
+    archiveAlbums.flatMap((album) => album.photos.map(photoIdentity)),
+  );
+  const loose = photos.filter((photo) => !included.has(photoIdentity(photo)));
+  if (loose.length)
+    archiveAlbums.push({
+      id: "standalone.community-archive",
+      title: "The community archive",
+      photos: loose,
+    });
+
   return {
+    getArchiveAlbums: () => archiveAlbums,
     getJournalEntries: () => publicEntries,
     getJournalEntry: (slug: string) =>
       publicEntries.find(
@@ -157,10 +199,4 @@ export const getPublicContent = async () => {
   const { source, entries } = await getContentSnapshot();
   return createContentAdapter(source, entries);
 };
-export const journalDate = (date: string) =>
-  new Intl.DateTimeFormat("en-CA", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    timeZone: "UTC",
-  }).format(new Date(`${date}T12:00:00Z`));
+export { journalDate } from "./date-format";

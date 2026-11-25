@@ -21,7 +21,7 @@
     "cf:typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
     "test:workers": "node scripts/test-workers.mjs",
     "cf:tail": "wrangler tail",
-    "validate:ci": "node scripts/validate-ci.mjs",
+    "validate:ci": "node scripts/index-archive.mjs --check && node scripts/validate-ci.mjs",
     "cf:build:demo": "node scripts/build-demo.mjs",
     "cf:preview:demo": "opennextjs-cloudflare preview --config wrangler.demo.jsonc",
     "cf:deploy:demo": "opennextjs-cloudflare deploy --config wrangler.demo.jsonc",

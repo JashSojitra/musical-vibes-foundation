@@ -1,3 +1,4 @@
+import { foundationLogo } from "@/data/identity";
 import ArrowIcon from "@/components/arrow-icon";
 import Image from "next/image";
 import Link from "next/link";
@@ -14,11 +15,11 @@ export default function Footer({ settings }: { settings: SiteSettings }) {
             aria-label="Musical Vibes Foundation home"
           >
             <Image
-              src="/assets/legacy/logo.png"
+              src={foundationLogo}
               alt="Musical Vibes Foundation"
-              width={1001}
-              height={335}
-              sizes="260px"
+              width={480}
+              height={480}
+              sizes="106px"
             />
           </Link>
           <p>

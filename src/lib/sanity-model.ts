@@ -1,3 +1,11 @@
+import {
+  archiveCategory,
+  archivePhoto,
+  archiveTitle,
+  eventDate,
+  legacyAlbum,
+  legacyPosition,
+} from "./archive";
 import { createImageUrlBuilder } from "@sanity/image-url";
 import type { PortableTextBlock } from "@portabletext/types";
 import type { JournalEntry, SiteContent, MediaAsset } from "../types/content";
@@ -117,6 +125,7 @@ export function mapSanity(
                 `Photograph ${index + 1} from “${album.title || "Community album"}” (description not provided)`,
           decorative: photo.decorative,
           caption: photo.caption,
+          category: archiveCategory(text(album, "title"), []),
           editorialApproval: "approved",
           publicationEnabled: true,
         });
@@ -260,6 +269,7 @@ export function mapSanity(
     events,
     media,
     galleryAlbums: albums.flatMap((album) => {
+      const legacy = legacyAlbum(album.sourceId || album._id);
       const photos = (
         Array.isArray(album.albumPhotos)
           ? (album.albumPhotos as Array<Record<string, unknown>>)
@@ -269,10 +279,14 @@ export function mapSanity(
         const id = identities.get(photoByAsset.get(ref(image.asset)) ?? "");
         const photo = media.find((item) => item.id === id);
         if (!photo) return [];
+        const path =
+          legacy && legacyPosition(legacy, ref(image.asset), image._key);
+        const record =
+          legacy && path ? archivePhoto(photo, legacy, path) : photo;
         const hotspot = image.hotspot as { x: number; y: number } | undefined;
         return [
           {
-            ...photo,
+            ...record,
             src:
               image.crop || hotspot
                 ? builder
@@ -300,8 +314,13 @@ export function mapSanity(
         ? [
             {
               id: album.sourceId || album._id,
-              title: text(album, "title"),
+              title:
+                legacy && album.title === legacy.title
+                  ? archiveTitle(legacy.title)
+                  : text(album, "title"),
               photos,
+              date: eventDate(text(album, "eventDate")) ?? legacy?.date,
+              category: archiveCategory(text(album, "title"), photos),
               journalId: resolve(album.journalEntry),
             },
           ]

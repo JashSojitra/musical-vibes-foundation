@@ -178,6 +178,13 @@ export const schemaTypes = [
       }),
       string("title", "Album title"),
       defineField({
+        name: "eventDate",
+        title: "Event date",
+        description:
+          "Leave blank when the date is unknown. Historical albums already use the date recorded in the original archive.",
+        type: "date",
+      }),
+      defineField({
         name: "order",
         title: "Album display order",
         type: "number",

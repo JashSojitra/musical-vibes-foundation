@@ -16,6 +16,12 @@ export interface MediaAsset {
   approval: "approved" | "pending" | "rejected";
   standaloneGallery: boolean;
   position?: string;
+  archive?: {
+    folder: string;
+    title: string;
+    eventDate: string;
+    source: string;
+  };
 }
 
 export interface Program {
@@ -74,6 +80,8 @@ export interface GalleryCollection {
   id: string;
   title: string;
   photos: MediaAsset[];
+  date?: string;
+  category?: MediaAsset["category"];
   eventSlug?: string;
   journalSlug?: string;
   journalId?: string;

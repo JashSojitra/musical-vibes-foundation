@@ -44,6 +44,7 @@ test("gallery dialog locks scrolling and restores it on dismissal", async ({
   page,
 }) => {
   await page.goto("/gallery");
+  await page.getByRole("button", { name: "Timeline", exact: true }).click();
   const previous = await page
     .locator("body")
     .evaluate((body) => body.style.overflow);

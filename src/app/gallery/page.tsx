@@ -1,7 +1,5 @@
-import ArrowIcon from "@/components/arrow-icon";
-import Link from "next/link";
 import { getPublicContent } from "@/lib/journal";
-import GalleryPreview from "@/components/gallery-preview";
+import { timelineGroups } from "@/lib/archive";
 import { pageMetadata } from "@/lib/metadata";
 import { Invitation, PageIntro } from "@/components/ui";
 import GalleryExplorer from "@/components/gallery-explorer";
@@ -16,12 +14,14 @@ export default async function Gallery({
   searchParams: Promise<{ collection?: string }>;
 }) {
   const adapter = await getPublicContent();
-  const collections = adapter.getGalleryCollections();
+  const albums = adapter.getArchiveAlbums();
   const query = await searchParams;
-  const selected = collections.find(
-    (collection) => collection.id === query.collection,
-  );
-  const media = selected?.photos ?? adapter.getPublicPhotos();
+  const selected =
+    albums.find((album) => album.id === query.collection) ??
+    adapter
+      .getGalleryCollections()
+      .find((album) => album.id === query.collection);
+  const timeline = timelineGroups(albums, adapter.getPublicPhotos());
   const introPhoto =
     adapter.getPublicPhotos().find((photo) => photo.id === "diwali") ??
     adapter.getPublicPhotos()[0];
@@ -43,37 +43,12 @@ export default async function Gallery({
             : null
         }
       />
-      <section
-        className="gallery-stories wrap"
-        aria-labelledby="gallery-stories-title"
-      >
-        <h2 id="gallery-stories-title">
-          Every gathering has <em>a story.</em>
-        </h2>
-        <Link href="/events">See upcoming events</Link>
-        {!selected ? (
-          <GalleryPreview
-            collections={collections}
-            limit={collections.length}
-          />
-        ) : null}
-        {selected ? (
-          <div className="selected-collection" id="collection">
-            <p className="eyebrow">SELECTED COLLECTION</p>
-            <h2>{selected.title}</h2>
-            {selected.journalSlug ? (
-              <Link href={`/updates/${selected.journalSlug}`}>
-                Read the Update <ArrowIcon />
-              </Link>
-            ) : null}
-            {selected.eventSlug ? (
-              <Link href={`/events/${selected.eventSlug}`}>Related event</Link>
-            ) : null}
-            <Link href="/gallery">Show all photographs</Link>
-          </div>
-        ) : null}
-      </section>
-      <GalleryExplorer media={media} key={selected?.id ?? "all"} />
+      <GalleryExplorer
+        albums={albums}
+        timeline={timeline}
+        collection={selected}
+        key={selected?.id ?? "all"}
+      />
       <p className="gallery-editorial-note wrap">
         These photographs come from the foundation’s original website archive.
         Dates describe past gatherings.

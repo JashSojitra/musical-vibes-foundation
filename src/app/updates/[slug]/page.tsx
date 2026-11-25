@@ -1,3 +1,4 @@
+import { foundationLogo } from "@/data/identity";
 import EditorialBody from "@/components/editorial-body";
 import ArrowIcon from "@/components/arrow-icon";
 import Image from "next/image";
@@ -36,14 +37,14 @@ export async function generateMetadata({
       entry.seoTitle || entry.title,
       entry.seoDescription || entry.excerpt,
       `/updates/${entry.slug}`,
-      photo?.src ?? "/assets/legacy/logo.png",
+      photo?.src ?? foundationLogo,
     ),
     openGraph: {
       ...pageMetadata(
         entry.seoTitle || entry.title,
         entry.seoDescription || entry.excerpt,
         `/updates/${entry.slug}`,
-        photo?.src ?? "/assets/legacy/logo.png",
+        photo?.src ?? foundationLogo,
       ).openGraph,
       type: "article",
       publishedTime: entry.publishedAt,

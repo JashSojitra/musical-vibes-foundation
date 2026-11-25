@@ -1,12 +1,16 @@
 import { writeFile } from "node:fs/promises";
 import sharp from "sharp";
 
-// The original artwork's symbol occupies x=25..309, y=10..331.
-// Crop away only transparency and the wordmark. Never redraw or recolour it.
-const symbol = await sharp("public/assets/legacy/logo.png")
-  .extract({ left: 25, top: 10, width: 285, height: 322 })
+// Keep the complete circular artwork and trim the surrounding rectangular background.
+const branding = "public/assets/branding";
+const symbol = await sharp(`${branding}/musical-vibes-foundation-logo.png`)
+  .extract({ left: 304, top: 48, width: 928, height: 928 })
   .png()
   .toBuffer();
+await sharp(symbol)
+  .resize(480)
+  .webp({ quality: 90 })
+  .toFile(`${branding}/musical-vibes-foundation-mark.webp`);
 
 async function png(size) {
   // A proportional fit on a transparent square keeps the full hands and clef.

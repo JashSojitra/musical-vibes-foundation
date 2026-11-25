@@ -1,3 +1,4 @@
+import { foundationLogo } from "@/data/identity";
 import type { Metadata } from "next";
 import type { CommunityEvent } from "@/types/content";
 import { content } from "@/data/content";
@@ -6,7 +7,7 @@ export function pageMetadata(
   description: string,
   path: string,
   image = process.env.CONTENT_SOURCE === "sanity"
-    ? "/assets/legacy/logo.png"
+    ? foundationLogo
     : "/assets/curated/community-picnic.webp",
 ): Metadata {
   return {
@@ -35,7 +36,7 @@ export const organizationSchema = {
   "@id": `${content.settings.url}/#organization`,
   name: content.settings.name,
   url: content.settings.url,
-  logo: `${content.settings.url}/assets/legacy/logo.png`,
+  logo: `${content.settings.url}${foundationLogo}`,
   description: content.settings.mission,
   email: content.settings.email,
   telephone: content.settings.phone,

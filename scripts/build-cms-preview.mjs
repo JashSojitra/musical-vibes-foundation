@@ -101,7 +101,10 @@ cpSync(resolve(staging, ".open-next"), output, { recursive: true });
 const publicAssets = resolve(output, "assets/assets");
 // This path is inside the verified generated output, never the source public/ directory.
 rmSync(publicAssets, { recursive: true, force: true });
-for (const file of ["assets/legacy/logo.png", "assets/image-unavailable.svg"]) {
+for (const file of [
+  "assets/branding/musical-vibes-foundation-mark.webp",
+  "assets/image-unavailable.svg",
+]) {
   mkdirSync(resolve(output, "assets", file, ".."), { recursive: true });
   cpSync(resolve(root, "public", file), resolve(output, "assets", file));
 }

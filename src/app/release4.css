@@ -536,3 +536,293 @@ body:has(dialog[open]) .floating-contact {
     grid-column: 2;
   }
 }
+
+/* Circular foundation artwork */
+.site-header .brand {
+  width: auto;
+  flex: 0 0 auto;
+}
+.site-header .brand img,
+#menu-title > img,
+.footer-brand img {
+  display: block;
+  aspect-ratio: 1;
+  height: auto;
+  object-fit: contain;
+  border-radius: 50%;
+}
+.site-header .brand img {
+  width: 56px;
+}
+#menu-title > img {
+  width: 72px;
+  padding: 0;
+}
+.footer-brand {
+  width: 106px;
+}
+.footer-contact a {
+  overflow-wrap: anywhere;
+}
+
+/* Community photo archive */
+.archive-explorer {
+  scroll-margin-top: 105px;
+}
+.archive-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid #d8c6d4;
+  margin-bottom: 22px;
+  padding-bottom: 14px;
+}
+.archive-switch {
+  display: flex;
+  gap: 4px;
+}
+.archive-switch button {
+  min-height: 44px;
+  padding: 8px clamp(12px, 3vw, 26px);
+  border: 0;
+  background: transparent;
+  font-family: var(--serif);
+  font-size: clamp(23px, 4vw, 38px);
+}
+.archive-switch button[aria-pressed="true"] {
+  color: var(--plum);
+  box-shadow: inset 0 -2px currentColor;
+}
+.archive-filter,
+.archive-calendar label {
+  display: grid;
+  gap: 4px;
+  font-size: 12px;
+}
+.archive-explorer select {
+  min-height: 44px;
+  max-width: 100%;
+  padding: 5px 10px;
+  border: 1px solid #d8c6d4;
+  border-radius: 4px;
+  background: #fffaf3;
+  color: var(--ink);
+}
+.archive-album-cards {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 18px;
+}
+.archive-album-cards .archive-cover {
+  height: auto;
+  aspect-ratio: 5 / 3;
+}
+.archive-album-cards .archive-cover img {
+  width: 100%;
+  height: 100%;
+}
+.archive-album-cards .gallery-collection-card > span {
+  min-height: 0;
+}
+.archive-album-cards .gallery-collection-card small {
+  color: #755c73;
+}
+.archive-album-cards .gallery-collection-card i {
+  display: block;
+  position: static;
+  margin-top: 10px;
+  color: #755c73;
+}
+.archive-album-header {
+  margin-top: 0;
+  padding-top: 8px;
+  border-top: 0;
+}
+.archive-album-header h2,
+.archive-result-heading h2 {
+  font-size: clamp(30px, 5vw, 64px);
+  margin: 12px 0;
+  scroll-margin-top: 108px;
+}
+.archive-related {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin: 12px 0 22px;
+}
+.archive-album-header a {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.archive-album-header svg {
+  width: 14px;
+  display: inline;
+}
+.archive-timeline {
+  display: grid;
+  grid-template-columns: minmax(312px, 1fr) minmax(0, 2.4fr);
+  gap: clamp(22px, 4vw, 64px);
+  align-items: start;
+}
+.archive-calendar {
+  position: sticky;
+  top: 106px;
+  background: #f4eaf0;
+  padding: clamp(12px, 1.65vw, 22px);
+  border-top: 2px solid var(--plum);
+}
+.archive-calendar-heading,
+.archive-calendar-selects {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+}
+.archive-calendar-heading h3 {
+  text-align: center;
+  font-size: clamp(20px, 2.2vw, 34px);
+  margin: 0;
+}
+.archive-calendar button {
+  min-height: 36px;
+  min-width: 36px;
+  border: 0;
+  border-radius: 4px;
+  background: #e5d2e2;
+  color: var(--ink);
+  transition:
+    background-color 160ms ease,
+    color 160ms ease;
+}
+.archive-calendar button svg {
+  display: inline-block;
+  vertical-align: middle;
+}
+.archive-calendar button:disabled {
+  opacity: 0.42;
+  cursor: default;
+}
+.archive-calendar button:hover:not(:disabled),
+.archive-calendar button[aria-pressed="true"] {
+  background: #4c234b;
+  color: #fff;
+}
+.archive-calendar-selects {
+  margin: 16px 0;
+}
+.archive-calendar-selects label:last-child {
+  flex: 1;
+}
+.archive-calendar table {
+  width: 100%;
+  table-layout: fixed;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.archive-calendar th {
+  font-size: 11px;
+  padding-bottom: 6px;
+}
+.archive-calendar td {
+  height: 38px;
+  padding: 0;
+  font-size: 13px;
+}
+.archive-calendar td span {
+  color: #705f70;
+}
+.archive-date-jump {
+  margin-top: 16px;
+}
+.archive-result-heading {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.archive-date-group {
+  margin: 16px 0 30px;
+}
+.archive-date-group h3 {
+  font-size: clamp(22px, 3vw, 36px);
+  margin: 0 0 12px;
+  padding-top: 12px;
+  border-top: 1px solid #d8c6d4;
+}
+.archive-photo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+.archive-photo-grid figure {
+  margin: 0;
+  min-width: 0;
+}
+.archive-photo-grid button {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+}
+.archive-photo-grid img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.archive-photo-grid figcaption {
+  display: block;
+}
+.archive-more,
+.archive-result-heading button {
+  background: transparent;
+  border: 1px solid #aa8ca4;
+  border-radius: 4px;
+  min-height: 44px;
+  padding: 10px 16px;
+}
+.archive-image-unavailable {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: 100%;
+  padding: 16px;
+  background: #efe3ed;
+  color: #45233e;
+}
+.lightbox-stage .archive-image-unavailable {
+  min-height: 220px;
+}
+@media (max-width: 900px) {
+  .archive-timeline {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .archive-calendar {
+    position: static;
+    width: min(100%, 450px);
+  }
+  .archive-album-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 560px) {
+  .site-header .brand img {
+    width: 48px;
+  }
+  .archive-photo-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .archive-album-cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .archive-explorer *,
+  .archive-explorer *::before,
+  .archive-explorer *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+  .archive-explorer img {
+    transform: none !important;
+  }
+}

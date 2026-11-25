@@ -1,6 +1,7 @@
 import { cache } from "react";
 import { connection } from "next/server";
 import { createClient } from "@sanity/client";
+import { foundationEmail, foundationUrl } from "@/data/identity";
 import { content } from "@/data/content";
 import { journalSeed } from "@/lib/journal";
 import { readSanitySnapshot } from "./sanity-read";
@@ -29,5 +30,24 @@ export const getContentSnapshot = cache(async () => {
     perspective: "published",
     useCdn: false,
   });
-  return readSanitySnapshot(client);
+  const { source, entries } = await readSanitySnapshot(client);
+  const previousEmail = source.settings.email;
+  return {
+    source: {
+      ...source,
+      settings: {
+        ...source.settings,
+        email: foundationEmail,
+        url: foundationUrl,
+      },
+      faqs:
+        previousEmail && previousEmail !== foundationEmail
+          ? source.faqs.map((faq) => ({
+              ...faq,
+              answer: faq.answer.replaceAll(previousEmail, foundationEmail),
+            }))
+          : source.faqs,
+    },
+    entries,
+  };
 });

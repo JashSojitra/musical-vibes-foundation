@@ -1,3 +1,4 @@
+import { foundationLogo, foundationUrl } from "@/data/identity";
 import type { Metadata } from "next";
 import { getSiteContent, getMedia } from "@/lib/content";
 import { organizationSchema } from "@/lib/metadata";
@@ -18,14 +19,14 @@ export const metadata: Metadata = {
   },
   description:
     "Music, wellness, and community connection for seniors and the wider community in Brampton, Ontario.",
-  metadataBase: new URL("https://www.musicalvibesfoundation.com"),
+  metadataBase: new URL(foundationUrl),
   openGraph: {
     type: "website",
     locale: "en_CA",
     siteName: "Musical Vibes Foundation",
     images: [
       process.env.CONTENT_SOURCE === "sanity"
-        ? "/assets/legacy/logo.png"
+        ? foundationLogo
         : "/assets/curated/community-picnic.webp",
     ],
   },
@@ -37,7 +38,7 @@ export default async function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   const { settings, programs } = await getSiteContent();
   return (
-    <html lang="en-CA">
+    <html lang="en-CA" data-scroll-behavior="smooth">
       <body>
         <a href="#main" className="skip-link">
           Skip to content
@@ -46,7 +47,7 @@ export default async function RootLayout({
           data={{
             ...organizationSchema,
             "@id": `${settings.url.replace(/\/$/, "")}/#organization`,
-            logo: `${settings.url.replace(/\/$/, "")}/assets/legacy/logo.png`,
+            logo: `${settings.url.replace(/\/$/, "")}${foundationLogo}`,
             name: settings.name,
             url: settings.url,
             email: settings.email,

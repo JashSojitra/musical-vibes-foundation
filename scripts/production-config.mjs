@@ -124,7 +124,7 @@ export function validateBundle() {
   );
   const required = [
     "worker.js",
-    "assets/assets/legacy/logo.png",
+    "assets/assets/branding/musical-vibes-foundation-mark.webp",
     "assets/assets/image-unavailable.svg",
   ];
   required.forEach((file) =>

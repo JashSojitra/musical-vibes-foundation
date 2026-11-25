@@ -27,5 +27,5 @@ for (const item of publicDemoMedia)
   );
 export const publicDemoAssetPaths = [
   ...publicDemoMedia.map((item) => item.src),
-  "/assets/legacy/logo.png",
+  "/assets/branding/musical-vibes-foundation-mark.webp",
 ];

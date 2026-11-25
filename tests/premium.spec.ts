@@ -91,7 +91,8 @@ test("premium gallery, contact validation and FAQ preserve real interactions", a
   page,
 }) => {
   await page.goto("/gallery");
-  await page.getByRole("button", { name: "Music", exact: true }).click();
+  await page.getByRole("button", { name: "Timeline", exact: true }).click();
+  await page.getByLabel("Category").selectOption("Music");
   await expect(page.locator(".gallery-photo")).toHaveCount(2);
   const opener = page.locator(".gallery-photo button").first();
   await opener.click();

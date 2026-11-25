@@ -96,7 +96,7 @@ test("demo responses and static files carry noindex and security headers", async
     "/updates",
     "/gallery?collection=standalone.community-archive",
     "/contact",
-    "/assets/legacy/logo.png",
+    "/assets/branding/musical-vibes-foundation-mark.webp",
     "/_next/image?url=%2Fassets%2Fcurated%2Fcommunity-picnic.webp&w=640&q=75",
   ]) {
     const response = await request.get(path);

@@ -163,7 +163,8 @@ test("gallery filters, lightbox keyboard controls, and focus restoration", async
   page,
 }) => {
   await page.goto("/gallery");
-  await page.getByRole("button", { name: "Music", exact: true }).click();
+  await page.getByRole("button", { name: "Timeline", exact: true }).click();
+  await page.getByLabel("Category").selectOption("Music");
   await expect(page.locator(".gallery-photo")).toHaveCount(2);
   const opener = page.locator(".gallery-photo > button").first();
   await opener.click();
@@ -177,7 +178,7 @@ test("gallery filters, lightbox keyboard controls, and focus restoration", async
   await page.keyboard.press("Escape");
   await expect(dialog).not.toBeVisible();
   await expect(opener).toBeFocused();
-  await page.getByRole("button", { name: "All moments", exact: true }).click();
+  await page.getByLabel("Category").selectOption("All moments");
   await expect(page.locator(".gallery-photo")).toHaveCount(12);
 });
 
@@ -199,7 +200,10 @@ test("contact validation prepares an email without sending anything", async ({
   );
   await expect(
     page.getByRole("link", { name: "Open my email draft" }),
-  ).toHaveAttribute("href", /^mailto:meenumalik77@gmail.com\?subject=/);
+  ).toHaveAttribute(
+    "href",
+    /^mailto:musicalvibesfoundation1@gmail\.com\?subject=/,
+  );
 });
 
 test("FAQ search and keyboard accordion", async ({ page }) => {

@@ -240,7 +240,7 @@ test("root CMS failure shows a generic recovery screen and recovers when content
   page,
   request,
 }) => {
-  const logo = await request.get("/assets/legacy/logo.png");
+  const logo = await request.get("/assets/branding/musical-vibes-foundation-mark.webp");
   expect(logo.status()).toBe(200);
   expect(logo.headers()["x-content-type-options"]).toBe("nosniff");
   expect(logo.headers()["x-frame-options"]).toBe("DENY");
