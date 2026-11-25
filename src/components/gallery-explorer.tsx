@@ -3,10 +3,18 @@
 import ArrowIcon from "@/components/arrow-icon";
 import ArchiveCalendar from "@/components/archive-calendar";
 import { journalDate } from "@/lib/date-format";
-import Image from "next/image";
+import ArchiveImage from "@/components/archive-image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { GalleryCollection, MediaAsset } from "@/types/content";
+
+import TimelineTunnel from "@/components/archive-tunnel";
+import type { TunnelEngine } from "@/components/archive-tunnel/tunnel-engine";
+import {
+  monthKeyFor,
+  timelineMonths,
+  type TimelineGroup,
+} from "@/lib/archive-months";
 
 const categories = [
   "All moments",
@@ -18,46 +26,25 @@ const pageSize = 24;
 const albumHref = (id: string) =>
   `/gallery?collection=${encodeURIComponent(id)}#archive`;
 
-function ArchiveImage({ photo, sizes }: { photo: MediaAsset; sizes: string }) {
-  const [failed, setFailed] = useState(false);
-  return failed ? (
-    <span
-      className="archive-image-unavailable"
-      role="img"
-      aria-label="Photograph unavailable"
-    >
-      Photograph unavailable
-    </span>
-  ) : (
-    <Image
-      src={photo.src}
-      alt={photo.alt}
-      width={photo.width}
-      height={photo.height}
-      sizes={sizes}
-      style={{ objectPosition: photo.position }}
-      onError={() => setFailed(true)}
-    />
-  );
-}
-
-type Timeslice = { date?: string; photos: MediaAsset[] };
-
 export default function GalleryExplorer({
   albums,
   timeline,
   collection,
 }: {
   albums: GalleryCollection[];
-  timeline: Timeslice[];
+  timeline: TimelineGroup[];
   collection?: GalleryCollection;
 }) {
   const [view, setView] = useState<"albums" | "timeline">("albums");
   const [category, setCategory] =
     useState<(typeof categories)[number]>("All moments");
+  const [month, setMonth] = useState("");
+  const [calendarMonth, setCalendarMonth] = useState("");
+  const engine = useRef<TunnelEngine>(null);
   const [date, setDate] = useState("");
   const [limit, setLimit] = useState(pageSize);
   const [selected, setSelected] = useState<number | null>(null);
+  const [viewing, setViewing] = useState<MediaAsset[]>([]);
   const dialog = useRef<HTMLDialogElement>(null);
   const dialogClose = useRef<HTMLButtonElement>(null);
   const opener = useRef<HTMLButtonElement>(null);
@@ -72,16 +59,36 @@ export default function GalleryExplorer({
   const filteredAlbums = albums.filter((album) =>
     album.photos.some((photo) => inCategory(photo, album.category)),
   );
-  const dated = timeline
-    .map((group) => ({
-      ...group,
-      photos: group.photos.filter((photo) => inCategory(photo)),
-    }))
-    .filter((group) => group.photos.length);
+  const dated = useMemo(() => {
+    if (category === "All moments") return timeline;
+    const positionKey = (date: string | undefined, photo: MediaAsset) =>
+      `${date ?? ""}:${photo.originalSrc ?? photo.src}`;
+    const matchingAlbumPhotos = new Set(
+      albums.flatMap((album) =>
+        album.category === category
+          ? album.photos.map((photo) => positionKey(album.date, photo))
+          : [],
+      ),
+    );
+    return timeline
+      .map((group) => ({
+        ...group,
+        photos: group.photos.filter(
+          (photo) =>
+            photo.category === category ||
+            matchingAlbumPhotos.has(positionKey(group.date, photo)),
+        ),
+      }))
+      .filter((group) => group.photos.length);
+  }, [albums, timeline, category]);
+  const months = useMemo(() => timelineMonths(dated), [dated]);
+  const activeMonth = months.find((item) => item.key === month) ?? months[0];
   const dates = dated.flatMap((group) => (group.date ? [group.date] : []));
   const groups =
     view === "timeline"
-      ? dated.filter((group) => !date || group.date === date)
+      ? (activeMonth?.groups ?? []).filter(
+          (group) => !date || group.date === date,
+        )
       : [
           {
             photos:
@@ -92,15 +99,31 @@ export default function GalleryExplorer({
         ];
   const filtered = groups.flatMap((group) => group.photos);
   const index = selected ?? -1;
-  const photo = filtered[index];
+  const photo = viewing[index];
 
   const reset = () => {
+    setMonth("");
+    setCalendarMonth("");
     setDate("");
     setLimit(pageSize);
   };
+  const travel = (key: string) => {
+    if (key === activeMonth?.key) return;
+    setMonth(key);
+    if (key !== "undated") setCalendarMonth(key);
+    if (date && monthKeyFor(date) !== key) setDate("");
+    setLimit(pageSize);
+  };
   const selectDate = (value: string) => {
+    if (value) {
+      const key = monthKeyFor(value);
+      travel(key);
+      setCalendarMonth(key);
+      const index = months.findIndex((item) => item.key === key);
+      if (index >= 0) engine.current?.goTo(index, true);
+    }
     if (value === date && value) resultHeading.current?.focus();
-    jump.current = Boolean(value && value !== date);
+    jump.current = value !== date;
     setDate(value);
     setLimit(pageSize);
   };
@@ -110,8 +133,14 @@ export default function GalleryExplorer({
     resultHeading.current?.focus();
   }, [date]);
 
-  const open = (index: number, event: React.MouseEvent<HTMLButtonElement>) => {
-    opener.current = event.currentTarget;
+  const open = (
+    index: number,
+    button: HTMLButtonElement,
+    photos = filtered,
+  ) => {
+    if (index < 0) return;
+    opener.current = button;
+    setViewing(photos);
     setSelected(index);
     dialog.current?.showModal();
     dialogClose.current?.focus();
@@ -127,10 +156,10 @@ export default function GalleryExplorer({
   }, [isOpen]);
 
   function step(direction: number) {
-    if (filtered.length > 1)
+    if (viewing.length > 1)
       setSelected(
         (current) =>
-          ((current ?? 0) + direction + filtered.length) % filtered.length,
+          ((current ?? 0) + direction + viewing.length) % viewing.length,
       );
   }
 
@@ -156,8 +185,10 @@ export default function GalleryExplorer({
             type="button"
             aria-pressed={view === "albums"}
             onClick={() => {
-              setView("albums");
-              reset();
+              if (view !== "albums") {
+                setView("albums");
+                reset();
+              }
             }}
           >
             Albums
@@ -166,8 +197,10 @@ export default function GalleryExplorer({
             type="button"
             aria-pressed={view === "timeline"}
             onClick={() => {
-              setView("timeline");
-              reset();
+              if (view !== "timeline") {
+                setView("timeline");
+                reset();
+              }
             }}
           >
             Timeline
@@ -189,6 +222,21 @@ export default function GalleryExplorer({
           </select>
         </label>
       </div>
+      {view === "timeline" && activeMonth && (
+        <TimelineTunnel
+          key={category}
+          months={months}
+          engineRef={engine}
+          onMonth={travel}
+          onOpen={(frame, button) =>
+            open(
+              frame.index,
+              button,
+              activeMonth.groups.flatMap((group) => group.photos),
+            )
+          }
+        />
+      )}
       {showingAlbums ? (
         <>
           <p className="gallery-count" role="status">
@@ -247,6 +295,8 @@ export default function GalleryExplorer({
             <ArchiveCalendar
               key={category}
               dates={dates}
+              month={calendarMonth || dates[0].slice(0, 7)}
+              onMonth={setCalendarMonth}
               selected={date}
               onSelect={selectDate}
             />
@@ -282,7 +332,9 @@ export default function GalleryExplorer({
             ) : (
               <div className="archive-result-heading">
                 <h2 ref={resultHeading} tabIndex={-1}>
-                  {date ? journalDate(date) : "Photographs by date"}
+                  {date
+                    ? journalDate(date)
+                    : (activeMonth?.label ?? "Photographs by date")}
                 </h2>
                 {date && (
                   <button type="button" onClick={() => selectDate("")}>
@@ -321,7 +373,9 @@ export default function GalleryExplorer({
                     >
                       <button
                         type="button"
-                        onClick={(event) => open(group.first + i, event)}
+                        onClick={(event) =>
+                          open(group.first + i, event.currentTarget)
+                        }
                         aria-label={`Open photograph ${group.first + i + 1}${item.alt ? `: ${item.alt}` : ""}`}
                       >
                         <ArchiveImage
@@ -357,6 +411,7 @@ export default function GalleryExplorer({
         aria-labelledby="lightbox-title"
         onClose={() => {
           setSelected(null);
+          setViewing([]);
           opener.current?.focus();
         }}
         onClick={(event) => {
@@ -387,7 +442,7 @@ export default function GalleryExplorer({
                 type="button"
                 className="lightbox-prev"
                 onClick={() => step(-1)}
-                disabled={filtered.length < 2}
+                disabled={viewing.length < 2}
                 aria-label="Previous photograph"
               >
                 <ArrowIcon direction="left" />
@@ -397,7 +452,7 @@ export default function GalleryExplorer({
                 type="button"
                 className="lightbox-next"
                 onClick={() => step(1)}
-                disabled={filtered.length < 2}
+                disabled={viewing.length < 2}
                 aria-label="Next photograph"
               >
                 <ArrowIcon />
@@ -413,7 +468,7 @@ export default function GalleryExplorer({
                 View full-resolution photograph
               </a>
               <span>
-                {index + 1} / {filtered.length}
+                {index + 1} / {viewing.length}
               </span>
             </div>
           </>

@@ -43,6 +43,7 @@
     ".open-next-staging",
     ".wrangler",
     "studio",
+    "integrations/craft-archive-scrubber",
     ".open-next-cms-preview",
     ".open-next-production"
   ]

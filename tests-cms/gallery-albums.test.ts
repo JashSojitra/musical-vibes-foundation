@@ -1,6 +1,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { mapSanity, type CmsDocument } from "../src/lib/sanity-model";
+import { timelineGroups } from "../src/lib/archive";
+import { timelineMonths } from "../src/lib/archive-months";
 import { createContentAdapter } from "../src/lib/journal";
 
 const ref = (_ref: string) => ({ _type: "reference", _ref });
@@ -170,4 +172,36 @@ test("broken album assets stay absent and sharing an asset never approves a with
   );
   docs[4].publicationEnabled = false;
   assert.equal(adapt(docs).adapter.getPublicPhotos().length, 0);
+});
+
+test("archive months reflect CMS date, ordering, and publication changes", () => {
+  const docs = fixture();
+  docs[4].eventDate = "2024-02-29";
+  const months = () => {
+    const { adapter } = adapt(docs);
+    return timelineMonths(
+      timelineGroups(adapter.getArchiveAlbums(), adapter.getPublicPhotos()),
+    );
+  };
+  assert.equal(months()[0].key, "2024-02");
+  assert.deepEqual(
+    months()[0].featured.map(({ photo }) => photo.id),
+    ["owner-photo", `gallery-photo-${b}`],
+  );
+  docs[4].albumPhotos = [image(b, "two"), image(a, "one")];
+  docs[4].eventDate = "2025-03-09";
+  assert.equal(months()[0].key, "2025-03");
+  assert.equal(months()[0].groups[0].date, "2025-03-09");
+  assert.equal(months()[0].featured[0].photo.id, `gallery-photo-${b}`);
+  docs[4].publicationEnabled = false;
+  assert.equal(
+    months().some((month) => month.key === "2025-03"),
+    false,
+  );
+  assert.equal(
+    months().some((month) =>
+      month.featured.some(({ photo }) => photo.id === `gallery-photo-${b}`),
+    ),
+    false,
+  );
 });

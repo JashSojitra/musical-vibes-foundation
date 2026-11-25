@@ -211,7 +211,7 @@ test("built CMS navigation, contact and footer support keyboard use at each view
   await page.keyboard.press("Enter");
   await expect(
     page.getByRole("link", { name: "Open my email draft" }),
-  ).toHaveAttribute("href", /^mailto:hello@example\.org\?/);
+  ).toHaveAttribute("href", /^mailto:musicalvibesfoundation1@gmail\.com\?/);
   const credit = page.locator(".footer-credit");
   await credit.scrollIntoViewIfNeeded();
   await expect(credit).toContainText(

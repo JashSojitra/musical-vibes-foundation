@@ -22,9 +22,7 @@ export default async function Gallery({
       .getGalleryCollections()
       .find((album) => album.id === query.collection);
   const timeline = timelineGroups(albums, adapter.getPublicPhotos());
-  const introPhoto =
-    adapter.getPublicPhotos().find((photo) => photo.id === "diwali") ??
-    adapter.getPublicPhotos()[0];
+  const introPhoto = timeline[0]?.photos[0];
   return (
     <>
       <PageIntro
@@ -50,8 +48,7 @@ export default async function Gallery({
         key={selected?.id ?? "all"}
       />
       <p className="gallery-editorial-note wrap">
-        These photographs come from the foundation’s original website archive.
-        Dates describe past gatherings.
+        Dates reflect when gatherings took place, where recorded.
       </p>
       <Invitation title="Picture yourself" emphasis="in good company." />
     </>

@@ -1,5 +1,6 @@
 import index from "../data/archive-index.json";
 import type { GalleryCollection, MediaAsset } from "../types/content";
+import type { TimelineGroup } from "./archive-months";
 
 const origin = "https://www.musicalvibesfoundation.com/assets/";
 const indexedAlbums = new Map(index.map((album) => [album.id, album]));
@@ -89,30 +90,40 @@ export const photoIdentity = (photo: MediaAsset) =>
 export function timelineGroups(
   collections: GalleryCollection[],
   photos: MediaAsset[],
-) {
-  const byDate = new Map<string, MediaAsset[]>();
-  const seen = new Set<string>();
-  const dated = collections
-    .filter((album) => eventDate(album.date))
-    .sort((a, b) => b.date!.localeCompare(a.date!));
-  for (const album of dated) {
+): TimelineGroup[] {
+  const byDate = new Map<string, Map<string, MediaAsset>>();
+  const datedAssets = new Set<string>();
+  const undatedAlbumPhotos: MediaAsset[] = [];
+  for (const album of collections) {
+    const date = eventDate(album.date);
+    if (!date) {
+      undatedAlbumPhotos.push(...album.photos);
+      continue;
+    }
+    const group = byDate.get(date) ?? new Map<string, MediaAsset>();
     for (const photo of album.photos) {
       const key = photoIdentity(photo);
-      if (seen.has(key)) continue;
-      seen.add(key);
-      const group = byDate.get(album.date!) ?? [];
-      group.push(photo);
-      byDate.set(album.date!, group);
+      datedAssets.add(key);
+      if (!group.has(key)) group.set(key, photo);
     }
+    byDate.set(date, group);
   }
-  const undated = photos.filter((photo) => {
+
+  const seen = new Set<string>();
+  const undated = [
+    ...undatedAlbumPhotos,
+    ...photos.filter((photo) => !datedAssets.has(photoIdentity(photo))),
+  ].filter((photo) => {
     const key = photoIdentity(photo);
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
   });
   return [
-    ...Array.from(byDate, ([date, items]) => ({ date, photos: items })),
+    ...Array.from(byDate.keys())
+      .sort()
+      .reverse()
+      .map((date) => ({ date, photos: [...byDate.get(date)!.values()] })),
     ...(undated.length ? [{ date: undefined, photos: undated }] : []),
   ];
 }

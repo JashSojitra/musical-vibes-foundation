@@ -4,6 +4,37 @@ This patch changes no deployed demo, CMS preview, main branch, registrar, Hostin
 
 Start with [content inventory](PRODUCTION-CONTENT-INVENTORY.md), [exact cleanup review](PRODUCTION-CLEANUP.md) and [public observation](validation/SANITY-PUBLIC-LAUNCH-2026-11-10.md). Public reads are evidence, not a recovery backup.
 
+## Code-only release to the existing public CMS website
+
+Use this path when releasing website code against the existing published dataset. The content reconciliation and historical-import steps below are separate operations, not prerequisites for a code-only release. No data migration is required by this build path. Keep all backup/approval requirements for any later content mutation or domain cutover.
+
+`SANITY_REPAIR_TOKEN` is required by `sanity:repair`, not by the website build or deployment. If a command sequence stops with a Sanity backup error, do not weaken that safeguard: run the existing code-only commands directly instead. Neither CMS-preview nor production build/deploy scripts invoke repair, backup, migration, cleanup, import or Studio deployment. The builds copy only allowlisted website inputs, remove Sanity credentials from their child environment, and use published, tokenless CMS reads at request time. The deploy wrappers validate the target and build receipt before invoking Wrangler.
+
+The existing public CMS website is `https://musical-vibes-foundation-cms-preview.musical-vibes-staging.workers.dev`, served by `musical-vibes-foundation-cms-preview`. Read-only HTTP checks on 2026-11-25 returned 200 there. The official `www.musicalvibesfoundation.com` domain still returned Hostinger/LiteSpeed headers; updating that domain requires a separately approved cutover, not a Worker code release.
+
+From the repository root in PowerShell:
+
+```powershell
+npm run cf:build:cms-preview
+if ($LASTEXITCODE -ne 0) { throw 'CMS website build failed; stop' }
+npm run cf:validate:cms-preview
+if ($LASTEXITCODE -ne 0) { throw 'Artifact validation failed; stop' }
+npm run cf:dry-run:cms-preview
+if ($LASTEXITCODE -ne 0) { throw 'Worker dry-run failed; stop' }
+
+# STOP here until the owner approves this exact artifact and Cloudflare target.
+# Use existing scoped Cloudflare credentials; never put their values in this file.
+$env:CMS_PREVIEW_CONFIRM = 'musical-vibes-foundation-cms-preview'
+try {
+  npm run cf:deploy:cms-preview
+  if ($LASTEXITCODE -ne 0) { throw 'CMS website deployment failed; stop' }
+} finally {
+  Remove-Item Env:CMS_PREVIEW_CONFIRM -ErrorAction SilentlyContinue
+}
+```
+
+A Sanity backup is not needed to protect the dataset for this code-only operation because it performs no dataset writes. This does **not** authorize any data operation or establish owner content acceptance. `cf:deploy:production` instead targets the intentionally **unrouted** production Worker (`routes: []`, `workers_dev: false`); it does not update either public URL. Do not switch to the static demo target or attach routes as a workaround. The existing GitHub workflows accept only the main-branch demo or the explicitly guarded CMS preview on `feat/sanity-cms`; they will not deploy the current `feat/immersive-gallery-integration` worktree. Use the validated local CMS-preview path above, which includes uncommitted website files, after approval. It requires existing Cloudflare account/deployment authentication; never create or broaden credentials automatically.
+
 ## Read-only next steps on the caller's trusted workstation
 
 Use the existing `feat/sanity-cms` branch. Apply/review this patch locally; do not apply it to main automatically. Use Node >=22.14 and <25 and `npm ci`. Keep credentials out of history, public variables and Git. Existing operator configuration supplies `SANITY_REPAIR_TOKEN`; verify its full raw dataset read ACL independently. No credential or permission creation is included.

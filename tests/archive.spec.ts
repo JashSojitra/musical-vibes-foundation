@@ -21,12 +21,17 @@ test("original albums, timeline dates and date navigation work at each viewport"
   await expect(page.locator(".gallery-photo")).toHaveCount(2);
   await timeline.click();
   await expect(timeline).toHaveAttribute("aria-pressed", "true");
-  const groups = page.locator(".archive-date-group time");
-  const dates = await groups.evaluateAll((nodes) =>
-    nodes.map((node) => (node as HTMLTimeElement).dateTime),
-  );
-  expect(dates.length).toBeGreaterThan(1);
-  expect(dates).toEqual([...new Set(dates)].sort().reverse());
+  const monthJump = page.getByLabel("Jump to archive month");
+  await expect(monthJump).toHaveValue("2025-12");
+  const monthKeys = await monthJump
+    .locator("option")
+    .evaluateAll((nodes) =>
+      nodes
+        .map((node) => (node as HTMLOptionElement).value)
+        .filter((key) => key !== "undated"),
+    );
+  expect(monthKeys.length).toBeGreaterThan(1);
+  expect(monthKeys).toEqual([...new Set(monthKeys)].sort().reverse());
   await page.getByRole("button", { name: "Previous month" }).click();
   await expect(
     page.getByRole("table", { name: "November 2025" }),
@@ -42,7 +47,18 @@ test("original albums, timeline dates and date navigation work at each viewport"
   await page.getByLabel("Jump to a date").selectOption("2025-12-08");
   await expect(page.locator(".gallery-photo")).toHaveCount(1);
   await page.getByRole("button", { name: "Clear date" }).click();
-  await expect(page.locator(".gallery-photo")).toHaveCount(12);
+  await expect(monthJump).toHaveValue("2025-12");
+  await expect(
+    page.locator(".archive-date-group time").first(),
+  ).toHaveAttribute("datetime", "2025-12-08");
+  await page.getByLabel("Jump to a date").selectOption("2025-10-16");
+  await expect(monthJump).toHaveValue("2025-10");
+  await page.getByLabel("Category").selectOption("Celebrations");
+  await expect(monthJump).toHaveValue("2025-12");
+  await expect(monthJump.locator('option[value="2025-10"]')).toHaveCount(1);
+  await expect(page.getByLabel("Jump to a date")).toHaveValue("");
+  await page.getByLabel("Category").selectOption("All moments");
+  await expect(monthJump).toHaveValue("2025-12");
   expect(
     await page.evaluate(() => document.documentElement.scrollWidth),
   ).toBeLessThanOrEqual(page.viewportSize()!.width);
@@ -97,4 +113,48 @@ test("an image request failure displays an accessible replacement", async ({
     first.getByRole("img", { name: "Photograph unavailable" }),
   ).toBeVisible();
   await expect(first.locator("img")).toHaveCount(0);
+});
+
+test("the Craft tunnel travels, settles, and opens the shared lightbox", async ({
+  page,
+}) => {
+  await page.goto("/gallery#archive");
+  await page.getByRole("button", { name: "Timeline", exact: true }).click();
+  const stage = page.getByRole("region", { name: "Archive photo tunnel" });
+  const jump = page.getByLabel("Jump to archive month");
+  const slider = page.getByRole("slider", { name: "Timeline month" });
+  await expect(stage.locator(".ia-layer.is-settled")).toHaveCount(1);
+  await slider.press("ArrowDown");
+  await expect(jump).not.toHaveValue("2025-12");
+  await stage.press("End");
+  await expect(stage.locator(".ia-layer.is-settled")).toHaveCount(1);
+  expect(await stage.locator(".ia-layer").count()).toBeLessThanOrEqual(5);
+  await jump.selectOption("2025-10");
+  await expect(stage.locator(".ia-layer.is-settled .ia-title")).toHaveText(
+    /October 2025/,
+  );
+  const first = stage
+    .getByRole("button", { name: /Open featured photograph/ })
+    .first();
+  await first.click();
+  const lightbox = page.getByRole("dialog");
+  await expect(lightbox).toBeVisible();
+  await expect(
+    lightbox.getByRole("button", { name: "Close photograph" }),
+  ).toBeFocused();
+  await expect(lightbox.locator(".lightbox-caption span")).toHaveText("1 / 3");
+  await page.keyboard.press("ArrowRight");
+  await expect(lightbox.locator(".lightbox-caption span")).toHaveText("2 / 3");
+  await page.keyboard.press("Escape");
+  await expect(lightbox).not.toBeVisible();
+  await expect(first).toBeFocused();
+  await stage.scrollIntoViewIfNeeded();
+  const box = (await stage.boundingBox())!;
+  await page.mouse.move(box.x + box.width / 2, Math.max(0, box.y) + 20);
+  const before = await page.evaluate(() => window.scrollY);
+  await page.mouse.wheel(0, 240);
+  await expect
+    .poll(() => page.evaluate(() => window.scrollY))
+    .toBeGreaterThan(before);
+  await expect(jump).toHaveValue("2025-10");
 });

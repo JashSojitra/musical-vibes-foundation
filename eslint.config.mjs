@@ -20,6 +20,7 @@ export default defineConfig([
     ".agents/**",
     ".codex/**",
     "docs/legacy-snapshot/**",
+    "integrations/craft-archive-scrubber/**",
     "scripts/**",
     "next-env.d.ts",
     ".tmp/**",

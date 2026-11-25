@@ -1,7 +1,6 @@
 "use client";
 
 import ArrowIcon from "@/components/arrow-icon";
-import { useState } from "react";
 import { journalDate } from "@/lib/date-format";
 
 const months = Array.from({ length: 12 }, (_, month) =>
@@ -12,14 +11,17 @@ const months = Array.from({ length: 12 }, (_, month) =>
 
 export default function ArchiveCalendar({
   dates,
+  month,
+  onMonth,
   selected,
   onSelect,
 }: {
   dates: string[];
+  month: string;
+  onMonth: (month: string) => void;
   selected: string;
   onSelect: (date: string) => void;
 }) {
-  const [month, setMonth] = useState(dates[0].slice(0, 7));
   const years = [...new Set(dates.map((date) => date.slice(0, 4)))];
   const [year, monthNumber] = month.split("-").map(Number);
   const first = new Date(Date.UTC(year, monthNumber - 1, 1)).getUTCDay();
@@ -27,7 +29,7 @@ export default function ArchiveCalendar({
   const weeks = Math.ceil((first + length) / 7);
   const available = new Set(dates);
   const shift = (step: number) =>
-    setMonth(
+    onMonth(
       new Date(Date.UTC(year, monthNumber - 1 + step, 1))
         .toISOString()
         .slice(0, 7),
@@ -63,7 +65,7 @@ export default function ArchiveCalendar({
             aria-label="Year"
             value={year}
             onChange={({ target }) =>
-              setMonth(
+              onMonth(
                 dates
                   .find((date) => date.startsWith(target.value))!
                   .slice(0, 7),
@@ -81,7 +83,7 @@ export default function ArchiveCalendar({
             aria-label="Month"
             value={monthNumber}
             onChange={({ target }) =>
-              setMonth(`${year}-${target.value.padStart(2, "0")}`)
+              onMonth(`${year}-${target.value.padStart(2, "0")}`)
             }
           >
             {months.map((name, index) => (
@@ -136,11 +138,11 @@ export default function ArchiveCalendar({
           aria-label="Jump to a date"
           value={selected}
           onChange={({ target }) => {
-            if (target.value) setMonth(target.value.slice(0, 7));
+            if (target.value) onMonth(target.value.slice(0, 7));
             onSelect(target.value);
           }}
         >
-          <option value="">All dates</option>
+          <option value="">Whole archive month</option>
           {dates.map((date) => (
             <option key={date} value={date}>
               {journalDate(date)}
