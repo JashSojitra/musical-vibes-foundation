@@ -3,6 +3,7 @@ import ArrowIcon from "@/components/arrow-icon";
 import Image from "next/image";
 import Link from "next/link";
 import type { SiteSettings } from "@/types/content";
+import { Github, Linkedin } from "lucide-react";
 
 export default function Footer({ settings }: { settings: SiteSettings }) {
   return (
@@ -68,7 +69,9 @@ export default function Footer({ settings }: { settings: SiteSettings }) {
         </a>
       </div>
       <div className="footer-credit">
-        <span>Thoughtfully designed &amp; developed by Jash Sojitra</span>
+        <span>
+          Thoughtfully designed &amp; developed by <strong>Jash Sojitra</strong>
+        </span>
         <nav aria-label="Developer profiles">
           <a
             href="https://www.linkedin.com/in/jashsojitra/"
@@ -76,7 +79,8 @@ export default function Footer({ settings }: { settings: SiteSettings }) {
             rel="noopener noreferrer"
             aria-label="Jash Sojitra on LinkedIn (opens in a new tab)"
           >
-            LinkedIn
+            <Linkedin aria-hidden="true" size={16} strokeWidth={1.8} />
+            <span>LinkedIn</span>
           </a>
           <a
             href="https://github.com/JashSojitra"
@@ -84,7 +88,8 @@ export default function Footer({ settings }: { settings: SiteSettings }) {
             rel="noopener noreferrer"
             aria-label="Jash Sojitra on GitHub (opens in a new tab)"
           >
-            GitHub
+            <Github aria-hidden="true" size={16} strokeWidth={1.8} />
+            <span>GitHub</span>
           </a>
         </nav>
       </div>
